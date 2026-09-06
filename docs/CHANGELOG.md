@@ -6,6 +6,24 @@
 
 ## Unreleased
 
+- Prepared Time Challenge for community publishing and direct sharing: added the read-only `FAP_SCREENSHOT_V1` serial framebuffer service, a host-tested fragmented command matcher, a generated exact-3:4 cover, and a bilingual release/install guide. The service keeps a 120 x 160 evidence frame from real LVGL flushes, avoiding a full-screen DRAM allocation on the no-PSRAM target; it never flashes, resets, or changes game state.
+
+- Applied the reviewed handover layout to firmware: removed both agent portraits and VS from handover, and reused the target screen's 192 x 105 duration card with 40 px numerals. Retained one-press timing, hidden first-player results, timeout copy, and independent battery refresh. Added pixel-parity regression checks across all five targets, both players, and normal/timeout handovers; aligned browser status and requirements with firmware.
+
+- Fixed Time Challenge's missing battery percentage on first entry: the LVGL tick now observes the worker's battery cache independently of game transitions. Only the top-right label changes when its normalized value changes; delayed readings, unavailable/recovered values, and reentry no longer require a button or whole-screen redraw. Added host regression coverage and real-LVGL checks for unchanged game pixels, animation progress, and teardown safety. Battery I/O remains in the worker; physical cold-start acceptance is still required.
+
+- Refined the browser handover screen for review: removed the two-agent VS artwork and reused the target screen's full-size duration card, while keeping one-press start and sealed first-player results. This follow-up layout is preview-only, not yet applied to firmware.
+
+- Synchronized the interactive browser preview with current firmware: device-derived pixel assets and screen layouts, one-press handover, sealed confirmation before scoring, a separate 1.5-second celebration, persistent numeric results, and match victory returning home. Added frozen nine-screen navigation, five review scenarios, matching procedural music/cues, and nine portable browser tests. Browser fonts, audio, timing, battery, and the menu boundary remain explicitly non-device evidence; firmware is unchanged.
+
+- Clarified Time Challenge settlement: both attempts now remain sealed without changing the score until a separate OK. Confirmation plays the round-win animation, which then opens detailed results automatically; the next round still requires OK. Raised only background-music amplitude by 40% (about 2.9 dB), keeping the 75/100 output volume and all six cue waveforms unchanged. Added sealed-result, delayed score, and cue-baseline regression checks.
+
+- Refined Time Challenge after device playtesting: handover shows the target and starts timing with one OK; match victory returns home after 3.5 seconds or on OK, and the next match starts only from home. Added original background music outside timing and six button/game cues, on by default with a home sound toggle. Timing interrupts music/previous cues; dimming and exit stop sound. Added portable audio tests and LVGL tie coverage. Follow-up playtesting raised default volume from 40 to 75/100 and made both round celebration and detailed results wait for OK; neither automatically advances.
+
+- Added the first Time Challenge firmware page: a host-tested portable game model, timestamped queued input, pass-and-play and AI practice, Chinese military-pixel screens, separate round/match celebrations, optional worker-driven sound, battery status, and idle dimming. Added a five-task delivery plan and headless LVGL rendering/teardown checks. Existing hardware demos remain accessible; the game is preselected in the menu. Build and USB write validation are distinct from full device acceptance.
+
+- Redesigned the browser prototype as Time Challenge, a military arcade time-sense training match between two agents, with original detailed pixel agents and outpost artwork, hidden estimates during handover, raised-fist round wins, and separate match celebrations. Every target uses the same training premise and Start Timing / Stop Timing hints, without fictional missions, an operational story, or a course subtitle. The first to three round wins takes the match. Timing remains visually still; firmware is unchanged.
+
 - Added a standalone Time Duel interaction prototype for two players sharing one device, with turn-taking, sealed results, AI practice, replayable scenarios, and separate round and match celebrations.
 
 - Added the supplied 80-byte CW2017 profile for the specified 520 mAh cell, including content/update-flag checks, verified writes, the required restart sequence, and bounded SOC-readiness polling.

@@ -15,17 +15,25 @@
 #include "lvgl.h"
 #include "esp_log.h"
 #include "esp_sleep.h"
+#include "esp_timer.h"
+#include "duel_io.h"
+#include "fap_screenshot.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/queue.h"
+#include <stdatomic.h>
 
 static const char *TAG = "main";
 
 static const demo_entry_t DEMOS[] = {
-    { "Display", demo_display_enter, demo_display_exit, demo_display_key },
-    { "Button",  demo_button_enter,  demo_button_exit,  demo_button_key  },
-    { "Audio",   demo_audio_enter,   demo_audio_exit,   demo_audio_key   },
-    { "Battery", demo_battery_enter, demo_battery_exit, demo_battery_key },
-    { "Wi-Fi",   demo_wifi_enter,    demo_wifi_exit,    demo_wifi_key    },
-    { "BLE",     demo_ble_enter,     demo_ble_exit,     demo_ble_key     },
-    { "Low Power", demo_low_power_enter, demo_low_power_exit, demo_low_power_key },
+    {.name = "Display", .enter = demo_display_enter, .exit = demo_display_exit, .key = demo_display_key},
+    {.name = "Button", .enter = demo_button_enter, .exit = demo_button_exit, .key = demo_button_key},
+    {.name = "Audio", .enter = demo_audio_enter, .exit = demo_audio_exit, .key = demo_audio_key},
+    {.name = "Battery", .enter = demo_battery_enter, .exit = demo_battery_exit, .key = demo_battery_key},
+    {.name = "Wi-Fi", .enter = demo_wifi_enter, .exit = demo_wifi_exit, .key = demo_wifi_key},
+    {.name = "BLE", .enter = demo_ble_enter, .exit = demo_ble_exit, .key = demo_ble_key},
+    {.name = "Low Power", .enter = demo_low_power_enter, .exit = demo_low_power_exit, .key = demo_low_power_key},
+    {.name = "Challenge", .enter = demo_duel_enter, .exit = demo_duel_exit, .key = demo_duel_key,
+     .key_at = demo_duel_key_at, .tick = demo_duel_tick},
 };
 #define DEMO_COUNT (sizeof(DEMOS) / sizeof(DEMOS[0]))
 
@@ -38,6 +46,17 @@ static lv_obj_t *s_rows[DEMO_COUNT];
 static lv_obj_t *s_mascot;
 static int  s_sel;                 // 当前选中项
 static int  s_active = -1;         // 当前所在演示页;-1 = 在菜单
+
+typedef struct {
+    bsp_btn_t button;
+    bsp_btn_ev_t event;
+    int64_t timestamp_us;
+    unsigned generation;
+} input_message_t;
+
+static QueueHandle_t s_input_queue;
+static atomic_uint s_generation;
+static atomic_bool s_input_overflow;
 
 static void menu_refresh(void) {
     for (size_t i = 0; i < DEMO_COUNT; i++) {
@@ -74,15 +93,14 @@ static void enter_menu(void) {
     menu_build();
 }
 
-// 按键回调运行在 button 组件的任务里,操作 LVGL 必须加锁。
-static void on_key(bsp_btn_t btn, bsp_btn_ev_t ev, void *user) {
-    (void)user;
-    if (!bsp_lvgl_lock(500)) return;
-
+static void process_key(bsp_btn_t btn, bsp_btn_ev_t ev, int64_t timestamp_us) {
     if (s_active >= 0) {
         if (btn == BSP_BTN_OK && ev == BSP_BTN_LONG) {     // 统一返回
+            atomic_fetch_add(&s_generation, 1);
             DEMOS[s_active].exit();
             enter_menu();
+        } else if (DEMOS[s_active].key_at) {
+            DEMOS[s_active].key_at(btn, ev, timestamp_us);
         } else {
             DEMOS[s_active].key(btn, ev);
         }
@@ -90,6 +108,7 @@ static void on_key(bsp_btn_t btn, bsp_btn_ev_t ev, void *user) {
         if (btn == BSP_BTN_UP)   { s_sel = (s_sel + DEMO_COUNT - 1) % DEMO_COUNT; menu_refresh(); }
         if (btn == BSP_BTN_DOWN) { s_sel = (s_sel + 1) % DEMO_COUNT;              menu_refresh(); }
         if (btn == BSP_BTN_OK && s_ok[s_sel]) {
+            atomic_fetch_add(&s_generation, 1);
             s_active = s_sel;
             ui_pixel_mascot_jump(s_mascot);
             lv_obj_delete(s_menu_scr);
@@ -100,7 +119,38 @@ static void on_key(bsp_btn_t btn, bsp_btn_ev_t ev, void *user) {
             ui_pixel_mascot_jump(s_mascot);
         }
     }
-    bsp_lvgl_unlock();
+}
+
+static void on_key(bsp_btn_t button, bsp_btn_ev_t event, void *user) {
+    (void)user;
+    const input_message_t message = {
+        .button = button,
+        .event = event,
+        .timestamp_us = esp_timer_get_time(),
+        .generation = atomic_load(&s_generation),
+    };
+    if (s_input_queue && xQueueSend(s_input_queue, &message, 0) != pdTRUE) {
+        atomic_store(&s_input_overflow, true);
+    }
+}
+
+static void process_input(lv_timer_t *timer) {
+    (void)timer;
+    const int64_t batch_time_us = esp_timer_get_time();
+    if (atomic_exchange(&s_input_overflow, false)) {
+        xQueueReset(s_input_queue);
+        if (s_active >= 0 && DEMOS[s_active].key_at == demo_duel_key_at) {
+            demo_duel_input_lost(batch_time_us);
+        }
+        ESP_LOGW(TAG, "Input queue overflow; current challenge cancelled");
+    }
+    input_message_t message;
+    for (unsigned count = 0; count < 32 && xQueueReceive(s_input_queue, &message, 0) == pdTRUE; ++count) {
+        if (message.generation == atomic_load(&s_generation)) {
+            process_key(message.button, message.event, message.timestamp_us);
+        }
+    }
+    if (s_active >= 0 && DEMOS[s_active].tick) DEMOS[s_active].tick(batch_time_us);
 }
 
 void app_main(void) {
@@ -125,14 +175,26 @@ void app_main(void) {
 
     // 其余外设单项失败不阻塞:菜单里标 [FAIL],其他项照常可测。
     s_ok[0] = true;                                   // Display 已确认可用
-    s_ok[1] = (bsp_button_init(on_key, NULL) == ESP_OK);
+    s_input_queue = xQueueCreate(32, sizeof(input_message_t));
+    s_ok[1] = s_input_queue && (bsp_button_init(on_key, NULL) == ESP_OK);
     s_ok[2] = (bsp_audio_init() == ESP_OK);
     s_ok[3] = (bsp_battery_init() == ESP_OK);
     s_ok[4] = true;                                    // 页面内按需初始化并显示错误
     s_ok[5] = true;
     s_ok[6] = true;
+    s_ok[7] = s_ok[1];
+    if (!duel_io_init(s_ok[2], s_ok[3])) ESP_LOGW(TAG, "Challenge sound/battery worker unavailable");
 
-    if (bsp_lvgl_lock(1000)) { enter_menu(); bsp_lvgl_unlock(); }
+    if (bsp_lvgl_lock(1000)) {
+        s_sel = 7;
+        enter_menu();
+        if (s_input_queue) {
+            xQueueReset(s_input_queue);
+            lv_timer_create(process_input, 10, NULL);
+        }
+        bsp_lvgl_unlock();
+    }
+    if (fap_screenshot_start() != ESP_OK) ESP_LOGW(TAG, "Community screenshot service unavailable");
 
     ESP_LOGI(TAG, "就绪:Display=%d Button=%d Audio=%d Battery=%d",
              s_ok[0], s_ok[1], s_ok[2], s_ok[3]);

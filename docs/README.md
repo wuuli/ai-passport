@@ -115,7 +115,8 @@ LICENSE                  Repository license
 
 Repository documentation is organized by function area. `authoritative` documents define development or collaboration requirements; `reference` documents provide background or an index.
 
-- [Time Duel requirements](PRD_TIME_DUEL.md) and [interaction prototype](../prototype/time-duel-v2.html) — the single-device two-player game under review on this feature branch.
+- [Time Challenge requirements](PRD_TIME_DUEL.md), [development tasks and validation](TASKS_TIME_DUEL.md), [release and sharing guide](RELEASE_TIME_CHALLENGE.md), and [interaction prototype](../prototype/time-duel-v2.html) — the single-device two-player game on this feature branch.
+- [System home community options](RESEARCH_SYSTEM_HOME.md) — launcher references and integration boundaries; not a firmware replacement decision.
 - [`docs/development/`](development/README.md) — engineering rules and reusable workflows: the `ai-guide.md`, `engineering/`, `ci/`, and `release/` areas. Its README lists them.
 - [`docs/contribution/`](contribution/README.md) — collaboration, documentation, and commit/PR conventions.
 - [`docs/hardware-design/`](hardware-design/README.md) — board facts, constraints, acceptance matrix, and troubleshooting.

@@ -49,7 +49,7 @@
 - 英文标题：`Time Challenge`
 - 封面：`assets/images/time-duel/time-challenge-cover.png`
 - 固件：`build/FoloToy-AI-Passport-full.bin`
-- 源码分支：`feature/time-duel`；目前尚未配置公开 fork 地址
+- 源码仓库：<https://github.com/wuuli/ai-passport>；发布分支：`feature/time-duel`
 
 中文简介：把 AI Passport 变成双人时间感竞技场。两名玩家共用一台设备，看到目标时长后轮流按 OK 开始和停止，全凭感觉掐秒；误差更小者赢下回合，率先三胜赢得整场。包含 AI 练习、独立的回合／整场动画、原创街机音乐和按键反馈。
 

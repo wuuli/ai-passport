@@ -49,7 +49,7 @@ The complete gate runs repository checks and host tests, builds the application,
 - English title: `Time Challenge`
 - Cover: `assets/images/time-duel/time-challenge-cover.png`
 - Firmware: `build/FoloToy-AI-Passport-full.bin`
-- Source branch: `feature/time-duel`; a public fork URL is not configured yet
+- Source repository: <https://github.com/wuuli/ai-passport>; release branch: `feature/time-duel`
 
 Chinese description: Turn one AI Passport into a two-player time-sense arena. Players share one device and take turns estimating a target duration entirely by feel; the smaller error wins, and the first to three wins the match. AI practice, separate round and match celebrations, original arcade music, and button feedback are included.
 

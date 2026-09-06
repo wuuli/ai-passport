@@ -13,7 +13,7 @@ static uint32_t random_next(uint32_t *stream)
 
 uint32_t duel_clock_target_ms(uint32_t index)
 {
-    return index < DUEL_TARGET_COUNT ? 1000 + index * 500 : 0;
+    return index < DUEL_TARGET_COUNT ? DUEL_TARGET_MIN_MS + index * DUEL_TARGET_STEP_MS : 0;
 }
 
 static uint32_t draw_target(duel_clock_t *game)

@@ -208,7 +208,7 @@
 
 <script>
 // ---------- game state machine (mirrors PRD / Ticket 01) ----------
-const TARGETS = [1000, 1500, 2000, 2500, 3000];
+const TARGETS = Array.from({ length: 11 }, (_, index) => 1000 + index * 500);
 const WIN_ROUNDS = 3;
 const AUTO_STOP_MS = 3000;
 const DEBOUNCE_MS = 200;

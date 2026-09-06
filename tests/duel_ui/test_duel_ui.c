@@ -84,7 +84,7 @@ static void check_target_handover_parity(lv_display_t *display)
         for (unsigned current = 0; current < 2; ++current) {
             for (unsigned automatic = 0; automatic < 2; ++automatic) {
                 duel_view_t view = {.mode = DUEL_MODE_DUO, .phase = DUEL_PHASE_TARGET,
-                    .target_ms = 1000 + target_index * 500, .target_visible = true,
+                    .target_ms = duel_clock_target_ms(target_index), .target_visible = true,
                     .round = 1, .current = current, .winner = -1};
                 duel_ui_render(&view, 67, true, true, false);
                 lv_obj_update_layout(lv_screen_active());
@@ -131,7 +131,8 @@ static void check_target_handover_parity(lv_display_t *display)
     }
     lv_screen_load(fallback);
     duel_ui_destroy();
-    puts("LVGL handover: 20 target-card pixel comparisons, 40 px numbers, no VS/agents PASS");
+    printf("LVGL handover: %u target-card pixel comparisons, 40 px numbers, no VS/agents PASS\n",
+           (unsigned)DUEL_TARGET_COUNT * 4);
 }
 
 static void check_battery_only(lv_display_t *display)

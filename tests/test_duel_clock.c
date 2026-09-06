@@ -120,12 +120,13 @@ static void test_initial_state_and_mode(void)
 static void test_all_targets_and_winners(void)
 {
     unsigned seen = 0;
-    for (uint32_t seed = 0; seed < 100; ++seed) {
+    for (uint32_t seed = 0; seed < 1000; ++seed) {
         fixture_t test = fixture(DUEL_MODE_DUO, seed);
         press(&test);
         const uint32_t target = test.game.target_ms;
-        assert(target >= 1000 && target <= 3000 && target % 500 == 0);
-        const unsigned index = (target - 1000) / 500;
+        assert(target >= DUEL_TARGET_MIN_MS && target <= DUEL_TARGET_MAX_MS &&
+               (target - DUEL_TARGET_MIN_MS) % DUEL_TARGET_STEP_MS == 0);
+        const unsigned index = (target - DUEL_TARGET_MIN_MS) / DUEL_TARGET_STEP_MS;
         assert(target == duel_clock_target_ms(index));
         seen |= 1u << index;
         play_duo_round(&test, (int)(seed % 2));
@@ -136,7 +137,7 @@ static void test_all_targets_and_winners(void)
         assert(test.game.score[seed % 2] == 1);
         assert(test.game.score[1 - seed % 2] == 0);
     }
-    assert(seen == (1u << DUEL_TARGET_COUNT) - 1);
+    assert(seen == (UINT32_C(1) << DUEL_TARGET_COUNT) - 1);
     assert(duel_clock_target_ms(DUEL_TARGET_COUNT) == 0);
     assert(duel_clock_target_ms(UINT32_MAX) == 0);
 }
@@ -399,7 +400,8 @@ static void test_ai_after_human_timeout(void)
     fixture_t test = fixture(DUEL_MODE_AI, 42);
     press(&test);
     press(&test);
-    assert(send_after(&test, DUEL_EVENT_TICK, INT64_C(10000000)));
+    assert(send_after(&test, DUEL_EVENT_TICK,
+                      (int64_t)(test.game.target_ms + 3000) * 1000));
     assert(test.game.phase == DUEL_PHASE_AI_WAIT);
     assert(test.game.automatic[0]);
     assert_hidden(&test.game, false);

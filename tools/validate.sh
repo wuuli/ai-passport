@@ -45,6 +45,7 @@ run_static_checks() {
         tests/test_fap_screenshot_protocol.c main/fap_screenshot_protocol.c \
         -o "${test_dir}/test_fap_screenshot_protocol"
     "${test_dir}/test_fap_screenshot_protocol"
+    python3 tests/test_duel_assets.py
     python3 tests/test_verify_firmware.py
     rm -rf "${test_dir}"
     echo "Host tests: PASS"

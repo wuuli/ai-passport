@@ -10,14 +10,14 @@ Two players share **one AI Passport** and estimate the same target duration. The
 
 The [interactive browser preview](../prototype/time-duel-v2.html) now follows the implemented firmware screens and flow, including subsequent playtest refinements. [The task register](TASKS_TIME_DUEL.md) separates implementation from device evidence. No device communication is needed; the earlier two-device BLE concept is superseded.
 
-The nine-step navigator and five scenarios pause on selected screens with explicitly labeled example data; OK resumes interaction, while the playback button starts real-time phase transitions. Free play uses the shared OK button or Space/Enter. The browser mirrors sealed confirmation, separate 1.5-second round celebration, persistent numeric results, and 3.5-second match victory returning home. It also models 60-second idle dimming and wake-only input. Browser fonts, audio output, battery availability, and the illustrative hardware-menu boundary are not device measurements. Run `node --test tests/test_duel_preview.cjs` (Node 22 or later) for portable browser-flow and cue-parity checks.
+The nine-step navigator and five scenarios pause on selected screens with explicitly labeled example data; OK resumes interaction, while the playback button starts real-time phase transitions. Free play uses the shared OK button or Space/Enter. The browser mirrors sealed confirmation, separate 1.5-second round celebration, persistent numeric results, and 3.5-second match victory returning home. It also models 60-second idle dimming and wake-only input. Browser fonts, audio output, the illustrative battery value, and the hardware-menu boundary are not device measurements. Run `node --test tests/test_duel_preview.cjs` (Node 22 or later) for portable browser-flow and cue-parity checks.
 
 The handover screen removes the two-agent VS artwork and reuses the target screen's duration card at the same position and 40 px number size. First-player results stay sealed and one OK still starts timing. Firmware and browser now share this layout; the firmware's two screens call the same card builder.
 
 ## Confirmed requirements
 
 - One device hosts the two-player match. No NFC or BLE pairing is required.
-- Targets are drawn from `{1.0, 1.5, 2.0, 2.5, 3.0}` seconds, in 0.5-second steps.
+- Targets are drawn from 1.0 through 6.0 seconds, in 0.5-second steps.
 - Each player controls the start and stop of their estimate through a device button.
 - Timing screens do not show elapsed time.
 - A match is first to three round wins; tied rounds do not count toward the five scored rounds.
@@ -70,7 +70,7 @@ The browser prototype follows the hand-crafted military pixel-art animation dire
 - **Round win:** switch the winner to a raised-fist pose, add a short impact burst, stamp in a ROUND WIN banner, and pulse the score. Use a neutral DRAW state without the burst for ties.
 - **Match victory:** name the winner of this training match, show celebratory stars, preserve the final score, then return home before another match.
 - **Animation fidelity:** the prototype uses two illustrated poses per agent plus stepped CSS transforms, not a finished frame-by-frame character animation set. Reduce-motion preferences suppress these transitions.
-- **Memory:** ESP32-C3 has no PSRAM. The large source PNGs are browser-only design assets and are not linked into firmware. The device uses a 240 x 240 background and four 80 x 112 poses: 186,880 bytes of constant RGB565 data in Flash. Motion uses `lv_anim` transforms rather than full-screen frame sequences.
+- **Memory:** ESP32-C3 has no PSRAM. The large source PNGs are browser-only design assets and are not linked into firmware. The device uses one opaque 240 x 240 RGB565 background and four transparent 80 x 112 RGB565A8 poses: 222,720 bytes of constant image data in Flash. Motion uses `lv_anim` transforms rather than full-screen frame sequences.
 - **Sound:** original synthesized chiptune music plays outside timing. Accepted buttons, start, stop, round win/loss, and match victory have short cues. Entering timing stops music generation and interrupts the previous cue; only a one-shot 24 ms start cue remains, without a rhythmic soundtrack. Sound defaults on at volume 75/100; music-only PCM amplitudes are 1540 (melody) and 770 (bass), up 40% (about 2.9 dB) from the previous mix, while every cue waveform and the output-volume setting stay unchanged; DOWN on home toggles all sound. Idle dimming and exit stop music. A worker renders 16 kHz mono PCM in 128-sample chunks, never in input callbacks or the LVGL task. Acoustic latency and loudness require device listening. The browser synthesizes the same music and six cue PCM waveforms after a user gesture, without asserting equal speaker loudness.
 
 ## Single-player practice

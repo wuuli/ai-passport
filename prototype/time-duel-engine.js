@@ -1,5 +1,5 @@
 const Duel = (() => {
-  const targets = Object.freeze([1000, 1500, 2000, 2500, 3000]);
+  const targets = Object.freeze(Array.from({ length: 11 }, (_, index) => 1000 + index * 500));
   const create = (mode = 'duo') => ({
     mode, phase: 'home', score: [0, 0], round: 1, starter: 0, current: 0,
     target: null, started: null, phaseStarted: 0, lastOk: -Infinity,

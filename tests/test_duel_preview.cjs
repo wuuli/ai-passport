@@ -1,5 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 const Duel = require('../prototype/time-duel-engine.js');
 const Audio = require('../prototype/time-duel-audio.js');
 
@@ -9,6 +11,30 @@ function sealed(score = [0, 0], elapsed = [1982, 2145], mode = 'duo') {
 }
 const ok = (state, now, target = 2500) => Duel.reduce(state, { type: 'OK', now, target });
 const tick = (state, now, elapsed) => Duel.reduce(state, { type: 'TICK', now, elapsed });
+
+test('review page exposes only same-device two-player play', () => {
+  const root = path.resolve(__dirname, '..');
+  const html = fs.readFileSync(path.join(root, 'prototype/time-duel-v2.html'), 'utf8');
+  const preview = fs.readFileSync(path.join(root, 'prototype/time-duel-preview.js'), 'utf8');
+  for (const source of [html, preview]) {
+    assert.doesNotMatch(source, /mode-ai|单人练习|AI 教官|AI 练习|AI practice/);
+  }
+  assert.match(html, /同一台机器，轮流挑战/);
+  assert.match(preview, /previewBattery = 86/);
+  assert.match(preview, /目标 6 秒，9 秒时自动停止/);
+  assert.match(preview, /timeoutScenario \? 6000 : 2000/);
+  assert.match(preview, /timeoutScenario \? \[9000, 6145\]/);
+  assert.doesNotMatch(preview, /pendingAi|\['OK', 'MODE'\]/);
+});
+
+test('targets span 1.0 through 6.0 seconds in 0.5-second steps', () => {
+  assert.equal(Duel.targets.length, 11);
+  assert.equal(Duel.targets[0], 1000);
+  assert.equal(Duel.targets.at(-1), 6000);
+  for (let index = 1; index < Duel.targets.length; index++) {
+    assert.equal(Duel.targets[index] - Duel.targets[index - 1], 500);
+  }
+});
 
 test('same-device handover starts with one OK and second stop seals without scoring', () => {
   let state = ok(Duel.create(), 0, 2000);

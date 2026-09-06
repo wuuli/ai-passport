@@ -6,22 +6,47 @@ import struct
 import subprocess
 from pathlib import Path
 
-from PIL import Image, ImageOps
+from PIL import Image, ImageDraw, ImageOps
 
 
 ROOT = Path(__file__).resolve().parent.parent
 
 
+def flattened_pixels(image):
+    getter = getattr(image, "get_flattened_data", None)
+    return getter() if getter is not None else image.getdata()
+
+
+def remove_edge_matte(image):
+    marked = image.convert("RGB")
+    marker = (255, 0, 255)
+    ImageDraw.floodfill(marked, (0, 0), marker, thresh=14)
+    alpha = Image.new("L", marked.size, 255)
+    alpha.putdata([0 if pixel == marker else 255 for pixel in flattened_pixels(marked)])
+    result = image.convert("RGBA")
+    result.putalpha(alpha)
+    return result
+
+
 def descriptor(name, image):
     pixels = bytearray()
-    for red, green, blue in image.convert("RGB").getdata():
+    rgba = image.convert("RGBA")
+    has_alpha = image.mode == "RGBA"
+    alpha = bytearray()
+    for red, green, blue, opacity in flattened_pixels(rgba):
+        if opacity == 0:
+            red = green = blue = 0
         pixels.extend(struct.pack("<H", (red >> 3) << 11 | (green >> 2) << 5 | (blue >> 3)))
+        if has_alpha:
+            alpha.append(opacity)
+    pixels.extend(alpha)
     rows = [", ".join(f"0x{value:02x}" for value in pixels[offset:offset + 24])
             for offset in range(0, len(pixels), 24)]
     source = f"static const uint8_t {name}_data[] = {{\n    " + ",\n    ".join(rows) + "\n};\n"
+    color_format = "LV_COLOR_FORMAT_RGB565A8" if has_alpha else "LV_COLOR_FORMAT_RGB565"
     source += f"""
 const lv_image_dsc_t {name} = {{
-    .header = {{.magic = LV_IMAGE_HEADER_MAGIC, .cf = LV_COLOR_FORMAT_RGB565,
+    .header = {{.magic = LV_IMAGE_HEADER_MAGIC, .cf = {color_format},
                .w = {image.width}, .h = {image.height}, .stride = {image.width * 2}}},
     .data_size = sizeof({name}_data),
     .data = {name}_data,
@@ -32,11 +57,14 @@ const lv_image_dsc_t {name} = {{
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--font", type=Path, required=True)
-    parser.add_argument("--font-converter", type=Path, required=True)
+    parser.add_argument("--font", type=Path)
+    parser.add_argument("--font-converter", type=Path)
+    parser.add_argument("--assets-only", action="store_true")
     options = parser.parse_args()
     artwork = ROOT / "assets/images/time-duel"
     sheet = Image.open(artwork / "time-challenge-operatives.png")
+    transparent_sheet = remove_edge_matte(sheet)
+    transparent_sheet.save(artwork / "time-challenge-operatives-alpha.png")
     background = ImageOps.fit(Image.open(artwork / "time-challenge-outpost.png"), (240, 240),
                               method=Image.Resampling.NEAREST)
     images = [("duel_outpost", background)]
@@ -45,8 +73,8 @@ def main():
              ("duel_agent_0_win", (145, 594, 550, 1220)),
              ("duel_agent_1_win", (700, 594, 1095, 1220))]
     for name, bounds in crops:
-        pose = ImageOps.pad(sheet.crop(bounds), (80, 112), method=Image.Resampling.NEAREST,
-                            color=(34, 40, 29))
+        pose = ImageOps.pad(transparent_sheet.crop(bounds), (80, 112),
+                            method=Image.Resampling.NEAREST, color=(0, 0, 0, 0))
         images.append((name, pose))
     sources = ['#include "duel_assets.h"\n']
     image_bytes = 0
@@ -59,6 +87,11 @@ def main():
     (ROOT / "main/duel_assets.h").write_text(
         '#pragma once\n\n#include "lvgl.h"\n\n' + declarations +
         "\nextern const lv_font_t duel_font;\nextern const lv_font_t duel_title_font;\n")
+    if options.assets_only:
+        print(f"RGB565/RGB565A8 images: {image_bytes} bytes in Flash")
+        return
+    if options.font is None or options.font_converter is None:
+        parser.error("--font and --font-converter are required unless --assets-only is used")
     ui_source = (ROOT / "main/duel_ui.c").read_text()
     symbols = "".join(sorted(set(re.findall(r"[^\x00-\x7f]", ui_source))))
     for name, size, characters, ascii_range in [
@@ -73,7 +106,8 @@ def main():
         source = re.sub(r"/\*.*?\*/", "", output.read_text(), flags=re.DOTALL)
         source = "\n".join(line.rstrip() for line in source.splitlines()) + "\n"
         output.write_text(re.sub(r"\n{3,}", "\n\n", source))
-    print(f"RGB565 images: {image_bytes} bytes in Flash; CJK copy set: {len(symbols)} glyphs")
+    print(f"RGB565/RGB565A8 images: {image_bytes} bytes in Flash; "
+          f"CJK copy set: {len(symbols)} glyphs")
 
 
 if __name__ == "__main__":

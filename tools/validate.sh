@@ -28,6 +28,24 @@ run_static_checks() {
         tests/test_ui_pixel_math.c main/ui_pixel_math.c \
         -o "${test_dir}/test_ui_pixel_math"
     "${test_dir}/test_ui_pixel_math"
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
+        tests/test_duel_clock.c main/duel_clock.c -lm \
+        -o "${test_dir}/test_duel_clock"
+    "${test_dir}/test_duel_clock"
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
+        tests/test_duel_sound.c main/duel_sound.c \
+        -o "${test_dir}/test_duel_sound"
+    "${test_dir}/test_duel_sound"
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
+        -Itests/duel_demo/stubs -Icomponents/bsp/include \
+        tests/test_demo_duel.c main/demo_duel.c main/duel_clock.c -lm \
+        -o "${test_dir}/test_demo_duel"
+    "${test_dir}/test_demo_duel"
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
+        tests/test_fap_screenshot_protocol.c main/fap_screenshot_protocol.c \
+        -o "${test_dir}/test_fap_screenshot_protocol"
+    "${test_dir}/test_fap_screenshot_protocol"
+    python3 tests/test_duel_assets.py
     python3 tests/test_verify_firmware.py
     rm -rf "${test_dir}"
     echo "Host tests: PASS"

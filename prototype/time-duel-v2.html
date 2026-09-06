@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>掐秒挑战 · 同机双人预览</title>
+  <link rel="stylesheet" href="time-duel-military.css?v=firmware-duo-5">
+  <script defer src="time-duel-engine.js?v=target-6s-1"></script>
+  <script defer src="time-duel-audio.js?v=firmware-sync-1"></script>
+  <script defer src="time-duel-preview.js?v=target-6s-2"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"></span>AI Passport<span>时间感训练</span></div>
+    <div class="top-actions"><span class="tag">同机双人交互预览</span><button class="text-button" id="sound" aria-pressed="true">声音：开</button><button class="text-button" id="reset">返回首页</button></div>
+  </header>
+  <main>
+    <section class="playground" aria-label="同一台 AI Passport 双人模拟器">
+      <div class="intro">
+        <div class="mission-kicker">同机双人 · 五局三胜</div>
+        <h1 class="game-wordmark"><span class="title-cn"><span>掐秒</span><span>挑战</span></span><span class="title-en">TIME CHALLENGE</span></h1>
+        <p>两名特工，一场时间感训练的比拼。<br>不看表，凭感觉，比谁掐得准。</p>
+        <div class="field-postcard" role="img" aria-label="像素军事训练基地"><span>时间感训练基地</span></div>
+        <div class="modes" aria-label="试玩方式"><div class="mode-card">双人对抗<small>同一台机器，轮流挑战</small></div></div>
+        <div class="quick-rule"><span class="rule-pill">1.0–6.0 秒</span><span>间隔 0.5 秒</span><span>先赢 3 局</span></div>
+      </div>
+      <article class="device-stage">
+        <div class="game-round" id="game-round"></div>
+        <div class="device">
+          <div class="device-brand"><b>AI PASSPORT</b><span>PREVIEW<i class="device-led"></i></span></div>
+          <div class="screen" id="screen" role="region" aria-label="共享游戏屏幕"></div>
+          <div class="device-controls"><button class="nav-key" id="up" aria-label="上键，本游戏未使用" disabled>▲</button><button class="hardware-key" id="ok" aria-label="共享 OK 按键">OK</button><button class="nav-key" id="down" aria-label="下键切换声音">▼</button><div class="speaker" aria-hidden="true"></div></div>
+        </div>
+        <p class="device-note"><kbd>Space</kbd> / <kbd>Enter</kbd> = OK · 长按退出</p>
+        <p class="audio-note" id="audio-note">声音默认开，首次操作后播放</p>
+      </article>
+      <aside class="match-panel">
+        <div class="match-heading"><h2>训练战绩</h2><span>先赢 3 回合</span></div>
+        <div class="seats"><div class="seat" id="seat-0" aria-label="玩家一状态"></div><div class="seat seat-rival" id="seat-1" aria-label="玩家二状态"></div></div>
+        <section class="state-panel" aria-label="交互说明"><div class="state-index" id="state-index"></div><h3 id="state-title"></h3><p id="state-copy"></p><details><summary>查看当前状态</summary><div class="state-facts" id="state-facts"></div></details></section>
+        <div class="preview-state"><span id="demo-label" role="status"></span><button class="text-button" id="resume" hidden>按实机流程播放</button></div>
+      </aside>
+    </section>
+    <section class="journey"><div class="section-heading"><h2>训练流程</h2><p>点选画面会暂停，按 OK 可接着试玩</p></div><nav class="flow" id="flow" aria-label="流程画面预览"></nav></section>
+    <section class="scenarios" aria-label="情景演示"><div class="section-heading"><h2>重点交互</h2><p>预设成绩仅供流程评审</p></div><div class="scenario-tabs" id="scenario-tabs" aria-label="演示情景"></div><div class="walkthrough" id="walkthrough"></div></section>
+    <footer class="bottom-note"><span>网页按已完成的同机双人实机流程展示：交接直接计时，确认后播放回合动画，再展示详细成绩。</span><span>浏览器字体略有差异；外壳、菜单和 86% 电量为示意，声音与计时以实机为准。</span></footer>
+  </main>
+</body>
+</html>

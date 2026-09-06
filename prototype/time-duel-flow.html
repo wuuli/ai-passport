@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Time Duel — Flow Prototype</title>
+<style>
+  :root { --device-w: 240px; --device-h: 320px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "SF Mono", "Menlo", "Consolas", monospace;
+    background: #1a1d23; color: #eee;
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+    padding: 24px 16px 120px;
+  }
+  h1 { font-size: 15px; font-weight: 600; letter-spacing: 1px; margin-bottom: 4px; }
+  .sub { font-size: 11px; color: #888; margin-bottom: 20px; }
+  .stage { display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
+  .device-wrap { text-align: center; }
+  .device-label { font-size: 11px; color: #888; margin-top: 10px; }
+  .device {
+    width: var(--device-w); height: var(--device-h);
+    border-radius: 18px; overflow: hidden; position: relative;
+    box-shadow: 0 0 0 6px #2a2d33, 0 12px 40px rgba(0,0,0,.5);
+    image-rendering: pixelated;
+  }
+  .screen { position: absolute; inset: 0; display: none; flex-direction: column; }
+  .screen.active { display: flex; }
+
+  /* ============ Variant A: Pixel Field (faithful ui_pixel) ============ */
+  .v-a .device { background: #1689E8; }
+  .v-a .cloud { position: absolute; background: #fff; }
+  .v-a .cloud::before, .v-a .cloud::after { content: ""; position: absolute; background: #fff; }
+  .v-a .cloud1 { width: 43px; height: 10px; top: 15px; left: 188px; }
+  .v-a .cloud1::before { width: 10px; height: 9px; top: -7px; left: 10px; }
+  .v-a .cloud1::after { width: 9px; height: 8px; top: -6px; left: 25px; }
+  .v-a .grass { position: absolute; left: 0; right: 0; bottom: 0; height: 34px; background: #82BE2D; }
+  .v-a .grass::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: #A7D93E; }
+  .v-a .plate {
+    position: absolute; top: 8px; left: 5px; right: 5px; height: 33px;
+    background: #F4F4EA; border: 3px solid #17202A; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 700; color: #17202A; letter-spacing: 1px;
+  }
+  .v-a .panel {
+    background: #F4F4EA; border: 4px solid #17202A; color: #17202A;
+    padding: 8px; text-align: center;
+  }
+  .v-a .btn-ok {
+    position: absolute; bottom: 42px; left: 50%; transform: translateX(-50%);
+    width: 64px; height: 30px; background: #E43B2F; border: 3px solid #17202A;
+    color: #fff; font-family: inherit; font-size: 12px; font-weight: 700;
+    cursor: pointer; border-radius: 0;
+  }
+  .v-a .btn-ok:active { transform: translateX(-50%) translateY(2px); }
+  .v-a .battery { position: absolute; top: 12px; right: 10px; font-size: 9px; color: #17202A; background: #F4F4EA; padding: 1px 4px; border: 2px solid #17202A; z-index: 5; }
+  /* mascot: little TV robot */
+  .v-a .mascot { position: absolute; width: 38px; height: 48px; left: 50%; transform: translateX(-50%); }
+  .v-a .m-antenna { position: absolute; left: 18px; top: 0; width: 3px; height: 6px; background: #17202A; }
+  .v-a .m-antenna::before { content: ""; position: absolute; left: -2px; top: -3px; width: 7px; height: 3px; background: #FFB23E; }
+  .v-a .m-body { position: absolute; left: 3px; top: 6px; width: 32px; height: 24px; background: #17202A; }
+  .v-a .m-face { position: absolute; left: 7px; top: 10px; width: 24px; height: 16px; background: #B9F3FF; }
+  .v-a .m-eye { position: absolute; top: 4px; width: 4px; height: 6px; background: #294B7A; animation: blink 4s infinite; }
+  .v-a .m-eye.l { left: 4px; } .v-a .m-eye.r { left: 16px; }
+  @keyframes blink { 0%, 92%, 100% { opacity: 1; } 95% { opacity: 0.1; } }
+  .v-a .m-mouth { position: absolute; left: 9px; top: 12px; width: 7px; height: 2px; background: #7557D9; }
+  .v-a .m-scarf { position: absolute; left: 10px; top: 29px; width: 18px; height: 4px; background: #FFB23E; }
+  .v-a .m-base { position: absolute; left: 8px; top: 33px; width: 22px; height: 11px; background: #7557D9; }
+  .v-a .m-foot { position: absolute; top: 44px; width: 9px; height: 4px; background: #17202A; }
+  .v-a .m-foot.l { left: 8px; } .v-a .m-foot.r { left: 21px; }
+  .v-a .mascot.nervous { animation: nervous .12s infinite; }
+  @keyframes nervous { 0%,100% { transform: translateX(-50%) rotate(-3deg); } 50% { transform: translateX(-50%) rotate(3deg); } }
+  .v-a .mascot.cheer { animation: cheer .3s infinite; }
+  @keyframes cheer { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-14px); } }
+  .v-a .mascot.dizzy { animation: dizzy .5s infinite; }
+  @keyframes dizzy { 0%,100% { transform: translateX(-50%) rotate(-10deg); } 50% { transform: translateX(-50%) rotate(10deg); } }
+
+  /* ============ Variant B: Neon Arcade ============ */
+  .v-b .device { background: #0D0221; }
+  .v-b .device::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 50;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 1px, transparent 1px 3px);
+  }
+  .v-b .neon-title {
+    position: absolute; top: 14px; left: 0; right: 0; text-align: center;
+    font-size: 18px; font-weight: 800; letter-spacing: 3px; color: #00F0FF;
+    text-shadow: 0 0 6px #00F0FF, 0 0 14px #00F0FF;
+  }
+  .v-b .neon-num {
+    font-size: 56px; font-weight: 800; color: #FF2E88;
+    text-shadow: 0 0 8px #FF2E88, 0 0 20px #FF2E88;
+    text-align: center;
+  }
+  .v-b .neon-label { font-size: 12px; color: #00F0FF; letter-spacing: 2px; text-align: center; text-shadow: 0 0 6px #00F0FF; }
+  .v-b .neon-panel {
+    border: 2px solid #FF2E88; box-shadow: 0 0 10px rgba(255,46,136,.6), inset 0 0 10px rgba(255,46,136,.2);
+    padding: 10px; color: #fff;
+  }
+  .v-b .btn-ok {
+    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+    width: 100px; height: 36px; background: transparent; border: 2px solid #00F0FF;
+    color: #00F0FF; font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: 2px;
+    cursor: pointer; text-shadow: 0 0 6px #00F0FF; box-shadow: 0 0 10px rgba(0,240,255,.5);
+  }
+  .v-b .btn-ok:active { background: rgba(0,240,255,.2); }
+  .v-b .pulse-ring {
+    width: 120px; height: 120px; border-radius: 50%;
+    border: 3px solid #00F0FF; margin: 0 auto;
+    animation: neonPulse 1s infinite; box-shadow: 0 0 20px #00F0FF;
+  }
+  @keyframes neonPulse { 0%,100% { transform: scale(.85); opacity: .6; } 50% { transform: scale(1.05); opacity: 1; } }
+  .v-b .vs-row { display: flex; justify-content: space-around; align-items: center; }
+  .v-b .vs-side { text-align: center; }
+  .v-b .vs-side .name { font-size: 11px; letter-spacing: 2px; }
+  .v-b .vs-side.you .name { color: #00F0FF; text-shadow: 0 0 6px #00F0FF; }
+  .v-b .vs-side.rival .name { color: #FF2E88; text-shadow: 0 0 6px #FF2E88; }
+  .v-b .vs-side .val { font-size: 26px; font-weight: 800; margin-top: 6px; }
+  .v-b .vs-side.you .val { color: #00F0FF; } .v-b .vs-side.rival .val { color: #FF2E88; }
+  .v-b .vs-mid { font-size: 20px; font-weight: 800; color: #FFD928; text-shadow: 0 0 8px #FFD928; }
+
+  /* ============ Variant C: Minimal Ring ============ */
+  .v-c .device { background: #FAFAF7; color: #17202A; }
+  .v-c .min-title { position: absolute; top: 20px; left: 0; right: 0; text-align: center; font-size: 13px; letter-spacing: 4px; color: #999; font-weight: 500; }
+  .v-c .ring-wrap { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-55%); }
+  .v-c .ring { width: 150px; height: 150px; border-radius: 50%; border: 5px solid #E4E4DE; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+  .v-c .ring.live { border-color: #17202A; animation: breathe 1.2s infinite; }
+  @keyframes breathe { 0%,100% { transform: scale(.96); } 50% { transform: scale(1.03); } }
+  .v-c .ring .big { font-size: 38px; font-weight: 200; letter-spacing: -1px; }
+  .v-c .ring .small { font-size: 11px; color: #999; margin-top: 4px; letter-spacing: 2px; }
+  .v-c .min-btn {
+    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 40px; background: #17202A; color: #FAFAF7; border: none;
+    font-family: inherit; font-size: 13px; letter-spacing: 3px; cursor: pointer; border-radius: 20px;
+  }
+  .v-c .min-btn:active { background: #333; }
+  .v-c .score-row { position: absolute; top: 50px; left: 0; right: 0; display: flex; justify-content: center; gap: 24px; font-size: 13px; color: #666; }
+  .v-c .score-row b { color: #17202A; font-size: 18px; font-weight: 600; }
+  .v-c .result-card { text-align: center; }
+  .v-c .result-card .err { font-size: 12px; color: #999; margin-top: 6px; }
+  .v-c .result-card .win { color: #2E9E5B; font-weight: 600; }
+  .v-c .result-card .lose { color: #C44; font-weight: 600; }
+
+  /* ============ shared bits ============ */
+  .center-col { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; gap: 12px; padding: 50px 16px 60px; }
+  .score-bar { font-size: 12px; color: inherit; opacity: .8; }
+  .confetti { position: absolute; width: 6px; height: 10px; top: -12px; animation: fall linear infinite; z-index: 20; }
+  @keyframes fall { to { transform: translateY(340px) rotate(360deg); } }
+  .banner {
+    position: absolute; top: 40%; left: 50%; transform: translate(-50%,-50%);
+    font-size: 22px; font-weight: 800; padding: 8px 20px; z-index: 30; white-space: nowrap;
+    animation: bannerPop .4s ease;
+  }
+  @keyframes bannerPop { 0% { transform: translate(-50%,-50%) scale(.3); opacity: 0; } 70% { transform: translate(-50%,-50%) scale(1.15); } 100% { transform: translate(-50%,-50%) scale(1); opacity: 1; } }
+  .v-a .banner { background: #FFD928; border: 3px solid #17202A; color: #17202A; }
+  .v-b .banner { background: transparent; border: 2px solid #FFD928; color: #FFD928; text-shadow: 0 0 8px #FFD928; }
+  .v-c .banner { background: #17202A; color: #FAFAF7; border-radius: 8px; }
+  .pair-dots { display: flex; gap: 6px; }
+  .pair-dots span { width: 8px; height: 8px; border-radius: 50%; animation: pairPulse 1s infinite; }
+  .v-a .pair-dots span { background: #17202A; }
+  .v-b .pair-dots span { background: #00F0FF; box-shadow: 0 0 6px #00F0FF; }
+  .v-c .pair-dots span { background: #999; }
+  .pair-dots span:nth-child(2) { animation-delay: .2s; } .pair-dots span:nth-child(3) { animation-delay: .4s; }
+  @keyframes pairPulse { 0%,100% { opacity: .2; } 50% { opacity: 1; } }
+
+  /* switcher bar */
+  .switcher {
+    position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 12px; background: #2a2d33;
+    border: 1px solid #444; border-radius: 24px; padding: 8px 16px; z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,.4);
+  }
+  .switcher button {
+    background: #1a1d23; color: #eee; border: 1px solid #555; border-radius: 50%;
+    width: 32px; height: 32px; cursor: pointer; font-size: 16px;
+  }
+  .switcher button:hover { background: #3a3d43; }
+  .switcher .vlabel { font-size: 12px; color: #ccc; min-width: 180px; text-align: center; }
+  .switcher .vlabel b { color: #FFD928; }
+  .statebar {
+    position: fixed; bottom: 64px; left: 50%; transform: translateX(-50%);
+    font-size: 11px; color: #777; background: rgba(0,0,0,.4); padding: 4px 12px; border-radius: 12px;
+    font-family: monospace; z-index: 100;
+  }
+  .hint { font-size: 11px; color: #666; margin-top: 8px; text-align: center; max-width: 300px; }
+</style>
+</head>
+<body class="v-a">
+<p style="background:#F4F4EA;color:#17202A;padding:12px 18px;margin-bottom:18px;font:14px/1.6 sans-serif">旧版双机设想已归档。当前玩法为同一台 AI Passport 双人对战：<a href="time-duel-v2.html">打开同机交互原型 v2 →</a></p>
+<h1>TIME DUEL — 流程交互设计稿</h1>
+<div class="sub">PROTOTYPE · 240×320 · 内置 AI 对手模拟双人对战 · Space/Enter = OK</div>
+
+<div class="stage">
+  <div class="device-wrap">
+    <div class="device" id="device">
+      <!-- screens injected by JS -->
+    </div>
+    <div class="device-label">AI Passport (P1)</div>
+    <div class="hint">点击屏幕上的 OK 按钮或按 Space/Enter 推进流程</div>
+  </div>
+</div>
+
+<div class="statebar" id="statebar">state: MENU</div>
+<div class="switcher">
+  <button id="prev">←</button>
+  <div class="vlabel" id="vlabel"></div>
+  <button id="next">→</button>
+</div>
+
+<script>
+// ---------- game state machine (mirrors PRD / Ticket 01) ----------
+const TARGETS = Array.from({ length: 11 }, (_, index) => 1000 + index * 500);
+const WIN_ROUNDS = 3;
+const AUTO_STOP_MS = 3000;
+const DEBOUNCE_MS = 200;
+const AI_K = 0.12; // normal difficulty
+
+const S = { MENU:'MENU', PAIRING:'PAIRING', TARGET:'TARGET', TIMING:'TIMING',
+            STOPPED:'STOPPED', RESULT:'RESULT', VICTORY:'VICTORY' };
+
+let state = S.MENU;
+let round = 0, scoreP = 0, scoreR = 0;
+let targetMs = 0, pStart = 0, pEst = null, rEst = null;
+let lastPress = 0, aiTimer = null, autoTimer = null, pairTimer = null;
+
+function gauss() { // Box-Muller
+  let u=0,v=0; while(!u) u=Math.random(); while(!v) v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+function pickTarget() { return TARGETS[Math.floor(Math.random()*TARGETS.length)]; }
+function aiEstimate(t) { return Math.max(300, t + gauss()*AI_K*t); }
+
+function setState(s) {
+  state = s;
+  document.getElementById('statebar').textContent =
+    `state: ${s} · round ${round} · score P:${scoreP} R:${scoreR}` +
+    (pEst!=null ? ` · P est ${pEst}ms` : '') + (rEst!=null ? ` · R est ${rEst}ms` : '');
+  render();
+}
+
+function clearTimers() {
+  [aiTimer, autoTimer, pairTimer].forEach(t => { if(t) clearTimeout(t); });
+  aiTimer = autoTimer = pairTimer = null;
+}
+
+function startMatch() {
+  clearTimers();
+  round = 0; scoreP = 0; scoreR = 0;
+  setState(S.PAIRING);
+  pairTimer = setTimeout(() => nextRound(), 1800);
+}
+function nextRound() {
+  round++;
+  targetMs = pickTarget(); pEst = null; rEst = null;
+  setState(S.TARGET);
+}
+function startTiming() {
+  pStart = performance.now();
+  setState(S.TIMING);
+  // AI starts "at the same time" and stops after its own estimate
+  aiTimer = setTimeout(() => {
+    rEst = Math.round(aiEstimate(targetMs));
+    if (state === S.TIMING) { /* P still timing; AI result waits */ checkResult(); }
+    else if (state === S.STOPPED) { checkResult(); }
+  }, 100 + Math.random()*400); // AI reaction delay before its own start
+  // auto-stop if P never presses
+  autoTimer = setTimeout(() => {
+    if (state === S.TIMING) { pEst = targetMs + AUTO_STOP_MS; stopTiming(true); }
+  }, targetMs + AUTO_STOP_MS + 50);
+}
+function stopTiming(auto) {
+  if (state !== S.TIMING) return;
+  if (!auto) pEst = Math.round(performance.now() - pStart);
+  clearTimeout(autoTimer);
+  setState(S.STOPPED);
+  checkResult();
+}
+function checkResult() {
+  if (pEst == null || rEst == null) return;
+  const errP = Math.abs(pEst - targetMs), errR = Math.abs(rEst - targetMs);
+  const pWin = errP < errR;
+  if (errP === errR) { /* tie → replay, keep scores */ }
+  else if (pWin) scoreP++; else scoreR++;
+  setState(S.RESULT);
+}
+function afterResult() {
+  if (scoreP >= WIN_ROUNDS || scoreR >= WIN_ROUNDS) setState(S.VICTORY);
+  else nextRound();
+}
+
+// ---------- input ----------
+function pressOk() {
+  const now = performance.now();
+  if (now - lastPress < DEBOUNCE_MS) return;
+  lastPress = now;
+  switch (state) {
+    case S.MENU: startMatch(); break;
+    case S.TARGET: startTiming(); break;
+    case S.TIMING: stopTiming(false); break;
+    case S.RESULT: afterResult(); break;
+    case S.VICTORY: startMatch(); break; // rematch
+  }
+}
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); pressOk(); }
+});
+
+// ---------- rendering (3 variants) ----------
+const VARIANTS = {
+  A: { name: 'Pixel Field — 真机基线 (ui_pixel)', cls: 'v-a' },
+  B: { name: 'Neon Arcade — 街机霓虹', cls: 'v-b' },
+  C: { name: 'Minimal Ring — 极简圆环', cls: 'v-c' },
+};
+let cur = new URLSearchParams(location.search).get('variant') || 'A';
+
+function mascotHTML(mood) {
+  return `<div class="mascot ${mood}">
+    <div class="m-antenna"></div><div class="m-body"></div>
+    <div class="m-face"><div class="m-eye l"></div><div class="m-eye r"></div><div class="m-mouth"></div></div>
+    <div class="m-scarf"></div><div class="m-base"></div>
+    <div class="m-foot l"></div><div class="m-foot r"></div>
+  </div>`;
+}
+function confettiHTML(n) {
+  const colors = ['#FFD928','#E43B2F','#1689E8','#82BE2D','#FFB23E','#7557D9'];
+  let h = '';
+  for (let i=0;i<n;i++) {
+    h += `<div class="confetti" style="left:${Math.random()*95}%;background:${colors[i%6]};animation-duration:${1.5+Math.random()}s;animation-delay:${Math.random()*.8}s"></div>`;
+  }
+  return h;
+}
+function scoreBar() {
+  return `<div class="score-bar">ROUND ${round} · YOU ${scoreP} : ${scoreR} RIVAL</div>`;
+}
+
+// Each variant returns {html, okLabel} per state
+const RENDER = {
+  A: () => {
+    const v = 'v-a';
+    const base = (inner, okLabel) => `
+      <div class="battery">87%</div>
+      <div class="cloud cloud1"></div>
+      <div class="grass"></div>
+      <div class="plate">TIME DUEL</div>
+      <div class="center-col">${inner}</div>
+      <button class="btn-ok" onclick="pressOk()">${okLabel}</button>`;
+    switch (state) {
+      case S.MENU: return { html: base(
+        `<div class="panel" style="width:180px">
+           <div style="font-size:13px;font-weight:700;margin-bottom:6px">掐秒对战</div>
+           <div style="font-size:10px;line-height:1.5">凭感觉估出目标时长<br>误差小者赢下回合</div>
+         </div>${mascotHTML('')}`, 'START') };
+      case S.PAIRING: return { html: base(
+        `<div class="panel" style="width:170px"><div style="font-size:12px;font-weight:700">配对中…</div>
+         <div class="pair-dots" style="justify-content:center;margin-top:8px"><span></span><span></span><span></span></div></div>`,
+        '…') };
+      case S.TARGET: return { html: base(
+        `${scoreBar()}
+         <div class="panel" style="width:170px">
+           <div style="font-size:11px">目标时长</div>
+           <div style="font-size:30px;font-weight:800;margin:4px 0">${(targetMs/1000).toFixed(2)}<span style="font-size:14px">s</span></div>
+         </div>
+         <div style="font-size:10px;color:#17202A">按 OK 开始计时</div>`, 'START') };
+      case S.TIMING: return { html: base(
+        `<div style="font-size:11px;font-weight:700;color:#17202A">计时中…</div>
+         ${mascotHTML('nervous')}
+         <div style="font-size:9px;color:#555">凭感觉，别看表</div>`, 'STOP') };
+      case S.STOPPED: return { html: base(
+        `<div class="panel" style="width:170px">
+           <div style="font-size:11px">你的估时</div>
+           <div style="font-size:28px;font-weight:800">${(pEst/1000).toFixed(2)}<span style="font-size:13px">s</span></div>
+           <div style="font-size:10px;margin-top:4px">等待对手…</div>
+         </div>${mascotHTML('')}`, '…') };
+      case S.RESULT: {
+        const errP = Math.abs(pEst-targetMs), errR = Math.abs(rEst-targetMs);
+        const pWin = errP < errR, tie = errP === errR;
+        return { html: base(
+          `${scoreBar()}
+           ${confettiHTML(pWin?14:0)}
+           <div class="panel" style="width:190px">
+             <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px">
+               <span>YOU ${(pEst/1000).toFixed(2)}s</span>
+               <span>RIVAL ${(rEst/1000).toFixed(2)}s</span>
+             </div>
+             <div style="font-size:10px;color:#666">目标 ${(targetMs/1000).toFixed(2)}s · 误差 ${errP}ms vs ${errR}ms</div>
+           </div>
+           ${mascotHTML(tie?'':pWin?'cheer':'dizzy')}
+           ${tie?'':`<div class="banner">${pWin?'ROUND WIN':'ROUND LOSE'}</div>`}`, 'NEXT') };
+      }
+      case S.VICTORY: {
+        const win = scoreP >= WIN_ROUNDS;
+        return { html: base(
+          `${confettiHTML(24)}
+           <div class="panel" style="width:180px">
+             <div style="font-size:20px;font-weight:800">${win?'VICTORY':'DEFEAT'}</div>
+             <div style="font-size:14px;margin:6px 0">${scoreP} : ${scoreR}</div>
+             <div style="font-size:10px;color:#666">${win?'你赢下了整场比赛':'对手更强，再战？'}</div>
+           </div>
+           ${mascotHTML(win?'cheer':'dizzy')}`, 'REMATCH') };
+      }
+    }
+  },
+
+  B: () => {
+    const base = (inner, okLabel) => `
+      <div class="neon-title">TIME DUEL</div>
+      <div class="center-col">${inner}</div>
+      <button class="btn-ok" onclick="pressOk()">${okLabel}</button>`;
+    switch (state) {
+      case S.MENU: return { html: base(
+        `<div class="neon-label">ESTIMATE · DUEL</div>
+         <div class="neon-num" style="font-size:40px">VS</div>
+         <div class="neon-label" style="font-size:10px">FEEL THE TIME</div>`, 'INSERT COIN') };
+      case S.PAIRING: return { html: base(
+        `<div class="neon-label">LINKING</div>
+         <div class="pair-dots" style="justify-content:center"><span></span><span></span><span></span></div>`, '…') };
+      case S.TARGET: return { html: base(
+        `<div class="neon-label">ROUND ${round} · TARGET</div>
+         <div class="neon-num">${(targetMs/1000).toFixed(1)}</div>
+         <div class="neon-label" style="font-size:10px">YOU ${scoreP} · ${scoreR} RIVAL</div>`, 'READY') };
+      case S.TIMING: return { html: base(
+        `<div class="neon-label">TIMING</div>
+         <div class="pulse-ring"></div>
+         <div class="neon-label" style="font-size:10px">TRUST YOUR GUT</div>`, 'STOP') };
+      case S.STOPPED: return { html: base(
+        `<div class="neon-label">YOU</div>
+         <div class="neon-num" style="color:#00F0FF;text-shadow:0 0 8px #00F0FF">${(pEst/1000).toFixed(2)}</div>
+         <div class="neon-label" style="font-size:10px">WAITING RIVAL…</div>`, '…') };
+      case S.RESULT: {
+        const errP = Math.abs(pEst-targetMs), errR = Math.abs(rEst-targetMs);
+        const pWin = errP < errR, tie = errP === errR;
+        return { html: base(
+          `<div class="neon-label">ROUND ${round}</div>
+           <div class="vs-row">
+             <div class="vs-side you"><div class="name">YOU</div><div class="val">${(pEst/1000).toFixed(2)}</div></div>
+             <div class="vs-mid">VS</div>
+             <div class="vs-side rival"><div class="name">RIVAL</div><div class="val">${(rEst/1000).toFixed(2)}</div></div>
+           </div>
+           <div class="neon-label" style="font-size:10px">TGT ${(targetMs/1000).toFixed(2)}s</div>
+           ${tie?'':`<div class="banner">${pWin?'YOU WIN':'YOU LOSE'}</div>`}`, 'NEXT') };
+      }
+      case S.VICTORY: {
+        const win = scoreP >= WIN_ROUNDS;
+        return { html: base(
+          `${confettiHTML(20)}
+           <div class="neon-num" style="font-size:32px;color:${win?'#00F0FF':'#FF2E88'};text-shadow:0 0 10px ${win?'#00F0FF':'#FF2E88'}">${win?'WINNER':'GAME OVER'}</div>
+           <div class="neon-num" style="font-size:24px">${scoreP} - ${scoreR}</div>
+           <div class="neon-label" style="font-size:10px">${win?'FLAWLESS TIMING':'TRY AGAIN'}</div>`, 'REMATCH') };
+      }
+    }
+  },
+
+  C: () => {
+    const base = (inner, okLabel) => `
+      <div class="min-title">TIME DUEL</div>
+      <div class="center-col">${inner}</div>
+      <button class="min-btn" onclick="pressOk()">${okLabel}</button>`;
+    switch (state) {
+      case S.MENU: return { html: base(
+        `<div class="ring"><div class="big">TD</div><div class="small">ESTIMATE DUEL</div></div>
+         <div style="font-size:11px;color:#999;text-align:center">双人估时对战</div>`, '开始') };
+      case S.PAIRING: return { html: base(
+        `<div class="ring"><div class="pair-dots" style="justify-content:center"><span></span><span></span><span></span></div></div>
+         <div style="font-size:11px;color:#999">正在连接对手</div>`, '…') };
+      case S.TARGET: return { html: base(
+        `<div class="score-row">YOU <b>${scoreP}</b> : <b>${scoreR}</b> RIVAL</div>
+         <div class="ring"><div class="big">${(targetMs/1000).toFixed(1)}<span style="font-size:16px">s</span></div><div class="small">ROUND ${round} · 目标</div></div>
+         <div style="font-size:11px;color:#999">按下开始计时</div>`, '开始') };
+      case S.TIMING: return { html: base(
+        `<div class="ring live"><div class="big" style="font-size:18px">···</div><div class="small">计时中</div></div>
+         <div style="font-size:11px;color:#999">凭感觉按下停止</div>`, '停止') };
+      case S.STOPPED: return { html: base(
+        `<div class="ring"><div class="big">${(pEst/1000).toFixed(2)}</div><div class="small">你的估时</div></div>
+         <div style="font-size:11px;color:#999">等待对手</div>`, '…') };
+      case S.RESULT: {
+        const errP = Math.abs(pEst-targetMs), errR = Math.abs(rEst-targetMs);
+        const pWin = errP < errR, tie = errP === errR;
+        return { html: base(
+          `<div class="score-row">YOU <b>${scoreP}</b> : <b>${scoreR}</b> RIVAL</div>
+           <div class="ring">
+             <div style="display:flex;gap:20px">
+               <div class="result-card"><div style="font-size:20px;font-weight:300">${(pEst/1000).toFixed(2)}</div><div class="err">YOU · ±${errP}ms</div></div>
+               <div class="result-card"><div style="font-size:20px;font-weight:300;color:#999">${(rEst/1000).toFixed(2)}</div><div class="err">RIVAL · ±${errR}ms</div></div>
+             </div>
+             <div class="err" style="margin-top:8px">目标 ${(targetMs/1000).toFixed(2)}s</div>
+           </div>
+           ${tie?'':`<div class="banner ${pWin?'win':'lose'}">${pWin?'本回合获胜':'本回合落败'}</div>`}`, '继续') };
+      }
+      case S.VICTORY: {
+        const win = scoreP >= WIN_ROUNDS;
+        return { html: base(
+          `${confettiHTML(18)}
+           <div class="ring" style="border-color:${win?'#2E9E5B':'#C44'}">
+             <div class="big" style="font-size:26px">${scoreP} : ${scoreR}</div>
+             <div class="small">${win?'整场胜利':'整场落败'}</div>
+           </div>
+           <div style="font-size:11px;color:#999">${win?'精准的时间感':'再练一局？'}</div>`, '再战') };
+      }
+    }
+  },
+};
+
+function render() {
+  const v = VARIANTS[cur];
+  document.body.className = v.cls;
+  const r = RENDER[cur]();
+  const dev = document.getElementById('device');
+  dev.innerHTML = `<div class="screen active">${r.html}</div>`;
+  document.getElementById('vlabel').innerHTML = `<b>${cur}</b> — ${v.name}`;
+  history.replaceState(null, '', `?variant=${cur}`);
+}
+
+document.getElementById('prev').onclick = () => { cur = cur==='A'?'C':String.fromCharCode(cur.charCodeAt(0)-1); render(); };
+document.getElementById('next').onclick = () => { cur = cur==='C'?'A':String.fromCharCode(cur.charCodeAt(0)+1); render(); };
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === 'ArrowLeft') document.getElementById('prev').click();
+  if (e.key === 'ArrowRight') document.getElementById('next').click();
+});
+
+render();
+</script>
+</body>
+</html>

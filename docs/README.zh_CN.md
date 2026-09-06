@@ -113,6 +113,8 @@ LICENSE                  仓库许可证
 
 本仓库文档按功能域组织。`authoritative` 指对开发与协作有约束力的文档；`参考` 指提供背景或索引的文档。
 
+- [掐秒挑战需求](PRD_TIME_DUEL.zh_CN.md)、[开发任务与验证](TASKS_TIME_DUEL.zh_CN.md)、[发布与分享指南](RELEASE_TIME_CHALLENGE.zh_CN.md)及[交互原型](../prototype/time-duel-v2.html) — 本功能分支的同机双人游戏。
+- [系统首页社区方案](RESEARCH_SYSTEM_HOME.zh_CN.md) — 应用首页参考与集成边界，不代表更换固件的决定。
 - [`docs/development/`](development/README.zh_CN.md) — 工程规则与可复用工作流：`ai-guide.md`、`engineering/`、`ci/`、`release/` 区。其 README 列明它们。
 - [`docs/contribution/`](contribution/README.zh_CN.md) — 协作、文档与提交/PR 约定。
 - [`docs/hardware-design/`](hardware-design/README.zh_CN.md) — 板卡事实、约束、验收矩阵与排障。

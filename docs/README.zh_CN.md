@@ -18,7 +18,7 @@ FoloToy AI Passport 是一个开放式可穿戴 AI 硬件，本仓库是这款 A
 
 | 能力 | 已确认实现 | 应用接口 | 必须遵守的边界 |
 | --- | --- | --- | --- |
-| 显示 | ST7789P3，240 × 320，竖屏 RGB565，SPI2 40 MHz；LEDC 背光 | `bsp_display_*`、`bsp_lvgl_*` | ESP32-C3 无 PSRAM；当前为小型单 DMA 缓冲；BSP 未暴露 LCD MISO、触摸或 TE 接口 |
+| 显示 | ST7789P3，240 × 320，竖屏 RGB565，SPI2 40 MHz；LEDC 背光 | `bsp_display_*`、`bsp_lvgl_*` | ESP32-C3 无 PSRAM；当前采用两块 40 行 DMA 缓冲（共 38,400 B）；BSP 未暴露 LCD MISO、触摸或 TE 接口 |
 | 输入 | `UP` / `DOWN` / `OK` 三键，共用 GPIO0 的 ADC 电阻分压 | `bsp_button_init()`、`bsp_button_read_mv()` | 回调运行在 button 组件任务中，不能阻塞；不能再创建第二个 ADC1 unit |
 | 音频 | ES8311，I2S0 全双工 PCM，可播放和麦克风录音 | `bsp_audio_*` | PCM 读写为阻塞调用，应放工作任务；格式切换必须保留 BSP 内的 close/open 流程 |
 | 电池 | CW2017 的 SOC 与电压读取 | `bsp_battery_*` | 是可缺省能力；读数精度取决于电芯与 profile，不能等同于已标定结果 |
@@ -113,8 +113,9 @@ LICENSE                  仓库许可证
 
 本仓库文档按功能域组织。`authoritative` 指对开发与协作有约束力的文档；`参考` 指提供背景或索引的文档。
 
+- [走廊玩法研究](RESEARCH_EXIT_CORRIDOR.zh_CN.md)、[任务与历史验收](TASKS_EXIT_CORRIDOR.zh_CN.md)、[固件网页同步说明](WEB_PREVIEW_EXIT_CORRIDOR.zh_CN.md)及[可玩预览](../prototype/exit-corridor.html)——网页与当前固件共用 C 逻辑／渲染及素材，240×320 三键操作；真机实测见[设备验证](DEVICE_VALIDATION_EXIT_CORRIDOR.zh_CN.md)，待测项见[最小验证方案](EXIT_CORRIDOR_DEVICE_PROBE.zh_CN.md)。
+
 - [掐秒挑战需求](PRD_TIME_DUEL.zh_CN.md)、[开发任务与验证](TASKS_TIME_DUEL.zh_CN.md)、[发布与分享指南](RELEASE_TIME_CHALLENGE.zh_CN.md)及[交互原型](../prototype/time-duel-v2.html) — 本功能分支的同机双人游戏。
-- [系统首页社区方案](RESEARCH_SYSTEM_HOME.zh_CN.md) — 应用首页参考与集成边界，不代表更换固件的决定。
 - [`docs/development/`](development/README.zh_CN.md) — 工程规则与可复用工作流：`ai-guide.md`、`engineering/`、`ci/`、`release/` 区。其 README 列明它们。
 - [`docs/contribution/`](contribution/README.zh_CN.md) — 协作、文档与提交/PR 约定。
 - [`docs/hardware-design/`](hardware-design/README.zh_CN.md) — 板卡事实、约束、验收矩阵与排障。

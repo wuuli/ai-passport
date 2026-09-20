@@ -42,3 +42,9 @@ void demo_duel_key(bsp_btn_t button, bsp_btn_ev_t event);
 void demo_duel_key_at(bsp_btn_t button, bsp_btn_ev_t event, int64_t timestamp_us);
 void demo_duel_tick(int64_t now_us);
 void demo_duel_input_lost(int64_t now_us);
+
+void demo_corridor_enter(void);
+void demo_corridor_exit(void);
+void demo_corridor_key(bsp_btn_t button, bsp_btn_ev_t event);
+void demo_corridor_tick(int64_t now_us);
+void demo_corridor_input_lost(void);

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#171915"><title>地下通道 · 固件同步版</title>
+<link rel="stylesheet" href="./exit-corridor/firmware/style.css?v=20260920-1">
+</head>
+<body>
+<header><div class="brand">8</div><div><h1>地下通道</h1><p>AI Passport · 固件同步版</p></div>
+<nav aria-label="显示与游戏工具"><label>视图 <select id="scale" aria-label="视图缩放"><option value="1" selected>1× 原生</option><option value="2">2× 放大</option></select></label><button id="fullscreen">全屏</button><button id="restart" disabled>重新开始</button></nav></header>
+<main>
+<div class="caption"><span>240 × 320 · 三键操作</span><span>与真机共用游戏代码及素材</span></div>
+<section class="device" id="device" aria-label="AI Passport 游戏预览">
+<button id="exitFullscreen">退出全屏</button>
+<div class="screen"><canvas id="corridorCanvas" width="240" height="320" tabindex="0" aria-label="正在加载固件画面"></canvas>
+<div id="loading" role="status">正在加载固件与素材…</div>
+<div id="reviewPaused" hidden>评审已暂停 <button id="resumeReview">继续观察</button></div></div>
+<div class="keys" role="group" aria-label="实体三键">
+<button id="btnAction1" data-key="0" disabled aria-label="向左转"><b>◀</b><span>向左转</span><small>UP / ↑</small></button>
+<button id="btnAction2" data-key="1" disabled aria-label="向右转"><b>▶</b><span>向右转</span><small>DOWN / ↓</small></button>
+<button id="btnAction3" data-key="2" disabled aria-label="OK 开始或走停"><b>●</b><span>开始 / 走停</span><small>OK / 空格</small></button>
+</div>
+</section>
+<p class="controls">UP 左转 45° · DOWN 右转 45° · OK 进入／走停<br>长按 OK 1 秒返回入口；网页可用 ↑ / ↓ 和空格 / Enter。</p>
+<p class="boundary">画面使用原生分辨率。网页运行速度不代表设备帧率，电量显示为占位。</p>
+<details id="reviewPanel"><summary>开发评审（含答案）<small>展开暂停游戏</small></summary>
+<div class="review-body"><p>评审样例使用同一套固件逻辑；回到盲玩会从 0 重新开始。</p>
+<div class="fields"><label>异常样例<select id="anomaly"><option value="0">正常通道</option><option value="1">维修门缺失</option><option value="2">海报眼睛</option><option value="3">海报倒置</option><option value="4">额外通风口</option><option value="5">红灯</option><option value="6">高大路人</option><option value="7">停止凝视</option><option value="8">路人缺席</option></select></label>
+<label>观察位置<select id="fixture"><option value="entry">入口</option><option value="poster45">45° 可见广告牌</option><option value="corner">接近前方拐角</option><option value="northPortal">前方跨界</option><option value="southPortal">后方跨界</option><option value="final">第 7 轮前方跨界</option></select></label></div>
+<div class="actions"><button id="applySample" disabled>应用样例</button><button id="toggleReview" disabled>继续观察</button><button id="blind" disabled>回到盲玩</button></div>
+<dl><dt>当前状态</dt><dd id="reviewState">—</dd><dt>最近判定</dt><dd id="reviewJudgement">—</dd><dt>网页运行</dt><dd id="reviewPerf">—</dd><dt>代码与素材</dt><dd id="reviewBuild">正在加载</dd></dl>
+</div></details>
+</main>
+<footer>共享 C 状态机与软件渲染 · 人物、墙面、告示及字体来自当前固件</footer>
+<script type="module" src="./exit-corridor/firmware/app.mjs?v=20260920-1"></script>
+</body></html>

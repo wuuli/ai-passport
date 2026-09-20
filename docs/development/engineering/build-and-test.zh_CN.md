@@ -54,3 +54,5 @@ cc -std=c11 -Wall -Wextra -Werror -Imain \
 
 社区只能上传验证通过的 `build/FoloToy-AI-Passport-full.bin`，不得上传应用单镜像
 `build/FoloToy-AI-Passport.bin`，后者没有小程序可安全解析与转换的完整结构。
+
+地下通道网页对照门禁额外需要 Node.js 18+、Python 3.10+ 和 C11 编译器；只校验现有生成产物不需要 WASI SDK。修改固件游戏、渲染、字体或对应素材后，按[网页同步说明](../../WEB_PREVIEW_EXIT_CORRIDOR.zh_CN.md)重建。

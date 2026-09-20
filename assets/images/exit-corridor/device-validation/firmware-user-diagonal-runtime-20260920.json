@@ -1,0 +1,23 @@
+{
+  "recorded_at": "2026-09-19T16:15:29.888421+00:00",
+  "seconds": 20.073339249938726,
+  "corridor_logs": [
+    "I (236269) corridor: frames=63 window_ms=5042 render_avg_us=38723 free=27572 min=23060 largest=14848 phase=1 score=0 passages=0",
+    "I (236270) corridor: last_cpu_us floor=17217 walls=21476 sprite=0",
+    "I (236270) corridor: pipeline tick_us=32981 refresh_avg_us=38005 refreshes=63 decoded_chunks=4032",
+    "I (236271) corridor: view x_mm=0 z_mm=-19131 yaw_mrad=785 walking=0 turning=0 observing=0",
+    "I (241313) corridor: frames=63 window_ms=5044 render_avg_us=38631 free=27572 min=23060 largest=14848 phase=1 score=0 passages=0",
+    "I (241314) corridor: last_cpu_us floor=17197 walls=21396 sprite=0",
+    "I (241315) corridor: pipeline tick_us=32702 refresh_avg_us=38075 refreshes=63 decoded_chunks=4032",
+    "I (241316) corridor: view x_mm=0 z_mm=-19131 yaw_mrad=785 walking=0 turning=0 observing=0",
+    "I (246358) corridor: frames=63 window_ms=5045 render_avg_us=38632 free=27572 min=23060 largest=14848 phase=1 score=0 passages=0",
+    "I (246359) corridor: last_cpu_us floor=17214 walls=21396 sprite=0",
+    "I (246360) corridor: pipeline tick_us=32702 refresh_avg_us=38078 refreshes=63 decoded_chunks=4032",
+    "I (246361) corridor: view x_mm=0 z_mm=-19131 yaw_mrad=785 walking=0 turning=0 observing=0"
+  ],
+  "failure_markers": {
+    "panic": 0,
+    "watchdog": 0,
+    "malloc": 0
+  }
+}

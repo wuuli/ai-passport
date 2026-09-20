@@ -1,0 +1,20 @@
+{
+  "recorded_at": "2026-09-19T14:57:20.698790+00:00",
+  "seconds": 20.051214166916907,
+  "corridor_logs": [
+    "I (41962) corridor: frames=24 window_ms=5224 render_avg_us=109774 free=15620 min=11180 largest=7680 phase=1 score=0 passages=0",
+    "I (41964) corridor: last_cpu_us floor=49390 walls=61947 sprite=19135",
+    "I (47139) corridor: frames=22 window_ms=5200 render_avg_us=126381 free=15620 min=11180 largest=7680 phase=1 score=0 passages=0",
+    "I (47141) corridor: last_cpu_us floor=49498 walls=58164 sprite=0",
+    "I (52177) corridor: frames=23 window_ms=5036 render_avg_us=110168 free=15620 min=11180 largest=7680 phase=1 score=0 passages=0",
+    "I (52179) corridor: last_cpu_us floor=50125 walls=58925 sprite=0",
+    "I (57248) corridor: frames=24 window_ms=5080 render_avg_us=103922 free=15620 min=11180 largest=7680 phase=1 score=0 passages=0",
+    "I (57250) corridor: last_cpu_us floor=49584 walls=50900 sprite=811"
+  ],
+  "failure_markers": {
+    "panic": 0,
+    "watchdog": 0,
+    "malloc": 0
+  },
+  "measurement": "Render submissions and CPU stages; not completed LCD frame rate."
+}

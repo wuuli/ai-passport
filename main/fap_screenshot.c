@@ -5,6 +5,7 @@
 #include "driver/usb_serial_jtag.h"
 #include "driver/usb_serial_jtag_vfs.h"
 #include "esp_log.h"
+#include "esp_timer.h"
 #include "fap_screenshot_protocol.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -18,9 +19,13 @@
 #define SCREENSHOT_CHUNK 512
 
 static const char *TAG = "fap_screen";
-static uint16_t s_pixels[SCREENSHOT_PIXELS] __attribute__((aligned(64)));
-static uint8_t s_coverage[(SCREENSHOT_PIXELS + 7) / 8];
-static size_t s_covered_pixels;
+/* Capture only when requested. The former always-on RGB565 copy and
+ * coverage map reserved 40,800 bytes and processed every display flush. */
+static uint16_t s_capture_row[SCREENSHOT_WIDTH];
+static int64_t s_capture_deadline;
+static bool s_capturing;
+static bool s_capture_ok;
+static unsigned s_next_row;
 
 static bool write_all(const void *data, size_t size)
 {
@@ -29,50 +34,59 @@ static bool write_all(const void *data, size_t size)
     while (sent < size) {
         size_t remaining = size - sent;
         size_t chunk = remaining < SCREENSHOT_CHUNK ? remaining : SCREENSHOT_CHUNK;
-        int written = usb_serial_jtag_write_bytes(bytes + sent, chunk, pdMS_TO_TICKS(5000));
+        if (esp_timer_get_time() >= s_capture_deadline) return false;
+        int written = usb_serial_jtag_write_bytes(bytes + sent, chunk, pdMS_TO_TICKS(50));
         if (written != (int)chunk) return false;
         sent += chunk;
     }
     return true;
 }
 
+static void finish_capture(bool success)
+{
+    s_capture_ok = success;
+    s_capturing = false;
+}
+
 static void observe_flush(lv_event_t *event)
 {
+    if (!s_capturing) return;
     lv_display_t *display = lv_event_get_target(event);
     const lv_area_t *area = lv_event_get_param(event);
     lv_draw_buf_t *source = lv_display_get_buf_active(display);
-    if (!area || !source || source->header.cf != LV_COLOR_FORMAT_RGB565) return;
-
-    for (unsigned destination_y = 0; destination_y < SCREENSHOT_HEIGHT; ++destination_y) {
-        int source_y = (int)destination_y * 2;
-        if (source_y < area->y1 || source_y > area->y2) continue;
-        for (unsigned destination_x = 0; destination_x < SCREENSHOT_WIDTH; ++destination_x) {
-            int source_x = (int)destination_x * 2;
-            if (source_x < area->x1 || source_x > area->x2) continue;
-            unsigned local_x = (unsigned)(source_x - area->x1);
-            unsigned local_y = (unsigned)(source_y - area->y1);
-            if (local_x >= source->header.w || local_y >= source->header.h) continue;
-            const uint8_t *row = source->data + (size_t)local_y * source->header.stride;
-            size_t destination = (size_t)destination_y * SCREENSHOT_WIDTH + destination_x;
-            s_pixels[destination] = ((const uint16_t *)row)[local_x];
-            uint8_t mask = (uint8_t)(1U << (destination % 8));
-            if (!(s_coverage[destination / 8] & mask)) {
-                s_coverage[destination / 8] |= mask;
-                s_covered_pixels++;
-            }
-        }
+    if (!area || !source || source->header.cf != LV_COLOR_FORMAT_RGB565 ||
+        area->x1 != 0 || area->x2 != BSP_LCD_W - 1 ||
+        source->header.w < BSP_LCD_W || source->header.h < (unsigned)(area->y2 - area->y1 + 1)) {
+        finish_capture(false);
+        return;
     }
+    /* A full-screen invalidation supplies top-to-bottom bands. Read before
+     * esp_lvgl_port swaps bytes or hands this buffer to DMA. No persistent
+     * framebuffer is needed; the requested capture still pauses UI drawing. */
+    for (int y = area->y1; y <= area->y2; ++y) {
+        if (y & 1) continue;
+        if (y < (int)s_next_row * 2) continue;
+        if (y != (int)s_next_row * 2 || s_next_row >= SCREENSHOT_HEIGHT) {
+            finish_capture(false);
+            return;
+        }
+        const uint16_t *row = (const uint16_t *)(source->data +
+                              (size_t)(y - area->y1) * source->header.stride);
+        for (unsigned x = 0; x < SCREENSHOT_WIDTH; ++x) s_capture_row[x] = row[x * 2];
+        if (!write_all(s_capture_row, sizeof(s_capture_row))) {
+            finish_capture(false);
+            return;
+        }
+        ++s_next_row;
+    }
+    if (s_next_row == SCREENSHOT_HEIGHT) finish_capture(true);
 }
 
 static void send_screen(void)
 {
     if (!bsp_lvgl_lock(1000)) return;
-    if (s_covered_pixels != SCREENSHOT_PIXELS) {
-        bsp_lvgl_unlock();
-        ESP_LOGW(TAG, "Screen capture is not ready");
-        return;
-    }
-
+    lv_obj_t *screen = lv_screen_active();
+    if (!screen) { bsp_lvgl_unlock(); return; }
     char header[72];
     int header_size = snprintf(header, sizeof(header), "FAP_SCREENSHOT_V1 %u %u RGB565LE %u\n",
                                (unsigned)SCREENSHOT_WIDTH, (unsigned)SCREENSHOT_HEIGHT,
@@ -81,14 +95,25 @@ static void send_screen(void)
         bsp_lvgl_unlock();
         return;
     }
-
     esp_log_level_t previous_level = esp_log_get_default_level();
     esp_log_level_set("*", ESP_LOG_NONE);
-    bool sent = write_all(header, (size_t)header_size) &&
-                write_all(s_pixels, SCREENSHOT_BYTES) &&
-                usb_serial_jtag_wait_tx_done(pdMS_TO_TICKS(10000)) == ESP_OK;
-    esp_log_level_set("*", previous_level);
+    s_capture_deadline = esp_timer_get_time() + 2000000;
+    s_next_row = 0;
+    s_capture_ok = false;
+    s_capturing = write_all(header, (size_t)header_size);
+    /* Serialize the one requested full refresh under the LVGL lock. The
+     * capture worker owns the request lifetime; no late callback can write
+     * binary pixels after timeout/log restoration. USB writes are bounded by
+     * a two-second request deadline and fail on 50 ms of backpressure. */
+    if (s_capturing) {
+        lv_obj_invalidate(screen);
+        lv_refr_now(lv_display_get_default());
+    }
+    bool sent = s_capture_ok;
+    s_capturing = false;
     bsp_lvgl_unlock();
+    if (sent) sent = usb_serial_jtag_wait_tx_done(pdMS_TO_TICKS(1000)) == ESP_OK;
+    esp_log_level_set("*", previous_level);
     if (!sent) ESP_LOGW(TAG, "Screen capture transfer failed");
 }
 

@@ -1,0 +1,38 @@
+{
+  "snapshots": 59,
+  "traceCommands": 1343,
+  "maxStateError": 2.9802322387695312e-08,
+  "pixelSamples": 4531200,
+  "changedPixels": 0,
+  "maxColorDelta": 0,
+  "input": "PASS",
+  "date": "2026-09-20",
+  "shared_installed_source_hashes": {
+    "main/corridor_game.c": "50183b88a7c536048dccd53f209c0bd18ae697fba7b44253957db825f0792758",
+    "main/corridor_game.h": "9cd738db88551ff63fd46198889baa4ff1b7150b1518b19aff2dc2aca2413b69",
+    "main/corridor_render.c": "4e7c285f75c7715af0e29e8c005ef2805e6495cc9406eb095058e717532bcdbf",
+    "main/corridor_render.h": "04149768d5a7cbdd1a137cc9d3c62d30697b567d3836cdd06f24fa95493283c5",
+    "main/corridor_palette.inc": "e57da4669a7fe741e668e1d782595583d80ae71d845623a624db631d2a82e8d2",
+    "main/corridor_sprite_lut.inc": "e456f6d10133b3404d45244ea85bcc3c7b0a8c5dfa9999a363479d0881c7016d",
+    "main/corridor_wall_lut.inc": "fd08c10325e8873a76a00a0a342ac9cda1c070fee76098d35acd5a454f9e5759",
+    "main/corridor_notice.inc": "1eb52c0eb15345035fe878d411013efc585a5b61058faf054c3ca4e875cc15f0",
+    "main/corridor_font.c": "5ae50d1ca23e1ef81494ef0ea879e510e83aa07660be79792fc2f3bebd0f2eca",
+    "main/demo_corridor.c": "8cbefe17d6c95bc96d482f8e68969a2161e5b2c6ee3f1b30501e80c66b3f4dfb"
+  },
+  "web_module_sha256": "756358c2bdb402513bd8e2d47b0c66a1f6a404e4103d8ee7e981e9f125eeb68b",
+  "browser_url": "http://127.0.0.1:8098/?renderer=webgl",
+  "browser_checks": {
+    "poster45": "PASS: X=0, Z=-20, yaw=90",
+    "normal_final": "PASS: 7 to 8, won",
+    "replay": "PASS: normal stopped at 0",
+    "anomaly_forward": "PASS: 7 to 0",
+    "anomaly_return": "PASS: 0 to 1",
+    "blind_reset": "PASS: title, review closed",
+    "timer_receiver_regression": "Fixed browser Illegal invocation; default-adapter regression and browser short-OK checks pass",
+    "physical_long_press": "NOT RUN: browser automation does not expose key hold; timer semantics covered by host test"
+  },
+  "build": "PASS: complete validate.sh including firmware merge and BLE contract",
+  "host_tests": "PASS",
+  "device_tests": "NOT RUN: this task changes web preview only",
+  "boundary": "Framebuffer comparison excludes Canvas HUD; browser timing is not physical device performance."
+}

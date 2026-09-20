@@ -1,0 +1,11 @@
+{
+  "timestamp_utc": "2026-09-19T09:06:52.776224Z",
+  "port": "/dev/cu.usbmodem2101",
+  "baudrate": 115200,
+  "width": 120,
+  "height": 160,
+  "format": "RGB565LE",
+  "bytes": 38400,
+  "raw_sha256": "c49ef1ee3d7ef5fbd08a85c0a37732f4d578a660b6027c55baed5644a89d29e7",
+  "notes": "Capture holds the LVGL lock on the device during readout; do not use for high-frequency polling or FPS measurements."
+}

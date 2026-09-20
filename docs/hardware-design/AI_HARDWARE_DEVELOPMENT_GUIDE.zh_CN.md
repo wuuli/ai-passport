@@ -137,7 +137,7 @@ Wi-Fi、NimBLE 和 light/deep sleep 直接使用 ESP-IDF API，不属于板级 B
 
 ### 5.2 LVGL 内存和线程规则
 
-ESP32-C3 无 PSRAM。当前 LVGL 显示缓冲为 `240 × 20` 像素的单 DMA 缓冲，RGB565 约 9.6 KB；`sdkconfig.defaults` 的 LVGL 内部池为 24 KB。不要直接改为大行数双缓冲，也不要扩大 UI 内存池而不检查内部 RAM、最大连续堆和 I2S DMA 初始化。
+LVGL 使用两块 `240 × 40` RGB565 DMA 缓冲，总计 38,400 B；内部池为 24 KB。截图服务移除原来的 40,800 B 常驻画面及覆盖表，为增大显示缓冲腾出空间；截图仅在请求时用一行 240 B 的半宽缓冲发送。增加分配前仍须检查内部 RAM、最大连续块和 I2S DMA。
 
 LVGL 非线程安全：
 
@@ -236,7 +236,7 @@ SOC 准确度取决于电芯与 profile 的匹配程度。本驱动给出的是�
 内存审查至少关注：
 
 - LVGL 静态内存池 24 KB；
-- LCD DMA buffer 约 9.6 KB；
+- LCD DMA 双缓冲总计 38,400 B；
 - I2S DMA descriptor/frame buffer；
 - Audio demo 96 KB 录音堆；
 - Wi-Fi 驱动或 NimBLE host/controller（两个示例不同时常驻）；

@@ -1,0 +1,40 @@
+{
+  "recorded_at": "2026-09-20T05:26:07.479104+00:00",
+  "app_offset": "0x10000",
+  "app_bytes": 2312240,
+  "app_sha256": "db38283f753909e0e3f9f05c28bdc80d39ffbae078ebbc8edfde2c4e046024e6",
+  "merged_sha256": "f9955ea5ce95642853b91394d8ee1a21aed89b749b0b2de93d8024e9c6975819",
+  "rollback_bytes": 3145728,
+  "rollback_sha256": "6a7e54593fbab44fec2c88682f995da647257a375c9ae5a9bbc6a4f56f19bf3d",
+  "preserved": [
+    "bootloader",
+    "partition table",
+    "nvs",
+    "phy_init",
+    "cardid",
+    "recovery"
+  ],
+  "source_sha256": {
+    "main/corridor_game.c": "50183b88a7c536048dccd53f209c0bd18ae697fba7b44253957db825f0792758",
+    "main/corridor_game.h": "9cd738db88551ff63fd46198889baa4ff1b7150b1518b19aff2dc2aca2413b69",
+    "main/corridor_render.c": "60213698d0ab5517fdc809cdd110787daadf8a649f354f676a31918979f9be02",
+    "main/corridor_render.h": "04149768d5a7cbdd1a137cc9d3c62d30697b567d3836cdd06f24fa95493283c5",
+    "main/corridor_palette.inc": "e57da4669a7fe741e668e1d782595583d80ae71d845623a624db631d2a82e8d2",
+    "main/corridor_sprite_lut.inc": "e456f6d10133b3404d45244ea85bcc3c7b0a8c5dfa9999a363479d0881c7016d",
+    "main/corridor_notice.inc": "1eb52c0eb15345035fe878d411013efc585a5b61058faf054c3ca4e875cc15f0",
+    "main/corridor_font.c": "5ae50d1ca23e1ef81494ef0ea879e510e83aa07660be79792fc2f3bebd0f2eca",
+    "main/demo_corridor.c": "8cbefe17d6c95bc96d482f8e68969a2161e5b2c6ee3f1b30501e80c66b3f4dfb",
+    "prototype/exit-corridor/firmware/bridge.c": "29c381ee29ed4e8479f0bce473c7de328a600d4c7699bdfd42c2005e9d159d42",
+    "assets/images/exit-corridor/commuter-device.bin": "57103150daa85a913788951388cb3feba62e823dca2426a0a40f28802318251f",
+    "tools/build_corridor_web.py": "8a9887003fbcd22dc7c379838e74e6acc158fe98def32f977be86f3bfac27d66"
+  },
+  "full_gate": "PASS",
+  "host_tests": "PASS including 8241 fixture-free pixels at 9 positions and native/Wasm parity",
+  "device_tests": "PASS: partition table readback matches, application write hash verified, normal startup/menu screenshot",
+  "unverified": [
+    "Physical plain-wall movement comfort",
+    "Actual frame-rate change",
+    "Full gameplay on this image"
+  ],
+  "menu_png_sha256": "c8c0eb22e010125e749bb235448181858c76f773c3c91c26315ddcca494d6828"
+}

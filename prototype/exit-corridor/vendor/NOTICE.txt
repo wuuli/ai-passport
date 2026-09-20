@@ -1,0 +1,10 @@
+Three.js 0.180.0 (r180)
+Copyright 2010-2025 Three.js Authors
+License: MIT (see LICENSE)
+Upstream: https://github.com/mrdoob/three.js/tree/r180
+Obtained from the version-pinned npm package via jsDelivr; no runtime CDN requests.
+
+Files and SHA-256:
+three.module.js  c8211c69345d2e9949dc7a8ac969380497aa0600a5a8ac6a459c8cd02dd9cb8a
+three.core.js    eb077d2417f61d3e6d9264c317cabc4ea35769ed6b0ab533067292a550784c20
+LICENSE          bfe119ea4fd413f5f7ca3fcd63adb0c4a073ed39daa2fe7d3e6b769e21272601

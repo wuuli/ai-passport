@@ -1,0 +1,15 @@
+{
+  "recorded_at": "2026-09-19T14:42:27.863134+00:00",
+  "seconds": 20.056980874971487,
+  "corridor_logs": [
+    "I (96970) corridor: frames=20 window_ms=5035 render_avg_us=112317 free=14092 min=9580 largest=7680 phase=1 score=0 passages=0",
+    "I (102106) corridor: frames=21 window_ms=5178 render_avg_us=105117 free=14092 min=9580 largest=7680 phase=1 score=0 passages=0",
+    "I (107232) corridor: frames=20 window_ms=5156 render_avg_us=117657 free=14092 min=9580 largest=7680 phase=1 score=0 passages=0"
+  ],
+  "failure_markers": {
+    "panic": 0,
+    "watchdog": 0,
+    "malloc": 0
+  },
+  "measurement": "Render submissions and CPU stages; not completed LCD frame rate."
+}

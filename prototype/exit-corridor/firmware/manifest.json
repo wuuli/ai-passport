@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "compiler": "clang version 23.1.0-wasi-sdk (https://github.com/llvm/llvm-project 895aa2c896ada719451be2e3673c83da8ddf1141)",
+  "nativeResolution": [
+    240,
+    320
+  ],
+  "sources": {
+    "main/corridor_game.c": "50183b88a7c536048dccd53f209c0bd18ae697fba7b44253957db825f0792758",
+    "main/corridor_game.h": "9cd738db88551ff63fd46198889baa4ff1b7150b1518b19aff2dc2aca2413b69",
+    "main/corridor_render.c": "e40154d8c4ce89c9c4175e3652accffb4fef0c31f9ee7204790a9d1647019a78",
+    "main/corridor_render.h": "04149768d5a7cbdd1a137cc9d3c62d30697b567d3836cdd06f24fa95493283c5",
+    "main/corridor_palette.inc": "e57da4669a7fe741e668e1d782595583d80ae71d845623a624db631d2a82e8d2",
+    "main/corridor_sprite_lut.inc": "e456f6d10133b3404d45244ea85bcc3c7b0a8c5dfa9999a363479d0881c7016d",
+    "main/corridor_notice.inc": "1eb52c0eb15345035fe878d411013efc585a5b61058faf054c3ca4e875cc15f0",
+    "main/corridor_font.c": "5ae50d1ca23e1ef81494ef0ea879e510e83aa07660be79792fc2f3bebd0f2eca",
+    "main/demo_corridor.c": "8cbefe17d6c95bc96d482f8e68969a2161e5b2c6ee3f1b30501e80c66b3f4dfb",
+    "prototype/exit-corridor/firmware/bridge.c": "29c381ee29ed4e8479f0bce473c7de328a600d4c7699bdfd42c2005e9d159d42",
+    "assets/images/exit-corridor/commuter-device.bin": "57103150daa85a913788951388cb3feba62e823dca2426a0a40f28802318251f",
+    "tools/build_corridor_web.py": "8a9887003fbcd22dc7c379838e74e6acc158fe98def32f977be86f3bfac27d66"
+  },
+  "artifacts": {
+    "corridor.wasm": "bde6446da1664155549f43564c7bf814c47c00cd51024bda2bee7d5d2c2be496",
+    "presentation.json": "6deb6f12ee8a3173df66cfc52333aa8548f2cf4ca490e1f41f9a55861cf417e7"
+  },
+  "spriteBytes": 312689,
+  "spriteUrl": "/assets/images/exit-corridor/commuter-device.bin",
+  "boundary": "Shared C game and renderer; browser input/display shell. Browser timing is not device timing."
+}

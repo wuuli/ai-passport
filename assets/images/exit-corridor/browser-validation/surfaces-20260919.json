@@ -1,0 +1,79 @@
+{
+  "timestamp_utc": "2026-09-19T09:20:46.804Z",
+  "status": "PASS",
+  "source": "Browser DOM readback from tools/surface-audit.html on the current host; Canvas2D with system font rasterization",
+  "source_bytes": 406528,
+  "texture_count": 14,
+  "indexed_count": 14,
+  "direct_rgb565_count": 0,
+  "pixel_error_max_rgb": [
+    7,
+    3,
+    7
+  ],
+  "exit_states": [
+    {
+      "number": 0,
+      "encoded_bytes": 103470,
+      "runtime_typed_array_bytes": 107146,
+      "texture_count": 14
+    },
+    {
+      "number": 1,
+      "encoded_bytes": 103438,
+      "runtime_typed_array_bytes": 107050,
+      "texture_count": 14
+    },
+    {
+      "number": 2,
+      "encoded_bytes": 103484,
+      "runtime_typed_array_bytes": 107188,
+      "texture_count": 14
+    },
+    {
+      "number": 3,
+      "encoded_bytes": 103504,
+      "runtime_typed_array_bytes": 107248,
+      "texture_count": 14
+    },
+    {
+      "number": 4,
+      "encoded_bytes": 103462,
+      "runtime_typed_array_bytes": 107122,
+      "texture_count": 14
+    },
+    {
+      "number": 5,
+      "encoded_bytes": 103498,
+      "runtime_typed_array_bytes": 107230,
+      "texture_count": 14
+    },
+    {
+      "number": 6,
+      "encoded_bytes": 103512,
+      "runtime_typed_array_bytes": 107272,
+      "texture_count": 14
+    },
+    {
+      "number": 7,
+      "encoded_bytes": 103454,
+      "runtime_typed_array_bytes": 107098,
+      "texture_count": 14
+    },
+    {
+      "number": 8,
+      "encoded_bytes": 103494,
+      "runtime_typed_array_bytes": 107218,
+      "texture_count": 14
+    },
+    {
+      "number": 0,
+      "encoded_bytes": 103470,
+      "runtime_typed_array_bytes": 107146,
+      "texture_count": 14
+    }
+  ],
+  "encoded_bytes_max": 103512,
+  "runtime_typed_array_bytes_max": 107272,
+  "scope": "Converted surface data only. No firmware container emitted. Excludes file headers, JS objects, initialization scratch, framebuffer and device measurements. Font rasterization may vary across hosts."
+}

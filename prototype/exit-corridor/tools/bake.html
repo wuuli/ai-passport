@@ -1,0 +1,1007 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rocketbox Character Sprite Atlas Baker (EC-16A)</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #121411;
+      --panel: #1b1e19;
+      --card: #232720;
+      --border: #383d33;
+      --yellow: #e8b820;
+      --yellow-glow: rgba(232, 184, 32, 0.35);
+      --text: #eef1e6;
+      --muted: #9aa192;
+      --accent: #48bb78;
+      --danger: #e53e3e;
+      font-family: 'Hiragino Sans', 'PingFang SC', -apple-system, 'Segoe UI', sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    header {
+      padding: 12px 24px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: .02em;
+    }
+    .badge-mit {
+      background: #2b3a28;
+      color: #9ae6b4;
+      border: 1px solid #48bb78;
+      border-radius: 3px;
+      font-size: 10px;
+      padding: 2px 6px;
+      font-weight: 600;
+    }
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 1fr 450px;
+      gap: 18px;
+      padding: 18px 24px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    @media (max-width: 1080px) {
+      .layout-grid { grid-template-columns: 1fr; }
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .viewport-box {
+      width: 100%;
+      height: 500px;
+      background: #090a08;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+    canvas#preview3D {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .status-overlay {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      right: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+    }
+    .status-tag {
+      background: rgba(18, 20, 17, 0.85);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .btn {
+      background: #2c3127;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .btn:hover { background: #3b4234; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-select {
+      background: #242721;
+      border-color: #4a5043;
+      padding: 6px 10px;
+      font-size: 12px;
+      color: var(--text);
+    }
+    .btn-primary {
+      background: var(--yellow);
+      color: #121411;
+      border-color: var(--yellow);
+      font-weight: 600;
+    }
+    .btn-primary:hover { background: #f0c419; }
+    .btn-save {
+      background: #2b6cb0;
+      color: #fff;
+      border-color: #3182ce;
+      font-weight: 600;
+    }
+    .btn-save:hover { background: #3182ce; }
+    .controls-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .btn-group {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      flex-wrap: wrap;
+    }
+    .btn-group .btn {
+      border: none;
+      border-right: 1px solid var(--border);
+      border-radius: 0;
+      padding: 5px 9px;
+      font-size: 11px;
+    }
+    .btn-group .btn:last-child { border-right: none; }
+    .btn-group .btn.active {
+      background: var(--yellow);
+      color: #121411;
+      font-weight: 600;
+    }
+    .atlas-preview-box {
+      width: 100%;
+      height: 420px;
+      background: repeating-conic-gradient(#222520 0% 25%, #181a16 0% 50%) 50% / 16px 16px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: auto;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+    }
+    #atlasCanvas {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+      background: transparent;
+      image-rendering: pixelated;
+    }
+    .sprite-animated-box {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px;
+    }
+    #spriteViewCanvas {
+      width: 96px;
+      height: 192px; /* 48x96 displayed at 2x */
+      background: repeating-conic-gradient(#2a2e26 0% 25%, #1f221c 0% 50%) 50% / 12px 12px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      image-rendering: pixelated;
+    }
+    .sprite-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .meta-box {
+      background: #141612;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 10px;
+      font-family: ui-monospace, monospace;
+      font-size: 11px;
+      color: #b8c0af;
+      max-height: 130px;
+      overflow: auto;
+      white-space: pre-wrap;
+    }
+    .progress-bar-container {
+      width: 100%;
+      height: 6px;
+      background: #242721;
+      border-radius: 3px;
+      overflow: hidden;
+      display: none;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--yellow);
+      transition: width 0.05s;
+    }
+    .log-box {
+      font-family: ui-monospace, monospace;
+      font-size: 10.5px;
+      background: #121411;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 8px 10px;
+      max-height: 110px;
+      overflow-y: auto;
+      color: #8c9383;
+    }
+    .log-box .log-entry { margin-bottom: 3px; }
+    .log-box .log-success { color: #68d391; }
+    .log-box .log-err { color: #fc8181; }
+  </style>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "/vendor/three.module.js",
+      "three/addons/": "/vendor/addons/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+<header>
+  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+    <h1>Rocketbox Character Sprite Baker (EC-16A)</h1>
+    <span class="badge-mit">MIT License · Microsoft 2020</span>
+  </div>
+  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+    <div style="display: flex; align-items: center; gap: 5px;">
+      <label for="selectBakeProfile" style="font-size: 11px; color: var(--muted);">烘焙规格：</label>
+      <select class="btn btn-select" id="selectBakeProfile" aria-label="烘焙规格切换">
+        <option value="shipped_8x8">现行标准版 (8 方向 × 8 帧 · 384×864, 72 帧)</option>
+        <option value="candidate_16x16" selected>平滑候选版 (16 方向 × 16 帧 · 768×1632, 272 帧)</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" id="btnBake">烘焙精灵表 (Bake Atlas)</button>
+    <button class="btn btn-save" id="btnSave" disabled>保存到 Assets (Save)</button>
+  </div>
+</header>
+
+<main class="layout-grid">
+  <!-- Left Column: 3D Inspection Viewport -->
+  <section class="panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+      <strong>3D 骨骼模型与动画实时检视</strong>
+      <div class="controls-row">
+        <div class="btn-group">
+          <button class="btn active" id="btnModeWalk">行走循环</button>
+          <button class="btn" id="btnModeStand">静态站姿</button>
+        </div>
+        <button class="btn" id="btnResetCamera">重置视角</button>
+      </div>
+    </div>
+
+    <div class="viewport-box">
+      <canvas id="preview3D"></canvas>
+      <div class="status-overlay">
+        <span class="status-tag" id="statusModel">加载中...</span>
+        <span class="status-tag" id="statusDims">高度: 1.76m</span>
+      </div>
+    </div>
+
+    <!-- Direction Quick Selector (Dynamically populated based on profile) -->
+    <div style="display: flex; flex-direction: column; gap: 6px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 11px; color: var(--muted);">镜头方位检视 (<span id="labelStepAngle">22.5°</span> 步进)：</span>
+        <span style="font-size: 11px; color: var(--yellow);" id="labelActiveAngle">0° (正面)</span>
+      </div>
+      <div class="btn-group" id="dirButtonGroup"></div>
+    </div>
+
+    <div class="progress-bar-container" id="progressBarContainer">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="log-box" id="logBox">
+      <div class="log-entry">初始化中...</div>
+    </div>
+  </section>
+
+  <!-- Right Column: Atlas Sheet Preview & 2D Animated Verification -->
+  <section class="panel">
+    <strong>烘焙产物与 2D 精灵切片验证</strong>
+
+    <!-- 2D Animated Billboard Sprite View -->
+    <div class="sprite-animated-box">
+      <canvas id="spriteViewCanvas" width="48" height="96"></canvas>
+      <div class="sprite-info">
+        <div style="font-weight: 600; font-size: 12px;">2D 精灵实时回放预览</div>
+        <div style="font-size: 11px; color: var(--muted);">
+          规格：48×96 像素 · 1:2 宽高比<br>
+          方向：<span id="labelCurrentDir">0° 正面 (Col 0)</span><br>
+          帧率：<span id="labelFrameRate">16 帧／循环 (约 1.07s)</span>
+        </div>
+        <div style="display: flex; gap: 6px; margin-top: 4px;">
+          <button class="btn" style="padding: 4px 10px; font-size: 11px;" id="btnPrevDir">◀ 上一方向</button>
+          <button class="btn" style="padding: 4px 10px; font-size: 11px;" id="btnNextDir">下一方向 ▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metadata Spec -->
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <span style="font-size: 11px; color: var(--muted);">元数据规格 (Metadata JSON)：</span>
+        <span style="font-size: 10px; color: #a4ad9d;" id="labelTargetFile">目标: sprite-atlas-16.json</span>
+      </div>
+      <div class="meta-box" id="metaDisplay">加载中...</div>
+    </div>
+
+    <!-- Complete Atlas Sheet Canvas View -->
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <span style="font-size: 11px; color: var(--muted);">完整精灵表 (<span id="labelAtlasDims">768×1632</span>，透明背景)：</span>
+        <span style="font-size: 10px; color: #a4ad9d;" id="atlasStatus">未烘焙</span>
+      </div>
+      <div class="atlas-preview-box">
+        <canvas id="atlasCanvas" width="768" height="1632"></canvas>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script type="module">
+import * as THREE from 'three';
+import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+import { TGALoader } from 'three/addons/loaders/TGALoader.js';
+
+const logBox = document.getElementById('logBox');
+function log(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.className = 'log-entry ' + (type === 'success' ? 'log-success' : type === 'err' ? 'log-err' : '');
+  el.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+  logBox.appendChild(el);
+  logBox.scrollTop = logBox.scrollHeight;
+}
+
+// --------------------------------------------------------------------------
+// 1. Profile Definitions (Shipped 8x8 vs Candidate 16x16)
+// --------------------------------------------------------------------------
+const PROFILES = {
+  shipped_8x8: {
+    profileKey: 'shipped_8x8',
+    name: '现行标准版',
+    directions: 8,
+    walkFrames: 8,
+    atlasWidth: 384,
+    atlasHeight: 864,
+    totalCells: 72,
+    stepAngle: 45.0,
+    targetPng: 'sprite-atlas.png',
+    targetJson: 'sprite-atlas.json',
+    dirLabels: [
+      '0° 正面 (Col 0)',
+      '45° 右前 (Col 1)',
+      '90° 正右 (Col 2)',
+      '135° 右后 (Col 3)',
+      '180° 正背 (Col 4)',
+      '225° 左后 (Col 5)',
+      '270° 正左 (Col 6)',
+      '315° 左前 (Col 7)'
+    ]
+  },
+  candidate_16x16: {
+    profileKey: 'candidate_16x16',
+    name: '平滑候选版',
+    directions: 16,
+    walkFrames: 16,
+    atlasWidth: 768,
+    atlasHeight: 1632,
+    totalCells: 272,
+    stepAngle: 22.5,
+    targetPng: 'sprite-atlas-16.png',
+    targetJson: 'sprite-atlas-16.json',
+    dirLabels: [
+      '0° 正面 (Col 0)',
+      '22.5° 右前微斜 (Col 1)',
+      '45° 右前偏斜 (Col 2)',
+      '67.5° 右前近侧 (Col 3)',
+      '90° 正右 (Col 4)',
+      '112.5° 右后近侧 (Col 5)',
+      '135° 右后偏斜 (Col 6)',
+      '157.5° 右后微斜 (Col 7)',
+      '180° 正背 (Col 8)',
+      '202.5° 左后微斜 (Col 9)',
+      '225° 左后偏斜 (Col 10)',
+      '247.5° 左后近侧 (Col 11)',
+      '270° 正左 (Col 12)',
+      '292.5° 左前近侧 (Col 13)',
+      '315° 左前偏斜 (Col 14)',
+      '337.5° 左前微斜 (Col 15)'
+    ]
+  }
+};
+
+let currentProfileKey = 'candidate_16x16';
+const CELL_W = 48;
+const CELL_H = 96;
+const FIGURE_HEIGHT = 1.76;
+
+function getActiveProfile() {
+  return PROFILES[currentProfileKey];
+}
+
+// --------------------------------------------------------------------------
+// 2. Scene & 3D WebGL Inspection Setup
+// --------------------------------------------------------------------------
+const canvas3D = document.getElementById('preview3D');
+const renderer3D = new THREE.WebGLRenderer({ canvas: canvas3D, antialias: true, alpha: true });
+renderer3D.setPixelRatio(window.devicePixelRatio || 1);
+renderer3D.setSize(canvas3D.clientWidth, canvas3D.clientHeight, false);
+renderer3D.outputColorSpace = THREE.SRGBColorSpace;
+renderer3D.toneMapping = THREE.ACESFilmicToneMapping;
+renderer3D.toneMappingExposure = 1.05;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x161814);
+
+// Stage Lighting
+const hemiLight = new THREE.HemisphereLight(0xf5f8f5, 0x8a9082, 0.75);
+scene.add(hemiLight);
+
+const dirLight = new THREE.DirectionalLight(0xffffff, 1.25);
+dirLight.position.set(2, 4, 3);
+scene.add(dirLight);
+
+const fillLight = new THREE.DirectionalLight(0xdde5dc, 0.55);
+fillLight.position.set(-2, 2, -2);
+scene.add(fillLight);
+
+// Ground Disc
+const ground = new THREE.Mesh(
+  new THREE.CircleGeometry(1.2, 32),
+  new THREE.MeshStandardMaterial({ color: 0x222620, roughness: 0.85, metalness: 0.1 })
+);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = -0.002;
+scene.add(ground);
+
+// Inspection Camera
+const camera3D = new THREE.PerspectiveCamera(40, canvas3D.clientWidth / canvas3D.clientHeight, 0.1, 50);
+let currentCamAngleDeg = 0;
+let camDistance = 3.8;
+let camTargetY = 0.90;
+
+function updateCameraPosition() {
+  const rad = (currentCamAngleDeg * Math.PI) / 180;
+  camera3D.position.set(
+    camDistance * Math.sin(rad),
+    camTargetY + 0.15,
+    camDistance * Math.cos(rad)
+  );
+  camera3D.lookAt(0, camTargetY, 0);
+  document.getElementById('labelActiveAngle').textContent = `${currentCamAngleDeg.toFixed(1)}°`;
+}
+updateCameraPosition();
+
+window.addEventListener('resize', () => {
+  if (canvas3D.clientWidth && canvas3D.clientHeight) {
+    renderer3D.setSize(canvas3D.clientWidth, canvas3D.clientHeight, false);
+    camera3D.aspect = canvas3D.clientWidth / canvas3D.clientHeight;
+    camera3D.updateProjectionMatrix();
+  }
+});
+
+// --------------------------------------------------------------------------
+// 3. Offscreen Baking Camera & Target
+// --------------------------------------------------------------------------
+// Camera-relative top 1.0, bottom -1.0 with target Y = 0.90 -> world framing: top 1.90m, bottom -0.10m
+const bakeCamera = new THREE.OrthographicCamera(-0.5, 0.5, 1.0, -1.0, 0.1, 25);
+
+const offscreenCanvas = document.createElement('canvas');
+offscreenCanvas.width = CELL_W;
+offscreenCanvas.height = CELL_H;
+const offscreenRenderer = new THREE.WebGLRenderer({
+  canvas: offscreenCanvas,
+  antialias: true,
+  alpha: true,
+  preserveDrawingBuffer: true
+});
+offscreenRenderer.setSize(CELL_W, CELL_H, false);
+offscreenRenderer.outputColorSpace = THREE.SRGBColorSpace;
+offscreenRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+offscreenRenderer.toneMappingExposure = 1.05;
+offscreenRenderer.setClearColor(0x000000, 0);
+
+// Dynamic Metadata builder
+function getMetadataJSON() {
+  const prof = getActiveProfile();
+  return {
+    profile: prof.profileKey,
+    frameWorldWidth: 1.0,
+    frameWorldHeight: 2.0,
+    feetAnchor: 0.95,
+    actualFigureHeight: FIGURE_HEIGHT,
+    sourceHeight: FIGURE_HEIGHT,
+    width: CELL_W,
+    height: CELL_H,
+    directions: prof.directions,
+    walkFrames: prof.walkFrames,
+    walkCycleSeconds: walkClip ? Math.round(walkClip.duration * 1000) / 1000 : 1.067,
+    atlasWidth: prof.atlasWidth,
+    atlasHeight: prof.atlasHeight,
+    totalCells: prof.totalCells,
+    license: "Microsoft Rocketbox (MIT License, Copyright 2020 Microsoft)",
+    licenseFile: "ROCKETBOX_LICENSE.txt",
+    sourceRepository: "https://github.com/microsoft/Microsoft-Rocketbox",
+    sourceRevision: "0943055db6ec570bcef9f2c8b41c9e5467c808f9",
+    sourceAvatar: "Business_Male_01",
+    sourceAnimation: "m_walk_neutral.max.fbx",
+    standingSource: "m_idle_neutral_01.max.fbx",
+    standingSampleTime: 0.5,
+    runtimeBones: 80,
+    runtimeVertices: 22305
+  };
+}
+
+function refreshMetadataDisplay() {
+  const prof = getActiveProfile();
+  document.getElementById('metaDisplay').textContent = JSON.stringify(getMetadataJSON(), null, 2);
+  document.getElementById('labelTargetFile').textContent = `目标: ${prof.targetJson}`;
+  document.getElementById('labelAtlasDims').textContent = `${prof.atlasWidth}×${prof.atlasHeight}`;
+  document.getElementById('labelStepAngle').textContent = `${prof.stepAngle}°`;
+  document.getElementById('labelFrameRate').textContent = `${prof.walkFrames} 帧／循环 (约 1.07s)`;
+
+  // Resize atlas canvas
+  atlasCanvas.width = prof.atlasWidth;
+  atlasCanvas.height = prof.atlasHeight;
+  atlasStatus.textContent = '未烘焙';
+  btnSave.disabled = true;
+  bakedPNGDataURL = null;
+
+  renderDirectionButtons();
+  updateSpritePreview(0);
+}
+
+// --------------------------------------------------------------------------
+// 4. Direction Buttons Generator
+// --------------------------------------------------------------------------
+const dirButtonGroup = document.getElementById('dirButtonGroup');
+
+function renderDirectionButtons() {
+  const prof = getActiveProfile();
+  dirButtonGroup.innerHTML = '';
+
+  for (let i = 0; i < prof.directions; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'btn' + (i === 0 ? ' active' : '');
+    btn.dataset.dir = i;
+    const angle = i * prof.stepAngle;
+    btn.textContent = `${angle}°`;
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#dirButtonGroup .btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentCamAngleDeg = angle;
+      updateCameraPosition();
+      updateSpritePreview(i);
+    });
+    dirButtonGroup.appendChild(btn);
+  }
+}
+
+// --------------------------------------------------------------------------
+// 5. Load Rocketbox Model, Textures & Animations
+// --------------------------------------------------------------------------
+const manager = new THREE.LoadingManager();
+const tgaLoader = new TGALoader(manager);
+const fbxLoader = new FBXLoader(manager);
+
+let characterMesh = null;
+let characterRoot = null;
+let mixer = null;
+let walkAction = null;
+let idleAction = null;
+let walkClip = null;
+let idleClip = null;
+
+let isReady = false;
+let isBaking = false;
+let currentMode = 'walk';
+
+async function loadAssets() {
+  try {
+    log('开始加载 Microsoft Rocketbox Business_Male_01 纹理...');
+    const [bodyTex, headTex, opacityTex] = await Promise.all([
+      tgaLoader.loadAsync('/character-source/m005_body_color.tga'),
+      tgaLoader.loadAsync('/character-source/m005_head_color.tga'),
+      tgaLoader.loadAsync('/character-source/m005_opacity_color.tga')
+    ]);
+
+    bodyTex.colorSpace = THREE.SRGBColorSpace;
+    headTex.colorSpace = THREE.SRGBColorSpace;
+    bodyTex.flipY = true;
+    headTex.flipY = true;
+    opacityTex.flipY = true;
+    log('纹理加载成功 (body 2048x2048, head 2048x2048, opacity 1024x1024).', 'success');
+
+    log('加载 Business_Male_01.fbx 模型结构...');
+    characterRoot = await fbxLoader.loadAsync('/character-source/Business_Male_01.fbx');
+
+    characterRoot.traverse(c => {
+      if (c.isSkinnedMesh) {
+        characterMesh = c;
+      }
+    });
+
+    if (!characterMesh) throw new Error('未找到 SkinnedMesh');
+
+    const bodyMat = new THREE.MeshStandardMaterial({
+      map: bodyTex,
+      roughness: 0.52,
+      metalness: 0.04,
+      color: 0xffffff
+    });
+    const headMat = new THREE.MeshStandardMaterial({
+      map: headTex,
+      roughness: 0.46,
+      metalness: 0.02,
+      color: 0xffffff
+    });
+    const opacityMat = new THREE.MeshStandardMaterial({
+      map: headTex,
+      alphaMap: opacityTex,
+      transparent: true,
+      alphaTest: 0.45,
+      roughness: 0.65,
+      metalness: 0.0,
+      color: 0xffffff
+    });
+
+    characterMesh.material = [bodyMat, headMat, opacityMat];
+
+    const box = new THREE.Box3().setFromObject(characterRoot);
+    const naturalHeight = box.max.y - box.min.y;
+    const scale = FIGURE_HEIGHT / naturalHeight;
+    characterRoot.scale.setScalar(scale);
+
+    characterRoot.position.y = -box.min.y * scale;
+    characterRoot.position.x = 0;
+    characterRoot.position.z = 0;
+
+    scene.add(characterRoot);
+    log(`模型绑定完成 (顶点: ${characterMesh.geometry.attributes.position.count}, 骨骼: ${characterMesh.skeleton.bones.length})`, 'success');
+
+    function filterUnboundTracks(clip, rootObj, clipLabel) {
+      const availableNodes = new Set();
+      rootObj.traverse(c => {
+        if (c.name) availableNodes.add(c.name);
+      });
+      const originalCount = clip.tracks.length;
+      clip.tracks = clip.tracks.filter(track => {
+        const dotIdx = track.name.indexOf('.');
+        const nodeName = dotIdx !== -1 ? track.name.substring(0, dotIdx) : track.name;
+        return availableNodes.has(nodeName);
+      });
+      const removedCount = originalCount - clip.tracks.length;
+      log(`${clipLabel}: 过滤未绑定辅助骨骼轨道 ${removedCount} 个, 保留有效轨道 ${clip.tracks.length} 个 (排除 MotionExtractionHelper 等辅助节点).`, 'info');
+      return clip;
+    }
+
+    log('加载行走动画 m_walk_neutral.max.fbx...');
+    const walkAnimObj = await fbxLoader.loadAsync('/character-source/m_walk_neutral.max.fbx');
+    if (!walkAnimObj.animations || walkAnimObj.animations.length === 0) {
+      throw new Error('未在 m_walk_neutral.max.fbx 中找到动画剪辑');
+    }
+    walkClip = walkAnimObj.animations[0];
+    filterUnboundTracks(walkClip, characterRoot, '行走动画');
+
+    const bip01PosTrack = walkClip.tracks.find(t => t.name === 'Bip01.position');
+    if (bip01PosTrack) {
+      for (let i = 0; i < bip01PosTrack.values.length; i += 3) {
+        bip01PosTrack.values[i] = 0;
+        bip01PosTrack.values[i + 2] = 0;
+      }
+      log('成功移除根位移 (Root Motion $\\to$ 原地循环).', 'success');
+    }
+
+    log('加载站姿动画 m_idle_neutral_01.max.fbx...');
+    const idleAnimObj = await fbxLoader.loadAsync('/character-source/m_idle_neutral_01.max.fbx');
+    if (idleAnimObj.animations && idleAnimObj.animations.length > 0) {
+      idleClip = idleAnimObj.animations[0];
+      filterUnboundTracks(idleClip, characterRoot, '站姿动画');
+    }
+
+    mixer = new THREE.AnimationMixer(characterRoot);
+    walkAction = mixer.clipAction(walkClip);
+    walkAction.play();
+
+    if (idleClip) {
+      idleAction = mixer.clipAction(idleClip);
+    }
+
+    isReady = true;
+    document.getElementById('statusModel').textContent = 'Rocketbox 角色已就绪';
+    refreshMetadataDisplay();
+    log('全部资源已准备就绪，可以点击“烘焙精灵表”。', 'success');
+
+  } catch (err) {
+    console.error('加载失败:', err);
+    log('资源加载失败: ' + err.message, 'err');
+    document.getElementById('statusModel').textContent = '加载失败: ' + err.message;
+  }
+}
+
+loadAssets();
+
+// Profile switch handler
+document.getElementById('selectBakeProfile').addEventListener('change', (e) => {
+  currentProfileKey = e.target.value;
+  refreshMetadataDisplay();
+  log(`已切换至规格：${getActiveProfile().name} (${getActiveProfile().directions} 方向 × ${getActiveProfile().walkFrames} 帧, 尺寸 ${getActiveProfile().atlasWidth}×${getActiveProfile().atlasHeight})`, 'info');
+});
+
+// --------------------------------------------------------------------------
+// 6. Animation Loop for 3D Preview
+// --------------------------------------------------------------------------
+const clock = new THREE.Clock();
+
+function animate() {
+  requestAnimationFrame(animate);
+  const dt = clock.getDelta();
+
+  if (isReady && mixer && !isBaking) {
+    if (currentMode === 'walk') {
+      mixer.update(dt);
+    }
+  }
+
+  renderer3D.render(scene, camera3D);
+}
+animate();
+
+// --------------------------------------------------------------------------
+// 7. Controls & View Switching
+// --------------------------------------------------------------------------
+document.getElementById('btnResetCamera').addEventListener('click', () => {
+  currentCamAngleDeg = 0;
+  updateCameraPosition();
+  document.querySelectorAll('#dirButtonGroup .btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+  updateSpritePreview(0);
+});
+
+document.getElementById('btnModeWalk').addEventListener('click', () => {
+  document.getElementById('btnModeWalk').classList.add('active');
+  document.getElementById('btnModeStand').classList.remove('active');
+  currentMode = 'walk';
+  if (idleAction) idleAction.stop();
+  if (walkAction) {
+    walkAction.reset();
+    walkAction.play();
+  }
+});
+
+document.getElementById('btnModeStand').addEventListener('click', () => {
+  document.getElementById('btnModeStand').classList.add('active');
+  document.getElementById('btnModeWalk').classList.remove('active');
+  currentMode = 'stand';
+  if (walkAction) walkAction.stop();
+  if (idleAction) {
+    idleAction.reset();
+    idleAction.play();
+    mixer.setTime(0.5);
+  }
+});
+
+// --------------------------------------------------------------------------
+// 8. Baking Engine (Dynamically supports 8x8 or 16x16 profiles)
+// --------------------------------------------------------------------------
+const atlasCanvas = document.getElementById('atlasCanvas');
+const atlasCtx = atlasCanvas.getContext('2d');
+const progressBarContainer = document.getElementById('progressBarContainer');
+const progressBar = document.getElementById('progressBar');
+const btnBake = document.getElementById('btnBake');
+const btnSave = document.getElementById('btnSave');
+const atlasStatus = document.getElementById('atlasStatus');
+
+let bakedPNGDataURL = null;
+
+function renderCell(angleDeg, timeSec, isStanding = false) {
+  const rad = (angleDeg * Math.PI) / 180;
+  const dist = 5.0;
+  bakeCamera.position.set(
+    dist * Math.sin(rad),
+    0.90,
+    dist * Math.cos(rad)
+  );
+  bakeCamera.lookAt(0, 0.90, 0);
+  bakeCamera.updateProjectionMatrix();
+
+  if (isStanding) {
+    if (walkAction) walkAction.stop();
+    if (idleAction) {
+      idleAction.reset();
+      idleAction.play();
+      mixer.setTime(0.5);
+    }
+  } else {
+    if (idleAction) idleAction.stop();
+    if (walkAction) {
+      walkAction.reset();
+      walkAction.play();
+      mixer.setTime(timeSec);
+    }
+  }
+
+  const prevBg = scene.background;
+  scene.background = null;
+  ground.visible = false;
+  offscreenRenderer.render(scene, bakeCamera);
+  ground.visible = true;
+  scene.background = prevBg;
+
+  return offscreenCanvas;
+}
+
+btnBake.addEventListener('click', async () => {
+  if (!isReady) {
+    alert('请等待模型与动画加载完成！');
+    return;
+  }
+
+  const prof = getActiveProfile();
+  isBaking = true;
+  btnBake.disabled = true;
+  progressBarContainer.style.display = 'block';
+  progressBar.style.width = '0%';
+  atlasStatus.textContent = '正在烘焙中...';
+  log(`开始烘焙 ${prof.name} (${prof.atlasWidth}×${prof.atlasHeight}, ${prof.directions} 方向 × ${prof.walkFrames + 1} 行 = ${prof.totalCells} 帧)...`);
+
+  atlasCanvas.width = prof.atlasWidth;
+  atlasCanvas.height = prof.atlasHeight;
+  atlasCtx.clearRect(0, 0, prof.atlasWidth, prof.atlasHeight);
+
+  const duration = walkClip.duration;
+  let totalSteps = prof.totalCells;
+  let currentStep = 0;
+
+  // Bake Rows 0 to walkFrames - 1: Walk Cycle Loop
+  for (let r = 0; r < prof.walkFrames; r++) {
+    const t = (r / prof.walkFrames) * duration;
+    for (let c = 0; c < prof.directions; c++) {
+      const angle = c * prof.stepAngle;
+      const cell = renderCell(angle, t, false);
+      atlasCtx.drawImage(cell, c * CELL_W, r * CELL_H);
+
+      currentStep++;
+      progressBar.style.width = `${Math.round((currentStep / totalSteps) * 100)}%`;
+      await new Promise(res => setTimeout(res, 2));
+    }
+  }
+
+  // Bake Row walkFrames: Standing View
+  for (let c = 0; c < prof.directions; c++) {
+    const angle = c * prof.stepAngle;
+    const cell = renderCell(angle, 0.5, true);
+    atlasCtx.drawImage(cell, c * CELL_W, prof.walkFrames * CELL_H);
+
+    currentStep++;
+    progressBar.style.width = `${Math.round((currentStep / totalSteps) * 100)}%`;
+    await new Promise(res => setTimeout(res, 2));
+  }
+
+  isBaking = false;
+  if (idleAction) idleAction.stop();
+  if (walkAction) {
+    walkAction.reset();
+    walkAction.play();
+  }
+
+  bakedPNGDataURL = atlasCanvas.toDataURL('image/png');
+  btnSave.disabled = false;
+  btnBake.disabled = false;
+  progressBarContainer.style.display = 'none';
+  atlasStatus.textContent = `已完成 (${prof.atlasWidth}×${prof.atlasHeight} PNG 就绪)`;
+  log(`烘焙完成！${prof.totalCells} 帧已成功打包至 ${prof.atlasWidth}×${prof.atlasHeight} 透明 PNG (${prof.targetPng})。可点击“保存到 Assets”。`, 'success');
+
+  startSpritePlayback();
+});
+
+// --------------------------------------------------------------------------
+// 9. Save to Assets Endpoint Integration
+// --------------------------------------------------------------------------
+btnSave.addEventListener('click', async () => {
+  if (!bakedPNGDataURL) {
+    alert('请先烘焙精灵表！');
+    return;
+  }
+
+  const prof = getActiveProfile();
+  btnSave.disabled = true;
+  btnSave.textContent = '保存中...';
+  log(`发送数据至本地保存端点 /api/save (Profile: ${prof.profileKey} -> ${prof.targetPng})...`);
+
+  try {
+    const res = await fetch('/api/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        profile: prof.profileKey,
+        atlasData: bakedPNGDataURL,
+        metadata: getMetadataJSON()
+      })
+    });
+
+    if (!res.ok) {
+      const errTxt = await res.text();
+      throw new Error(`HTTP ${res.status}: ${errTxt}`);
+    }
+
+    const json = await res.json();
+    log(`保存成功！文件已存入: ${json.savedPng} (${(json.bytes / 1024).toFixed(1)} KB)`, 'success');
+    log(`元数据已存入: ${json.savedJson}`, 'success');
+    alert(`精灵表保存成功！\n文件路径: ${json.savedPng}\n元数据: ${json.savedJson}`);
+    btnSave.textContent = '已保存 (Save)';
+  } catch (e) {
+    console.error(e);
+    log('保存失败: ' + e.message, 'err');
+    alert('保存失败: ' + e.message);
+    btnSave.disabled = false;
+    btnSave.textContent = '保存到 Assets (Save)';
+  }
+});
+
+// --------------------------------------------------------------------------
+// 10. 2D Animated Billboard Sprite Playback Preview
+// --------------------------------------------------------------------------
+const spriteViewCanvas = document.getElementById('spriteViewCanvas');
+const spriteCtx = spriteViewCanvas.getContext('2d');
+let spritePlaybackDir = 0;
+let spriteAnimTimer = null;
+let spriteFrameIdx = 0;
+
+function updateSpritePreview(dir) {
+  const prof = getActiveProfile();
+  spritePlaybackDir = ((dir % prof.directions) + prof.directions) % prof.directions;
+  document.getElementById('labelCurrentDir').textContent = prof.dirLabels[spritePlaybackDir] || `${spritePlaybackDir * prof.stepAngle}°`;
+  drawCurrentSpriteFrame();
+}
+
+function drawCurrentSpriteFrame() {
+  spriteCtx.clearRect(0, 0, CELL_W, CELL_H);
+  if (!bakedPNGDataURL) return;
+
+  const prof = getActiveProfile();
+  const sx = spritePlaybackDir * CELL_W;
+  const sy = spriteFrameIdx * CELL_H;
+  spriteCtx.drawImage(atlasCanvas, sx, sy, CELL_W, CELL_H, 0, 0, CELL_W, CELL_H);
+}
+
+function startSpritePlayback() {
+  if (spriteAnimTimer) clearInterval(spriteAnimTimer);
+  const prof = getActiveProfile();
+  const intervalMs = Math.round(1067 / prof.walkFrames);
+  spriteAnimTimer = setInterval(() => {
+    spriteFrameIdx = (spriteFrameIdx + 1) % prof.walkFrames;
+    drawCurrentSpriteFrame();
+  }, intervalMs);
+}
+
+document.getElementById('btnPrevDir').addEventListener('click', () => {
+  updateSpritePreview(spritePlaybackDir - 1);
+});
+
+document.getElementById('btnNextDir').addEventListener('click', () => {
+  updateSpritePreview(spritePlaybackDir + 1);
+});
+</script>
+
+</body>
+</html>

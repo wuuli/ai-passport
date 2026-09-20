@@ -1,0 +1,110 @@
+{
+  "recorded_at_utc": "2026-09-19T13:59:44.370281+00:00",
+  "revision": {
+    "app": "20260919-corner2",
+    "renderers": "20260919-corner1"
+  },
+  "scope": "Browser prototype only; no firmware change or device gameplay validation",
+  "corner_assist": {
+    "braking_distance_m": 0.75,
+    "behavior": "Stop at actual cardinal turn point; no automatic yaw; existing 45-degree keys and one OK resume; no stop at portal",
+    "webgl_physical_cases": [
+      "NORTH_EXIT",
+      "EAST_JUNCTION",
+      "WEST_JUNCTION",
+      "SOUTH_ENTRANCE"
+    ],
+    "software_native_landscape": {
+      "framebuffer": [
+        320,
+        240
+      ],
+      "css_size": [
+        320,
+        240
+      ],
+      "first_stop": "X2,Y-0.33",
+      "input": "Two right 45-degree taps, then one OK",
+      "next_stop": "X2,Y24.33",
+      "score": "0 to 1"
+    },
+    "controlled_settings": {
+      "speed_m_s": 3.56,
+      "anomaly_probability": 0
+    }
+  },
+  "orientation": {
+    "default": [
+      240,
+      320
+    ],
+    "comparison": [
+      320,
+      240
+    ],
+    "pixels_each": 76800,
+    "webgl_vertical_fov_degrees": 76,
+    "horizontal_fov_degrees_approx": [
+      60.7,
+      92.3
+    ],
+    "landscape_feature_pixel_height_ratio": 0.75,
+    "physical_keys": "Product image shows three keys on right edge; horizontal grip not tested"
+  },
+  "startup_regression": "Early resolution selection before asynchronous module loading is now applied at startup; four new controller assertions pass",
+  "webgl_pixel_audit": {
+    "recorded_at_utc": "2026-09-19T13:52:10.754Z",
+    "cases": 384,
+    "profiles": [
+      "DEVICE_240x320",
+      "DEVICE_320x240"
+    ],
+    "failures": 0,
+    "max_changed_pixels": 0,
+    "max_channel_delta": 0,
+    "method": "Actual desktop browser GPU framebuffer before/after state rebase at identical absolute camera; 2 portals x 3 lateral positions x 8 yaws x 4 normal/red pairs x 2 profiles",
+    "limitations": "NPC disabled in pixel matrix; this is not hardware FPS or user comfort evidence"
+  },
+  "software_pixel_audit": {
+    "cases": 384,
+    "max_changed_pixels": 0
+  },
+  "host_checks": {
+    "input": 191,
+    "corner": 19,
+    "model": 116,
+    "npc_motion_frames": 3600,
+    "flow": 22,
+    "navigation": "PASS",
+    "portable_renderer_groups": 16,
+    "webgl_lifecycle_groups": 8
+  },
+  "console_warnings_errors": [],
+  "unverified": [
+    "Device input and horizontal grip",
+    "Rotated firmware",
+    "Device frame pacing and memory",
+    "User blind-play comfort and fairness"
+  ],
+  "source_sha256": {
+    "prototype/exit-corridor.html": "4bf172c64fcc79c21eff18baaaa063dc3806c5458559fe85bc69960d3f021557",
+    "prototype/exit-corridor/app.js": "9b177d30528f1388f4f31846ccfb2c7f05d5d67a5a17e970a431d92434276786",
+    "prototype/exit-corridor/model.js": "7e339d765a2b6f78f736496898cf08855e5547f63c04db9575d48adab00cd514",
+    "prototype/exit-corridor/navigation.js": "8fb50f15f969558051a2cfafd180ae0bfe19ec0b8df04d818a5d16cf25d07de2",
+    "prototype/exit-corridor/renderer.js": "3bd1048ab8fe5745c532bb8d227daa97c674a0929d0816930d79bcd5beda39b3",
+    "prototype/exit-corridor/scene.js": "4ee560d4cf2eea3d0a54590b08177ac544444050814a3a97a2fe24245d0c737e",
+    "prototype/exit-corridor/portable-renderer.js": "5f108245ec51ea0957a3cfb5822c9d6f1bee63e4aebe67c2352c6a1d268c4751",
+    "prototype/exit-corridor/portable-entry.js": "5b62d66ae5cbaedd8c77176f9451d603d7e5cc20146d2abc0be0ee66117ecc93",
+    "prototype/exit-corridor/style.css": "9a1cfaa43e85e47ede1cbea703b67cc457b5c4bdf0a576682fceb466b343c370",
+    "prototype/exit-corridor/corner.test.cjs": "172cf201a248cb3413c6a2b422c2c8e1c6fb19f714bdb1e4d84e734f3ba1b597",
+    "prototype/exit-corridor/input.test.cjs": "6abcece839182b591cd9498fb1d340f3bc3c9113c9aa4f64859dee5b4cdca080",
+    "prototype/exit-corridor/tools/seam-audit.html": "a3a426a0ed1ab0e4998f297fcbf1436e196d8ecc9fa374802eb16fdb506bad08"
+  },
+  "full_gate": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 ./tools/validate.sh",
+    "repository_checks": "PASS (264 text files)",
+    "host_tests": "PASS",
+    "build": "NOT RUN: idf.py unavailable",
+    "device_tests": "NOT RUN"
+  }
+}

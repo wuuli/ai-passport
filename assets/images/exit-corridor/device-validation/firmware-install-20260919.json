@@ -1,0 +1,31 @@
+{
+  "app_offset": "0x10000",
+  "app_bytes": 2268720,
+  "app_sha256": "1cbd2196e601df23ad394ed1aea283bb37e2f9de148d6325cd8d5c2f4e4575c1",
+  "preserved": [
+    "bootloader",
+    "partition table",
+    "nvs",
+    "phy_init",
+    "cardid",
+    "recovery"
+  ],
+  "source_sha256": {
+    "main/demo_corridor.c": "6a6f678b7af1fcf5751cec86772d75594ba010a9c202ee288ffda544f264c534",
+    "main/corridor_game.c": "5dbc2631dc567e344f3b2cbaa62f25657dd47ab9876024b61b842916f67856a4",
+    "main/corridor_render.c": "95d9e0609659aeabbc04382ae08ed45b65e0e7415c28726b9c4bc259b3df89c2",
+    "main/corridor_palette.inc": "e57da4669a7fe741e668e1d782595583d80ae71d845623a624db631d2a82e8d2",
+    "main/corridor_notice.inc": "1eb52c0eb15345035fe878d411013efc585a5b61058faf054c3ca4e875cc15f0",
+    "main/corridor_font.c": "5ae50d1ca23e1ef81494ef0ea879e510e83aa07660be79792fc2f3bebd0f2eca",
+    "sdkconfig.defaults": "e9856f187e9461e7e6e5b46f837efa1302bc5634ffae068e8c17e77da639e278",
+    "main/corridor_game.h": "0a5146ab4d98f754b57ba6b3cc1eee6ece472de38156a35f0d4f7db400c21c7d",
+    "main/corridor_render.h": "04149768d5a7cbdd1a137cc9d3c62d30697b567d3836cdd06f24fa95493283c5",
+    "main/corridor_sprite_lut.inc": "e456f6d10133b3404d45244ea85bcc3c7b0a8c5dfa9999a363479d0881c7016d",
+    "main/CMakeLists.txt": "c017db240e829676897d713b4bc4cbfb461a41554b8d000246a395279fce66c9"
+  },
+  "recorded_at": "2026-09-19T15:10:46.960955+00:00",
+  "installation": "Application write verified by esptool; latest menu capture passed; gameplay performance pending.",
+  "full_gate": "PASS",
+  "full_gate_app_sha256": "b77717ceb17f37344caa6c45aa2023f1c81924e15139508a92dad61874587c21",
+  "note": "Installed incremental build and clean full-gate build use identical source files; artifacts differ in build metadata/checksum."
+}

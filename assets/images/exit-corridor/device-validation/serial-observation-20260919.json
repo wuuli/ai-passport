@@ -1,0 +1,12 @@
+{
+  "port": "/dev/cu.usbmodem2101",
+  "listen_seconds": 30.15,
+  "bytes_received": 0,
+  "observed_counts": {
+    "panic": 0,
+    "watchdog": 0,
+    "assert": 0,
+    "boot_marker": 0
+  },
+  "scope": "Passive short serial observation with no data received; not evidence of long-term stability, device frame rate or heap headroom."
+}

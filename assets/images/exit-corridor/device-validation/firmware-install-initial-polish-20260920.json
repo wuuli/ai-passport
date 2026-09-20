@@ -1,0 +1,49 @@
+{
+  "recorded_at": "2026-09-19T16:12:32.567775+00:00",
+  "app_offset": "0x10000",
+  "app_bytes": 2317584,
+  "app_sha256": "71b6649002a84a83a750bfd3064326ab908315f3551f240bf7d1be89a466c802",
+  "merged_sha256": "634b2ef3db96a59066718a6526c7b6163c65eff03e2e0c6a5f6daab67caa4f32",
+  "rollback_bytes": 3145728,
+  "rollback_sha256": "db79cfe2374f8e10315cbc79853b8de5d2618365af04ee70916df52225bde53b",
+  "preserved": [
+    "bootloader",
+    "partition table",
+    "nvs",
+    "phy_init",
+    "cardid",
+    "recovery"
+  ],
+  "source_sha256": {
+    "main/demo_corridor.c": "8cbefe17d6c95bc96d482f8e68969a2161e5b2c6ee3f1b30501e80c66b3f4dfb",
+    "main/corridor_game.c": "efd9006d160de72570fb4d5a344052e6ab150405965a2a0a6ac64d892086ba65",
+    "main/corridor_render.c": "4e7c285f75c7715af0e29e8c005ef2805e6495cc9406eb095058e717532bcdbf",
+    "main/corridor_game.h": "0f09c3a46f03564a1ce2941e819e9a4806522eb8c19681aa17388799d7f30114",
+    "main/corridor_render.h": "04149768d5a7cbdd1a137cc9d3c62d30697b567d3836cdd06f24fa95493283c5",
+    "main/corridor_palette.inc": "e57da4669a7fe741e668e1d782595583d80ae71d845623a624db631d2a82e8d2",
+    "main/corridor_sprite_lut.inc": "e456f6d10133b3404d45244ea85bcc3c7b0a8c5dfa9999a363479d0881c7016d",
+    "main/corridor_wall_lut.inc": "fd08c10325e8873a76a00a0a342ac9cda1c070fee76098d35acd5a454f9e5759",
+    "main/corridor_font.c": "5ae50d1ca23e1ef81494ef0ea879e510e83aa07660be79792fc2f3bebd0f2eca",
+    "main/corridor_notice.inc": "1eb52c0eb15345035fe878d411013efc585a5b61058faf054c3ca4e875cc15f0",
+    "main/fap_screenshot.c": "e26141d8e004c35804e0e309a69d79d3c5673ac48eb0a99405715969a304459c",
+    "main/main.c": "3e94ef7995f77f95af1389a0c65daa4afccc60a34716d4f1cedaf1513a171035",
+    "main/CMakeLists.txt": "7cbff5986c90ca46746e64ae7dd366942ecefd3385035b923716295fd04dd3d3",
+    "components/bsp/src/bsp_display_lvgl.c": "3024229f69b040d9ac211b3ceca4442d9d9bd26cd087ff3af9927c3212f08242",
+    "sdkconfig.defaults": "4ab717658d9a8277bc4fe77968d522757cecf5bd2e28026004e7f79b4edb7335",
+    "tests/test_corridor_game.c": "caec1523d47c9f8691feaa6063244dffef95bd723decc6627a92ce983cf75716",
+    "tests/test_corridor_render.c": "939ffb851fd9e8713a1938b8d905722e458e819674b1fc35d86d54dd6499c6d4",
+    "tools/generate_corridor_wall_lut.py": "a9938189d5387be1c46d1f9d670c84ee91e9befaf6a7b13e1f8f538f430c3abc"
+  },
+  "full_gate": "PASS",
+  "host_tests": "PASS",
+  "installation": "Application extracted byte-for-byte from the clean verified merged image, installed at 0x10000; esptool write hash and normal menu capture PASS.",
+  "temporary_probes": "Removed; no automatic walk or turn in production image.",
+  "measurement_limit": "Performance/centering samples use the same renderer/game with a temporary public-key driver; physical comfort and current production user-play sample are separate.",
+  "post_build_formatting": {
+    "main/CMakeLists.txt": {
+      "change": "Removed trailing blank line only; build statements unchanged.",
+      "current_sha256": "22e2117cf5bd4c67d57fcd8dd1bdf02ee1144b9cf26303ae519fd85ebbe870c4"
+    }
+  },
+  "production_sample": "firmware-production-live-20260920.json: 55 seconds actual movement/turning, 10.7\u201312.7 submitted FPS, no matching failure markers; user comfort pending."
+}

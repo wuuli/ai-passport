@@ -25,11 +25,12 @@ lv_display_t *bsp_lvgl_init(void) {
     const lvgl_port_display_cfg_t dc = {
         .panel_handle = bsp_display_panel(),
         .io_handle    = bsp_display_io(),
-        // ⚠ C3 无 PSRAM,DMA 只能用内部 RAM(总共约 150KB)。
-        // 20 行单缓冲 ≈ 9.6KB;若改成 40 行双缓冲(≈37.5KB)会把 I2S 等外设的
-        // DMA 描述符挤到 NO_MEM。刷新略慢但稳。
-        .buffer_size   = (uint32_t)BSP_LCD_W * 20,
-        .double_buffer = false,
+        // Two 40-row DMA buffers use 38,400 bytes. On-demand screenshot
+        // streaming removed the former 40,800-byte persistent capture cache.
+        // Larger bands reduce SPI command overhead and overlap composition
+        // with DMA; LVGL remains the sole display owner.
+        .buffer_size   = (uint32_t)BSP_LCD_W * 40,
+        .double_buffer = true,
         .hres = BSP_LCD_W, .vres = BSP_LCD_H,
         // 旋转/镜像必须在这里配:esp_lvgl_port 注册显示时会重新下发 MADCTL,
         // 覆盖 bsp_display.c 里 esp_lcd_panel_mirror() 的设置。

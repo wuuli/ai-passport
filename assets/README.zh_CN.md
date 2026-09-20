@@ -48,3 +48,13 @@
 - 固件衍生素材：`main/duel_assets.c` 包含一张 240 × 240 不透明 RGB565 背景及四张 80 × 112 透明 RGB565A8 待命／庆祝姿态，合计占 Flash 222,720 字节。大型源 PNG 本身不链接进固件。新增 Alpha 平面用于去除人物矩形底色，同时仍满足应用预算。
 - 中文字形子集：`main/duel_font.c` 为 16 px 文案及 ASCII，`main/duel_title_font.c` 为 26 px 标题，使用 Noto Sans SC，[SIL OFL 1.1 许可证](fonts/time-duel/OFL.txt)。来源：[Noto Sans SC Regular](https://raw.githubusercontent.com/notofonts/noto-cjk/main/Sans/SubsetOTF/SC/NotoSansSC-Regular.otf)，SHA-256 为 `faa6c9df652116dde789d351359f3d7e5d2285a2b2a1f04a2d7244df706d5ea9`。完整字体只是构建输入，不是运行时依赖。
 - 复现环境为 Python + Pillow 11.3.0、`lv_font_conv` 1.5.3：`python tools/convert_duel_assets.py --font /path/to/NotoSansSC-Regular.otf --font-converter /path/to/lv_font_conv`。保留源 PNG，从 UI 文案重新生成图像描述符和两套字体；新增中文文案后需重新运行。固件图像数据从 Flash 读取，峰值 RAM 与屏幕效果仍需真机验证。
+
+## 出口走廊角色美术素材
+
+- `images/exit-corridor/commuter-device.bin` / `.json`：默认 8 方向 × 16 步态 + 站立行，48×96 单元格，312,689 B（305.36 KiB），按需按帧解码。
+- `images/exit-corridor/sprite-atlas-16.png` / `.json`：768×1632 离线源图（813,591 B），保留完整 16 视角用于烘焙和打包；旧 `sprite-atlas.png` / `.json` 保留作打包测试输入。
+- `images/exit-corridor/ROCKETBOX_LICENSE.txt`：Microsoft Rocketbox MIT 许可（Copyright 2020 Microsoft），固定提交 `0943055db6ec570bcef9f2c8b41c9e5467c808f9`；Business_Male_01、neutral walk 和 idle 仅用于离线烘焙。
+- 人物世界取景为 1×2 米、身高 1.76 米、脚底锚点 0.95。16 帧步态周期 1.067 秒；固件通过 `target_add_binary_data` 将 `commuter-device.bin` 直接链接进 Flash，由 C 渲染器按需仅解码当前活跃帧（`r->frame` 4,608 B + `r->alpha` 576 B）。
+- 详细溯源、格式和可复现命令见[人物素材说明](images/exit-corridor/README.zh_CN.md)。
+
+当前地下通道网页直接使用固件素材包与 C 渲染，生成字体数据来自 `main/corridor_font.c`；共享源码、重建与边界见[网页同步说明](../docs/WEB_PREVIEW_EXIT_CORRIDOR.zh_CN.md)。

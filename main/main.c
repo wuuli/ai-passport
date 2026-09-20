@@ -34,6 +34,8 @@ static const demo_entry_t DEMOS[] = {
     {.name = "Low Power", .enter = demo_low_power_enter, .exit = demo_low_power_exit, .key = demo_low_power_key},
     {.name = "Challenge", .enter = demo_duel_enter, .exit = demo_duel_exit, .key = demo_duel_key,
      .key_at = demo_duel_key_at, .tick = demo_duel_tick},
+    {.name = "Corridor", .enter = demo_corridor_enter, .exit = demo_corridor_exit,
+     .key = demo_corridor_key, .tick = demo_corridor_tick},
 };
 #define DEMO_COUNT (sizeof(DEMOS) / sizeof(DEMOS[0]))
 
@@ -74,8 +76,8 @@ static void menu_build(void) {
 
     for (size_t i = 0; i < DEMO_COUNT; i++) {
         int x = 11 + (int)(i % 2) * 112;
-        int y = 52 + (int)(i / 2) * 47;
-        s_cards[i] = ui_pixel_panel_create(s_menu_scr, x, y, 102, 40, UI_PAPER);
+        int y = 52 + (int)(i / 2) * 37;
+        s_cards[i] = ui_pixel_panel_create(s_menu_scr, x, y, 102, 32, UI_PAPER);
         s_rows[i] = lv_label_create(s_cards[i]);
         lv_obj_set_style_text_font(s_rows[i], &lv_font_montserrat_14, 0);
         lv_obj_set_style_text_align(s_rows[i], LV_TEXT_ALIGN_CENTER, 0);
@@ -142,7 +144,8 @@ static void process_input(lv_timer_t *timer) {
         if (s_active >= 0 && DEMOS[s_active].key_at == demo_duel_key_at) {
             demo_duel_input_lost(batch_time_us);
         }
-        ESP_LOGW(TAG, "Input queue overflow; current challenge cancelled");
+        if (s_active >= 0 && DEMOS[s_active].tick == demo_corridor_tick) demo_corridor_input_lost();
+        ESP_LOGW(TAG, "Input queue overflow; active game stopped");
     }
     input_message_t message;
     for (unsigned count = 0; count < 32 && xQueueReceive(s_input_queue, &message, 0) == pdTRUE; ++count) {
@@ -183,10 +186,11 @@ void app_main(void) {
     s_ok[5] = true;
     s_ok[6] = true;
     s_ok[7] = s_ok[1];
+    s_ok[8] = s_ok[1];
     if (!duel_io_init(s_ok[2], s_ok[3])) ESP_LOGW(TAG, "Challenge sound/battery worker unavailable");
 
     if (bsp_lvgl_lock(1000)) {
-        s_sel = 7;
+        s_sel = 8;
         enter_menu();
         if (s_input_queue) {
             xQueueReset(s_input_queue);

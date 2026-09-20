@@ -1,0 +1,109 @@
+{
+  "recordedAt": "2026-09-19T10:42:41.506414+00:00",
+  "scope": "Browser prototype flow; not device gameplay validation or user blind-play acceptance",
+  "reproduction": {
+    "route": "/?renderer=webgl",
+    "state": "Review expanded and paused",
+    "symptom": "HUD said stopped and enabled Walk button did nothing",
+    "controlProbe": "Enabling review roaming allowed actual Y20.50 to Y9.06 movement"
+  },
+  "browserChecks": [
+    {
+      "route": "webgl",
+      "check": "Physical-equivalent Space resumes review from title and starts actual traversal",
+      "result": "PASS"
+    },
+    {
+      "route": "webgl",
+      "check": "Actual normal first crossing0→1; random STARING_NPC turnback1→2; forced RED_LIGHTS wrong forward crossing2→0",
+      "result": "PASS",
+      "revision": "flow2; scoring unchanged in later UI fixes"
+    },
+    {
+      "route": "webgl",
+      "check": "Actual8forward crossings, then replay0",
+      "observedExits": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        0
+      ],
+      "result": "PASS",
+      "revision": "flow3"
+    },
+    {
+      "route": "software",
+      "check": "Actual8forward crossings, then physical-equivalent Enter replay0",
+      "observedExits": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        0
+      ],
+      "result": "PASS",
+      "revision": "flow3",
+      "observation": "One mid-passage stop required a new Walk click; stale walking HUD led to a focus-loss feedback regression and correction."
+    },
+    {
+      "route": "software",
+      "check": "Full-screen pause recovery and screen-local exit button visible at240x320",
+      "result": "PASS"
+    },
+    {
+      "route": "both",
+      "check": "Final flow4 start/walk/stop smoke, WebGL review recovery, reset to title, review closed, defaults restored",
+      "result": "PASS"
+    }
+  ],
+  "fullTraversalMethod": {
+    "input": "Visible three-key buttons; no scenario shortcut, hidden state injection or teleport",
+    "anomalyProbability": 0,
+    "speedWorldMetresPerSecond": 3.56,
+    "limitation": "Controlled normal rounds verify UI transitions. Mixed anomaly/error/recovery path also covered separately in browser and model flow tests."
+  },
+  "fixes": [
+    "Explicit review pause and one-OK resume",
+    "Pointer turn returns keyboard focus to canvas",
+    "Idempotent clean review reset",
+    "Title/review and scheme-A semantics",
+    "Passage transition disables unavailable controls",
+    "Focus/visibility changes refresh HUD",
+    "New game clears previous judgment"
+  ],
+  "hostChecks": {
+    "input": 173,
+    "model": 81,
+    "motionFrames": 3600,
+    "continuousFlow": 23,
+    "result": "PASS"
+  },
+  "console": {
+    "webglWarnings": 0,
+    "webglErrors": 0,
+    "softwareWarnings": 0,
+    "softwareErrors": 0
+  },
+  "unverified": [
+    "User blind-play fairness and comfort",
+    "Physical3-key timing",
+    "On-device rendering/FPS/RAM",
+    "Firmware build requires ESP-IDF5.5.3"
+  ],
+  "completeGate": {
+    "repositoryChecks": "PASS",
+    "hostTests": "PASS",
+    "firmwareBuild": "NOT RUN",
+    "reason": "idf.py unavailable; activate ESP-IDF5.5.3",
+    "deviceGameplay": "NOT RUN"
+  }
+}

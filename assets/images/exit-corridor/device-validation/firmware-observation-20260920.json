@@ -1,0 +1,25 @@
+{
+  "recorded_at": "2026-09-19T16:07:51.039287+00:00",
+  "seconds": 20.085916582960635,
+  "corridor_logs": [
+    "I (918) corridor: ready=1 native=240x320 image=77824 work=13240 free=33544 largest=23552",
+    "I (5980) corridor: frames=62 window_ms=5025 render_avg_us=39140 free=27500 min=23060 largest=14848 phase=1 score=0 passages=0",
+    "I (5981) corridor: last_cpu_us floor=8068 walls=25773 sprite=1859",
+    "I (5982) corridor: pipeline tick_us=40364 refresh_avg_us=38160 refreshes=63 decoded_chunks=4032",
+    "I (5983) corridor: view x_mm=0 z_mm=-5000 yaw_mrad=1570 walking=0 turning=0 observing=0",
+    "I (11000) corridor: frames=65 window_ms=5021 render_avg_us=35750 free=27500 min=23060 largest=14848 phase=1 score=0 passages=0",
+    "I (11002) corridor: last_cpu_us floor=7986 walls=25943 sprite=1754",
+    "I (11003) corridor: pipeline tick_us=24087 refresh_avg_us=38252 refreshes=65 decoded_chunks=4160",
+    "I (11004) corridor: view x_mm=0 z_mm=-5000 yaw_mrad=1570 walking=0 turning=0 observing=0",
+    "I (16020) corridor: frames=65 window_ms=5019 render_avg_us=35754 free=27500 min=23060 largest=14848 phase=1 score=0 passages=0",
+    "I (16021) corridor: last_cpu_us floor=8083 walls=25774 sprite=1920",
+    "I (16022) corridor: pipeline tick_us=24032 refresh_avg_us=38247 refreshes=65 decoded_chunks=4160",
+    "I (16023) corridor: view x_mm=0 z_mm=-5000 yaw_mrad=1570 walking=0 turning=0 observing=0"
+  ],
+  "failure_markers": {
+    "panic": 0,
+    "watchdog": 0,
+    "malloc": 0
+  },
+  "purpose": "Temporary automatic public-key probe: walk near first poster, turn right twice, settle at z=-5 and yaw=pi/2. Not physical-key comfort acceptance."
+}

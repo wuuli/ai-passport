@@ -1,0 +1,20 @@
+{
+  "recorded_at": "2026-09-19T15:35:19.898423+00:00",
+  "seconds": 20.126102291047573,
+  "corridor_logs": [
+    "I (1021) corridor: bench impl=0 scene=0 render_us=101589 hash=307059843",
+    "I (1195) corridor: bench impl=0 scene=1 render_us=85045 hash=3739795922",
+    "I (1369) corridor: bench impl=0 scene=2 render_us=84887 hash=778542207",
+    "I (1632) corridor: bench impl=0 scene=3 render_us=129516 hash=673492641",
+    "I (1787) corridor: bench impl=1 scene=0 render_us=59485 hash=848721226",
+    "I (1904) corridor: bench impl=1 scene=1 render_us=56669 hash=1159129686",
+    "I (2013) corridor: bench impl=1 scene=2 render_us=52478 hash=4001334725",
+    "I (2135) corridor: bench impl=1 scene=3 render_us=58905 hash=2788675516"
+  ],
+  "failure_markers": {
+    "panic": 0,
+    "watchdog": 0,
+    "malloc": 0
+  },
+  "measurement": "Submitted frame cadence; not completed LCD DMA or physical panel FPS."
+}

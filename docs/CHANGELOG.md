@@ -6,6 +6,16 @@
 
 ## Unreleased
 
+- Added the native Exit Corridor 3D observation game as a firmware page and default boot menu option: features three-key controls (turn left, turn right, walk/stop), eight consecutive correct passages to escape, eight original anomalies, entry-relative turn-back decisions, and Chinese HUD, title, and entrance guide text. Existing demos, duel mode, and permanent Recovery remain intact.
+
+- Implemented an optimized 240×320 software raycaster and renderer for ESP32-C3: uses fixed-point raycasting, sign projection, and surface calculations to reduce floating-point overhead on the no-FPU target. Employs continuous light-gray painted walls with subtle fixed perpendicular contrast for clear corner crease definition without subpixel grid shimmer, plus on-demand single-frame C decoding from Flash-embedded Rocketbox commuter sprites.
+
+- Added smooth navigation and observation assistance: auto-walk rounds corners along a 0.85 m arc before stopping toward the next leg, with OK pause/resume and manual key overrides. Turning square to a wall smoothly centers nearby nominal fixtures (including fixtures visible at 45 degrees up to 1.2 m) at speed-capped rates; fixed anchor positions are identical across normal and anomalous scenes so assistance never hints at answers.
+
+- Upgraded display pipeline and on-demand screenshot streaming: replaced the persistent 40,800 B capture buffer with on-demand serial row streaming (`FAP_SCREENSHOT_V1`), reclaiming internal RAM to support two 40-row DMA display buffers (38,400 B total) that overlap rendering with SPI transmission. Streamed I8-to-RGB565 LVGL decoding in 5-row chunks, bit-packed alpha masks, and out-of-memory handling reduce allocation pressure; audio coexistence and prolonged play remain device checks.
+
+- Added shared WebAssembly preview and comprehensive test suites: web demo compiles the exact C game logic and software renderer with native/Wasm parity checks. Host tests validate observation geometry, rounded corner arcs, entry-relative scoring (including 7-to-8 completion versus 7-to-0 reset distinctions), 64 camera portal transitions, and renderer memory bounds.
+
 - Expanded Time Challenge targets from 1.0–3.0 seconds to 1.0–6.0 seconds while retaining 0.5-second steps and the target-plus-three-second automatic stop. Firmware, browser free play, legacy prototype data, product requirements, sharing copy, and target-range regression coverage now use the same 11 values.
 
 - Aligned the browser review page with the completed same-device two-player experience: removed the AI-practice selector and copy, fixed the simulator to pass-and-play, marked UP unused, replaced the stale unavailable-battery marker with a clearly disclosed preview value, and repaired automatic timeout/celebration/final transitions after the mode cleanup. Sound, one-press handover, sealed settlement, round celebration, persistent results, and match return-home behavior now mirror the tested two-player flow.

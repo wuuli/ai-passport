@@ -33,6 +33,14 @@ run_static_checks() {
         -o "${test_dir}/test_duel_clock"
     "${test_dir}/test_duel_clock"
     "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
+        tests/test_corridor_game.c main/corridor_game.c -lm \
+        -o "${test_dir}/test_corridor_game"
+    "${test_dir}/test_corridor_game"
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
+        tests/test_corridor_render.c main/corridor_render.c main/corridor_game.c -lm \
+        -o "${test_dir}/test_corridor_render"
+    "${test_dir}/test_corridor_render"
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
         tests/test_duel_sound.c main/duel_sound.c \
         -o "${test_dir}/test_duel_sound"
     "${test_dir}/test_duel_sound"
@@ -47,7 +55,10 @@ run_static_checks() {
     "${test_dir}/test_fap_screenshot_protocol"
     python3 tests/test_duel_assets.py
     python3 tests/test_verify_firmware.py
+    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_capture_passport_screen.py
     rm -rf "${test_dir}"
+    python3 tools/build_corridor_web.py --check
+    node tests/test_corridor_web.mjs
     echo "Host tests: PASS"
 }
 

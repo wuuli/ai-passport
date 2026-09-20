@@ -5,3 +5,5 @@ managed_components/
 .vscode/
 .idea/
 .scratch/
+__pycache__/
+*.py[cod]

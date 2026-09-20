@@ -1,0 +1,157 @@
+{
+  "recorded_at_utc": "2026-09-19T11:34:44.129125+00:00",
+  "revision": "20260919-seam1",
+  "scope": "Browser prototype engineering acceptance, not device gameplay or blind-play fairness approval",
+  "routes": [
+    "http://127.0.0.1:8098/",
+    "http://127.0.0.1:8098/?renderer=webgl"
+  ],
+  "input": "Visible on-page three-key equivalents, native 240x320; no model injection or scoring shortcuts for these browser runs",
+  "settings": {
+    "traversal_speed_m_s": 3.564,
+    "normal_reference": true,
+    "probability_percent": [
+      100,
+      0
+    ],
+    "forced_sample_used": false
+  },
+  "observed_on_both_routes": [
+    {
+      "check": "No premature straight-corridor switch",
+      "model_pose": [
+        2,
+        -1.5
+      ],
+      "score": 0,
+      "note": "Walked to visible north wall before turning east"
+    },
+    {
+      "check": "Front portal",
+      "before_score": 0,
+      "after_score": 1,
+      "after_pose": [
+        -0.99,
+        23.17
+      ],
+      "facing_degrees": 90
+    },
+    {
+      "check": "Anomaly return after entering main corridor and reaching Y about13",
+      "before_score": 1,
+      "after_score": 2,
+      "after_pose": [
+        4.99,
+        0.83
+      ],
+      "facing_degrees": 270,
+      "entry_side": "EXIT"
+    },
+    {
+      "check": "Normal corridor from opposite entry, southbound",
+      "before_score": 2,
+      "after_score": 3,
+      "judgment": "FORWARD_CORRECT"
+    },
+    {
+      "check": "Ignored next anomaly, southbound",
+      "before_score": 3,
+      "after_score": 0,
+      "judgment": "FORWARD_WRONG"
+    },
+    {
+      "check": "Continuous recovery",
+      "scores": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "direction": "southbound",
+      "result": "Win overlay appeared after fade, replay enabled"
+    },
+    {
+      "check": "Replay",
+      "score": 0,
+      "model_pose": [
+        2,
+        20.5
+      ],
+      "result": "Stationary at new-game spawn"
+    },
+    {
+      "check": "Visual inspection",
+      "result": "Both connector views have walls, floor, ceiling, lighting and tactile continuation; camera direction preserved through both portals"
+    }
+  ],
+  "sampled_anomalies": {
+    "software_return": "EXTRA_VENT",
+    "software_mistake": "STARING_NPC",
+    "webgl_return": "ABSENT_NPC",
+    "webgl_mistake": "EXTRA_VENT"
+  },
+  "regressions": {
+    "navigation": "PASS",
+    "model": 117,
+    "npc_motion_frames": 3600,
+    "flow": 23,
+    "input": 178,
+    "renderer_groups": 15,
+    "scope": "Midpoint score/phase updates, pause, yaw, entry-relative judgment, collision, no idle recross, sample cancellation, real Three.js scene construction"
+  },
+  "issues_found_during_acceptance": [
+    {
+      "issue": "WebGL stale leftWallLength reference after geometry refactor",
+      "observed_at": "2026-09-19T11:19:59.481Z",
+      "resolution": "Removed unused material declarations, added real scene construction smoke; subsequent full WebGL playthrough passed"
+    }
+  ],
+  "console": {
+    "software_new_warnings_errors": 0,
+    "webgl_after_fix_new_warnings_errors": 0,
+    "note": "WebGL log history retains the earlier fixed initialization error; no new error after corrected reload"
+  },
+  "final_ui": {
+    "both_routes": "Reloaded to clean title, review closed, start enabled",
+    "resolution": "DEVICE_240x320",
+    "speed_multiplier": 1,
+    "anomaly_probability": 0.5,
+    "control_mapping": "UP left45, DOWN right45, OK start/walk/stop/replay; hold OK1s exits",
+    "alternate_mapping": "removed"
+  },
+  "gate": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 ./tools/validate.sh",
+    "repository_checks": "PASS (259 text files)",
+    "host_tests": "PASS",
+    "build": "NOT RUN - idf.py unavailable",
+    "exit_code": 1,
+    "device_tests": "NOT RUN"
+  },
+  "firmware_modified": false,
+  "device_gameplay": "NOT RUN",
+  "unverified": [
+    "user blind-play comfort and anomaly fairness",
+    "ESP32-C3 rendering performance, memory, physical buttons and audio"
+  ],
+  "sha256": {
+    "prototype/exit-corridor.html": "3f9e57f974fdac3b40b480feef690074332aa32dba02827bfd9236366d4ad225",
+    "prototype/exit-corridor/navigation.js": "2e4a269d6410bf70c9b64837b60e8256f8ede157fb865f18d65f0b6c6cf4c340",
+    "prototype/exit-corridor/navigation.test.cjs": "12c250a901f159602c0ee673d3ddc1f106f822d9ca1547d1ad4162695593fdf6",
+    "prototype/exit-corridor/model.js": "961b63bce6c2b3a9070e0ef5371f04cea311787a2db56b46fd397fb3491c00fc",
+    "prototype/exit-corridor/model.test.cjs": "bbe3257f41bb41dfac517ca9a16dc23005d807c4efb9de63ee4f67d38b2c8698",
+    "prototype/exit-corridor/flow.test.cjs": "e6c01445d8463a44c3c2e770bedefb2e13036e1df8c01f67951ed16b297a6878",
+    "prototype/exit-corridor/app.js": "14d2efd71e5cee07ed511bf42c06d3a49e67e28704aa340b3cbe235d72a4bff1",
+    "prototype/exit-corridor/input.test.cjs": "a5915e06b73a158868781f9fd65d8d18c2fffa683880f6001fcb4eaff76d3def",
+    "prototype/exit-corridor/renderer.js": "87094c8d0d6b249852c8ac3fcd88c64d1420353e8460c6fda57f7039dd896b8d",
+    "prototype/exit-corridor/scene.js": "a5791c2abfc1e8e6dc9c64e2a2ebfd5b74aea84bb71995b3c71210a365994441",
+    "prototype/exit-corridor/portable-entry.js": "6c8e44902120408f5fcdc4a0f3d596c16f845eabdcabcbc11d48eccbd38f90f0",
+    "prototype/exit-corridor/portable-renderer.js": "9d294908f2248dbea1e5d89b13ef8ce478e8e926d16c802803b98e1945281721",
+    "prototype/exit-corridor/portable-renderer.test.cjs": "9c2df8406708bdf5d76a696d14b0676bc0b793ab137406a739d93620172c5852",
+    "prototype/exit-corridor/style.css": "2ed837c3530c44f4ea9eb078f465f2a902ae5f1f78c5b79f62513f141c8e4d64"
+  }
+}

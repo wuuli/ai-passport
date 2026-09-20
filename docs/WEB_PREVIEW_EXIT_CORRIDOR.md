@@ -1,0 +1,52 @@
+English | [简体中文](WEB_PREVIEW_EXIT_CORRIDOR.zh_CN.md)
+
+# Exit Corridor firmware web preview
+
+The main [preview](../prototype/exit-corridor.html) executes the current firmware game and renderer as WebAssembly. This replaces the independent JavaScript prototype, including visits with `?renderer=webgl`. The earlier JavaScript prototype runtime has been retired; character baking tools and package validation tests are retained.
+
+## Shared code and assets
+
+- `main/corridor_game.c` and `main/corridor_render.c` compile unchanged. Three-key movement, rounded corners, diagonal-visible observation centering, entry-relative decisions, wrong-choice resets, and eight-success completion use the same C implementation.
+- The browser loads the same 312,689-byte `commuter-device.bin`. Palette, sprite lookup and notice data compile from the firmware includes. Walls use plain light-gray paint with depth lighting and skirting, without a tiled lookup or PNG atlas. Transverse connector walls (`side >= 2`) dim by one shade for corner face contrast. Native C and Wasm parity is verified; 64 same-camera portal seams and dual-corner contrast tests pass. This corner contrast refinement is verified in tests and Wasm web preview, but has not yet been flashed to the physical device (the device currently runs the 2026-09-20 plain-wall installation).
+- Generated `presentation.json` extracts the firmware bitmap font and validates title/HUD copy against `demo_corridor.c`. The Canvas shell expands indexed pixels with RGB565 quantization and draws the UI at native 240×320.
+- `manifest.json` records source and artifact SHA-256 hashes. Startup validates the Wasm, presentation and sprite bytes. The static gate rejects a stale build after native source changes.
+
+The thin C bridge exposes input, ticks, output and explicit review fixtures. Browser glue handles pointer/keyboard input, visibility, loading, display and development controls. It does not implement another game state machine.
+
+## Run and rebuild
+
+Python 3.10+, Node.js 18+ and a C11 compiler are needed for local preview checks. Opening the already generated preview needs only a modern browser and HTTP server; no SDK is required.
+
+```bash
+python3 tools/serve_corridor_web.py --port 8098
+# Open http://127.0.0.1:8098/
+python3 tools/build_corridor_web.py --check
+node tests/test_corridor_web.mjs
+```
+
+The server binds only to loopback and serves the preview and its asset subtree. Do not start a second server on an occupied port.
+
+After changing a manifest-listed native source or asset, rebuild with the official [WASI SDK](https://github.com/WebAssembly/wasi-sdk/releases) (validated with 34.0):
+
+```bash
+python3 tools/build_corridor_web.py --sdk /path/to/wasi-sdk
+./tools/validate.sh --static
+# Activate ESP-IDF 5.5.3 before the complete gate:
+./tools/validate.sh
+```
+
+Keep `corridor.wasm`, `presentation.json` and `manifest.json` together. Runtime license notices accompany the module in `prototype/exit-corridor/firmware/`; character provenance remains in the [asset guide](../assets/images/exit-corridor/README.md).
+
+## Controls and review
+
+UP / up arrow turns left 45 degrees on press; DOWN / down arrow turns right 45 degrees on press; short OK / Space / Enter enters or toggles walking on release; holding OK for one second returns to the web title. Only one key acts at a time. Focus loss, hidden tabs and cancelled touches stop walking.
+
+Development review is closed by default, reveals answers and pauses play when opened. It provides all nine normal/anomaly fixtures, the reported 45-degree poster case, corner approaches and boundary/final-round cases. Resume simulation to inspect, or press OK to start walking. Returning to blind play starts fresh at zero; injected fixtures cannot be carried into a blind run. Magnification changes CSS size only.
+
+## Validation and boundaries
+
+On 2026-09-20 the native-versus-Wasm trace used 1,343 commands and 59 sampled frames. All 4,531,200 indexed pixels matched, with maximum state difference 2.98e-8. This covers round choices, both entry directions, final-round decisions, turns, pauses and observation; it is sampled equivalence, not proof for every possible run.
+
+Browser UI checks confirmed the reported diagonal poster case ends at X=0, Z=-20, yaw=90 degrees; normal 7-to-8 completion and replay; anomalous forward 7-to-0 reset; and anomalous return 0-to-1.
+
+The browser does not emulate ESP32 RAM pressure, SPI/DMA timing, physical ADC debounce, LVGL composition, battery readings or the device menu. Its battery is `--` and long OK returns to the preview title. The web loop submits at most 20 frames/s, and its visible performance counter is explicitly not a device measurement. Native framebuffer comparison excludes Canvas HUD composition. No device firmware is modified or flashed by the web build.

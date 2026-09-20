@@ -1,0 +1,157 @@
+{
+  "recorded_at_utc": "2026-09-19T13:39:29.612310+00:00",
+  "revision": "20260919-seamless2",
+  "scope": "Browser prototype seamless-traversal verification; not device gameplay or user blind-play acceptance",
+  "routes": [
+    "http://127.0.0.1:8098/",
+    "http://127.0.0.1:8098/?renderer=webgl"
+  ],
+  "changes": [
+    "Removed 0.5s fade, input gate, forced stop and crossing camera snap",
+    "3 reusable adjacent cells, continuous absolute camera position and full movement remainder",
+    "Neutral connectors; anomaly fixtures and finite red lighting hidden behind corners",
+    "Preserved single UP-left / DOWN-right / OK-walk-stop mapping"
+  ],
+  "actual_webgl_pixel_audit": {
+    "url": "http://127.0.0.1:8098/exit-corridor/tools/seam-audit.html",
+    "recorded_at_utc": "2026-09-19T13:34:42.367Z",
+    "resolution": [
+      240,
+      320
+    ],
+    "method": "Read real WebGL framebuffer immediately after rendering before/after states at the same absolute camera. Snap only before each case; then rebase, generate anomaly and update exit 0 to 1 without a camera snap.",
+    "matrix": {
+      "portals": [
+        "EXIT",
+        "ENTRANCE"
+      ],
+      "exit_z": [
+        -28.1,
+        -26.8,
+        -25.5
+      ],
+      "entrance_z": [
+        1.5,
+        2.8,
+        4.1
+      ],
+      "yaw_degrees": [
+        0,
+        45,
+        90,
+        135,
+        180,
+        225,
+        270,
+        315
+      ],
+      "anomaly_pairs": [
+        [
+          null,
+          null
+        ],
+        [
+          null,
+          "RED_LIGHTS"
+        ],
+        [
+          "RED_LIGHTS",
+          null
+        ],
+        [
+          "RED_LIGHTS",
+          "RED_LIGHTS"
+        ]
+      ]
+    },
+    "cases": 192,
+    "failures": 0,
+    "max_changed_pixels": 0,
+    "max_channel_delta": 0,
+    "minimum_lit_pixels": 76800,
+    "tolerance_per_channel": 1,
+    "observed_error_was_zero": true,
+    "initial_failure": {
+      "cases": 2,
+      "changed_pixels": 64,
+      "max_channel_delta": 3,
+      "side": "ENTRANCE",
+      "z": 1.5,
+      "yaw_degrees": 225,
+      "cause": "New red interior lamp spilled onto visible corner edge",
+      "resolution": "Affected lamps moved inward and both normal/red light range limited to 3m"
+    },
+    "limitation": "NPC disabled in pixel matrix; actual NPC world transform checked separately in host test and gameplay view. Same-camera audit isolates state-swap artifacts; it is not a device frame-pacing measurement."
+  },
+  "software_pixel_audit": {
+    "cases": 192,
+    "max_changed_pixels": 0,
+    "method": "Real render lifecycle with initially normal unseeded neighbours, no second snap, exit change and anomaly generation; separate yaw smoothing and reset-cache checks"
+  },
+  "visible_browser_checks": [
+    {
+      "route": "software",
+      "input": "Visible three-key equivalent buttons; speed3.56m/s; probability0",
+      "check": "Physically walked normal front portal 0 to1, continued beyond it; OK stopped and resumed"
+    },
+    {
+      "route": "software",
+      "check": "Forced RED_LIGHTS sample, physically walked rear portal1 to2; kept walking to next solid wall; no score shortcut for this crossing"
+    },
+    {
+      "route": "software",
+      "check": "Victory state8 via labelled review shortcut, then reload to default title"
+    },
+    {
+      "route": "webgl",
+      "revision": "seamless2",
+      "check": "Physically walked front portal0 to1 and continued to next main corridor without extra OK; NPC visible in new cell"
+    },
+    {
+      "route": "webgl",
+      "revision": "seamless2",
+      "check": "Physically walked rear portal on normal corridor; incorrect return1 to0; walking continued until next wall"
+    },
+    {
+      "route": "webgl",
+      "check": "Review victory shortcut reached8; clean-blind restart returned to0 with scene and NPC visible"
+    },
+    {
+      "route": "both",
+      "check": "Final default title, native240x320, review closed, start enabled; no new console warnings/errors observed"
+    }
+  ],
+  "host_checks": {
+    "model": 116,
+    "npc_motion_frames": 3600,
+    "input": 176,
+    "flow": 22,
+    "navigation": "PASS",
+    "portable_renderer_groups": 16,
+    "webgl_lifecycle_groups": 7
+  },
+  "full_gate": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 ./tools/validate.sh",
+    "repository_checks": "PASS",
+    "host_tests": "PASS",
+    "build": "NOT RUN: idf.py unavailable",
+    "device_tests": "NOT RUN"
+  },
+  "unverified": [
+    "AI Passport game frame pacing and memory",
+    "Physical button comfort",
+    "User blind-play fairness/comfort"
+  ],
+  "source_sha256": {
+    "prototype/exit-corridor.html": "7d6f65f57865978c9ac934a6774f342f45ccb460414d35c8120771f593a389fe",
+    "prototype/exit-corridor/navigation.js": "8fb50f15f969558051a2cfafd180ae0bfe19ec0b8df04d818a5d16cf25d07de2",
+    "prototype/exit-corridor/model.js": "dbc59b2743d53cef7f1f39849e14a77be80cb2d8dbd4707f7513dd524f3e297c",
+    "prototype/exit-corridor/app.js": "cb3e6c2d338fc767fd2018838d7cd488a7f8b37b033daf9be622502847212da9",
+    "prototype/exit-corridor/renderer.js": "3569979c23fdff90499af0a8a0634960e246a0896d37923f83d1ebd727f65c5d",
+    "prototype/exit-corridor/scene.js": "440d35426d84141a5b1df671efb0e57fbe48ad0ef1d0649546698545a5439669",
+    "prototype/exit-corridor/portable-renderer.js": "8b05fd99c3c9fb7d2a0b29e43060a0e8eba8eef3c599680e451da523426841b1",
+    "prototype/exit-corridor/portable-entry.js": "6338dce4a7d48df166c9dd85b61a41dcb88c0933f0eab572b77bbca8c222cdfa",
+    "prototype/exit-corridor/style.css": "3962455b51d9dc537e78e83c0e04b2330a3030970b8023f9747d18fdd1414341",
+    "prototype/exit-corridor/tools/seam-audit.html": "d0e2c1cea5dd4c7132bfc64431491bf29e76bee0f3943987fa8d57d02091341b"
+  }
+}

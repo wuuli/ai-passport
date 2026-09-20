@@ -33,6 +33,10 @@ During earlier playtesting, a user reported a transition from score 7 to 0. Unde
 
 Because the running version at the time did not log individual anomaly and departure events, the historical incident is **unattributable** (cannot be confirmed as player error or a code defect). Subsequent diagnostic builds add serial logging for boundary decisions (`log_judgement`) without revealing answers on screen. A 36-case test suite validates all 9 scene states, both entry directions, and all departures at score 7; correct choices advance to 8 and incorrect choices reset to 0.
 
+## Confirmed completion display defect (2026-09-20)
+
+The user connected a device still displaying Exit 7 and walking. Passive diagnostics recorded `before=7 after=8 correct=1 phase=2` with `frames=0 refreshes=0`; the [screen](../assets/images/exit-corridor/device-validation/cleared-stale-hud-20260920.png) and [sanitized record](../assets/images/exit-corridor/device-validation/cleared-stale-hud-20260920.json) confirm successful completion with a stale HUD, not an incorrect choice. No reset or input was issued during capture. The firmware redraw condition stopped updating after `EC_CLEARED` without marking the screen dirty; the next OK would therefore restart behind an unchanged playing screen. The fix preserves a redraw request across phase changes and frame throttling. It has not yet been flashed or verified on the device. The replacement ending now includes a playable stairway before the persistent completion panel; see [web acceptance](WEB_PREVIEW_EXIT_CORRIDOR.md). Earlier unlogged incidents remain unattributed.
+
 ## Repeatable host screen capture
 
 The host capture utility (`tools/capture_passport_screen.py`, tested by `tests/test_capture_passport_screen.py`) uses the `FAP_SCREENSHOT_V1` serial protocol. Capture streams 120 x 160 RGB565LE rows on demand under the LVGL lock, eliminating the former 40,800 B persistent capture buffer and freeing RAM for double-buffered LCD DMA.

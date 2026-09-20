@@ -157,13 +157,14 @@ static const float walls[6][4]={
  * operations per frame on the ESP32-C3, which has no hardware FPU. */
 static void draw_surfaces(ec_renderer_t *r,uint8_t *out,
     float cam_x,float cam_z,float fx,float fz,float rx,float rz,
-    int32_t origin_qx,int32_t origin_qz,const int32_t cell_qx[3],const int32_t cell_qz[3]){
+    int32_t origin_qx,int32_t origin_qz,const int32_t cell_qx[3],const int32_t cell_qz[3],
+    int eye_mm,int ceiling_mm){
     int32_t cx=(int32_t)lroundf(cam_x*65536),cz=(int32_t)lroundf(cam_z*65536);
     int32_t left_x=(int32_t)lroundf((fx-rx*.6f)*16777216);
     int32_t left_z=(int32_t)lroundf((fz-rz*.6f)*16777216);
     int32_t right_x=(int32_t)lroundf(rx*16777216),right_z=(int32_t)lroundf(rz*16777216);
     for(int y=0;y<EC_HEIGHT;++y){
-        bool floor=y>=160;int height=floor?310:280,dy=maxi(1,abs(y-160));
+        bool floor=y>=160;int height=(floor?eye_mm:ceiling_mm-eye_mm)/5,dy=maxi(1,abs(y-160));
         int32_t distance=(height*65536)/dy;
         int32_t xx=cx+(int32_t)(((int64_t)left_x*distance)/16777216);
         int32_t zz=cz+(int32_t)(((int64_t)left_z*distance)/16777216);
@@ -192,15 +193,213 @@ static void draw_surfaces(ec_renderer_t *r,uint8_t *out,
         }
     }
 }
+/* Clip each horizontal span to the hallway and the nearest wall before
+ * projection. This also handles a tread straddling the camera near plane. */
+static bool exit_span(int32_t *near,int32_t *far,int32_t cx,int32_t dx,int32_t wall){
+    int32_t a=mini(*near,*far),b=maxi(*near,*far);
+    if(dx){
+        int32_t left=(int32_t)((int64_t)(-1638-cx)*16384/dx);
+        int32_t right=(int32_t)((int64_t)(1638-cx)*16384/dx);
+        a=maxi(a,mini(left,right));b=mini(b,maxi(left,right));
+    }else if(abs(cx)>1638)return false;
+    *near=maxi(20,a);*far=mini(wall,b);
+    return *far>*near;
+}
+static void draw_exit_stairs(ec_renderer_t *r, uint8_t *out, const ec_game_t *g,
+                             float cam_x, float cam_z, float eye_h,
+                             int32_t fq_x, int32_t fq_z, int32_t rq_x, int32_t rq_z,
+                             float origin_x, float origin_z,
+                             float fx, float fz, float rx, float rz) {
+    bool north = !g->entry_exit;
+    float z_start = north ? -5.0f : -19.0f;
+    float z_end = north ? -9.0f : -15.0f;
+    float z_door = north ? -11.0f : -13.0f;
+    float z_step = north ? -0.4f : 0.4f;
+
+    int32_t cam_qx = (int32_t)lroundf(cam_x * 1024.0f);
+    int32_t cam_qz = (int32_t)lroundf(cam_z * 1024.0f);
+    int32_t orig_qx = (int32_t)lroundf(origin_x * 1024.0f);
+    int32_t door_zq=(int32_t)lroundf((z_door+origin_z)*1024.0f);
+    int32_t land_zq1=(int32_t)lroundf((z_end+origin_z)*1024.0f);
+    int32_t step_zq[11];
+    for(int k=0;k<=10;++k)step_zq[k]=(int32_t)lroundf((z_start+k*z_step+origin_z)*1024.0f);
+
+    for (int x = 0; x < EC_WIDTH; ++x) {
+        int32_t dx = fq_x + rq_x * (x - 120) / 200;
+        int32_t dz = fq_z + rq_z * (x - 120) / 200;
+        if (abs(dz) < 10) continue;
+
+        int32_t t_door_q = (int32_t)(((int64_t)(door_zq - cam_qz) * 16384) / dz);
+        if (t_door_q > 20) {
+            float d_door = t_door_q / 1024.0f;
+            if (d_door <= r->depth[x] + 0.15f) {
+                int32_t hit_xq = cam_qx + (int32_t)(((int64_t)dx * t_door_q) >> 14);
+                float x_door = (hit_xq - orig_qx) / 1024.0f;
+                if (fabsf(x_door) <= 0.90f) {
+                    int y_bot = 160 - (int)lroundf(200.0f * (1.60f - eye_h) / d_door);
+                    int y_top = 160 - (int)lroundf(200.0f * (3.65f - eye_h) / d_door);
+                    int dy1 = maxi(0, y_top), dy2 = mini(319, y_bot);
+                    for (int y = dy1; y <= dy2; ++y) {
+                        int v = (y-y_top)*100/maxi(1,y_bot-y_top);
+                        uint8_t c;
+                        if (v < 28) c = 127;
+                        else if (v < 45) c = 126;
+                        else if (v < 65) c = 127;
+                        else if (v < 85) c = 125;
+                        else c = 118;
+                        out[y * EC_WIDTH + x] = c;
+                    }
+                    if (fabsf(x_door) <= 0.65f) {
+                        int s_bot = 160 - (int)lroundf(200.0f * (3.75f - eye_h) / d_door);
+                        int s_top = 160 - (int)lroundf(200.0f * (4.15f - eye_h) / d_door);
+                        int sy1 = maxi(0, s_top), sy2 = mini(319, s_bot);
+                        int u = (int)((x_door + 0.65f) * 96.0f / 1.30f);
+                        for (int y = sy1; y <= sy2; ++y) {
+                            int v = (y - s_top) * 28 / maxi(1, s_bot - s_top);
+                            bool ink = text_at("EXIT", (u - 8) / 2, (v - 7) / 2) ||
+                                       text_at("8", (u - 69) / 2, (v - 7) / 2);
+                            out[y * EC_WIDTH + x] = ink ? 12 : 154;
+                        }
+                    }
+                }
+            }
+        }
+
+        int32_t t_land1_q = (int32_t)(((int64_t)(land_zq1 - cam_qz) * 16384) / dz);
+        if (t_land1_q > 20 || t_door_q > 20) {
+            int32_t t_near=t_land1_q,t_far=t_door_q;
+            bool visible=exit_span(&t_near,&t_far,cam_qx-orig_qx,dx,(int32_t)(r->depth[x]*1024));
+            if(!visible){t_near=20;t_far=20;}
+            float dn = t_near / 1024.0f, df = t_far / 1024.0f;
+            if (visible) {
+                int y_near = 160 - (int)lroundf(200.0f * (1.60f - eye_h) / dn);
+                int y_far = 160 - (int)lroundf(200.0f * (1.60f - eye_h) / df);
+                int ya = maxi(0, mini(y_near, y_far));
+                int yb = mini(319, maxi(y_near, y_far));
+                int32_t xn_q = cam_qx + (int32_t)(((int64_t)dx * t_near) >> 14);
+                float xn = (xn_q - orig_qx) / 1024.0f;
+                if (fabsf(xn) <= 1.60f) {
+                    int shade = mini(15, maxi(1, (int)(16 / (1 + dn * 0.052f)) - 1));
+                    for (int y = ya; y <= yb; ++y) {
+                        out[y * EC_WIDTH + x] = ec_shade[shade][92];
+                    }
+                }
+            }
+        }
+
+        bool ascending=north?dz<0:dz>0;
+        for (int index=0; index<10; ++index) {
+            int k=ascending?9-index:index;
+            float yk_bot = k * 0.16f;
+            float yk_top = (k + 1) * 0.16f;
+            int32_t zq_near=step_zq[k],zq_far=step_zq[k+1];
+
+            int32_t t_near = (int32_t)(((int64_t)(zq_near - cam_qz) * 16384) / dz);
+            int32_t t_far = (int32_t)(((int64_t)(zq_far - cam_qz) * 16384) / dz);
+
+            if (t_far > 20 || t_near > 20) {
+                int32_t tn=t_near,tf=t_far;
+                bool visible=exit_span(&tn,&tf,cam_qx-orig_qx,dx,(int32_t)(r->depth[x]*1024));
+                if(!visible){tn=20;tf=20;}
+                float d_tread = tn / 1024.0f;
+                if (visible) {
+                    int y_n = 160 - (int)lroundf(200.0f * (yk_top - eye_h) * 1024.0f / tn);
+                    int y_f = 160 - (int)lroundf(200.0f * (yk_top - eye_h) * 1024.0f / tf);
+                    int ya = maxi(0, mini(y_n, y_f));
+                    int yb = mini(319, maxi(y_n, y_f));
+                    int32_t xn_q = cam_qx + (int32_t)(((int64_t)dx * tn) >> 14);
+                    float xn = (xn_q - orig_qx) / 1024.0f;
+                    if (fabsf(xn) <= 1.60f) {
+                        int shade = mini(15, maxi(1, (int)(16 / (1 + d_tread * 0.052f)) - 1));
+                        for (int y = ya; y <= yb; ++y) {
+                            out[y * EC_WIDTH + x] = ec_shade[shade][96];
+                        }
+                    }
+                }
+            }
+
+            if (t_near > 20) {
+                float d_riser = t_near / 1024.0f;
+                if (d_riser < r->depth[x]) {
+                    int y_rb = 160 - (int)lroundf(200.0f * (yk_bot - eye_h) / d_riser);
+                    int y_rt = 160 - (int)lroundf(200.0f * (yk_top - eye_h) / d_riser);
+                    int ya = maxi(0, mini(y_rb, y_rt));
+                    int yb = mini(319, maxi(y_rb, y_rt));
+                    int32_t xn_q = cam_qx + (int32_t)(((int64_t)dx * t_near) >> 14);
+                    float xn = (xn_q - orig_qx) / 1024.0f;
+                    if (fabsf(xn) <= 1.60f) {
+                        int shade = mini(15, maxi(1, (int)(16 / (1 + d_riser * 0.052f)) - 1));
+                        for (int y = ya; y <= yb; ++y) {
+                            out[y * EC_WIDTH + x] = (y == ya) ? ec_shade[shade][154] : ec_shade[shade][58];
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    const float rail_x[2] = {-1.45f, 1.45f};
+    for (int side_i = 0; side_i < 2; ++side_i) {
+        float rx_pos = rail_x[side_i];
+        int prev_px = -1, prev_py = -1;
+        float prev_d = -1;
+        for (int k = 0; k <= 10; ++k) {
+            float zk = (k < 10) ? (z_start + k * z_step) : z_end;
+            float yk = k * 0.16f;
+            float rdx = rx_pos + origin_x - cam_x;
+            float rdz = zk + origin_z - cam_z;
+            float d = rdx * fx + rdz * fz;
+            float s = rdx * rx + rdz * rz;
+            if (d > 0.25f) {
+                int px = 120 + (int)lroundf(200.0f * s / d);
+                int py_top = 160 - (int)lroundf(200.0f * (yk + 0.90f - eye_h) / d);
+                int py_bot = 160 - (int)lroundf(200.0f * (yk - eye_h) / d);
+                if (px >= 0 && px < EC_WIDTH && d < r->depth[px]) {
+                    int ya = maxi(0, mini(py_top, py_bot)), yb = mini(319, maxi(py_top, py_bot));
+                    int col1 = maxi(0, px - 1), col2 = mini(239, px);
+                    for (int c = col1; c <= col2; ++c) for (int y = ya; y <= yb; ++y) out[y * EC_WIDTH + c] = 115;
+                }
+                if (prev_px >= 0 && (d < 25.0f || prev_d < 25.0f)) {
+                    int x0 = prev_px, y0 = prev_py, x1 = px, y1 = py_top;
+                    int steps = maxi(abs(x1 - x0), abs(y1 - y0));
+                    int depth_start=(int)(prev_d*1024),depth_delta=(int)((d-prev_d)*1024);
+                    if (steps > 0 && steps < 300) {
+                        for (int st = 0; st <= steps; ++st) {
+                            int cx = x0 + (x1 - x0) * st / steps;
+                            int cy = y0 + (y1 - y0) * st / steps;
+                            int cd=depth_start+depth_delta*st/steps;
+                            if (cx >= 0 && cx < EC_WIDTH && cy >= 0 && cy < EC_HEIGHT && cd < (int)(r->depth[cx]*1024)) {
+                                out[cy * EC_WIDTH + cx] = 124;
+                                if (cy + 1 < EC_HEIGHT) out[(cy + 1) * EC_WIDTH + cx] = 95;
+                            }
+                        }
+                    }
+                }
+                prev_px = px; prev_py = py_top; prev_d = d;
+            } else { prev_px = -1; }
+        }
+    }
+}
 void ec_renderer_draw(ec_renderer_t *r,const ec_game_t *g,uint8_t *image){
     if(!r||!g||!image)return;
+    bool exiting=(g->phase==EC_EXITING||g->phase==EC_CLEARED);
+    float eye_h=exiting?ec_game_eye_height(g):1.55f;
+    int32_t eye_mm=(int32_t)lroundf(eye_h*1000.0f);
+    int ceiling_mm=exiting?4750:2950;
     uint32_t started=r->clock_us?r->clock_us():0,mark=started;
     memset(r->stages,0,sizeof(r->stages));
     memcpy(image,ec_palette,EC_PALETTE_BYTES);uint8_t *out=image+EC_PALETTE_BYTES;
+    /* Past the doorway, hold daylight behind the result instead of exposing
+     * the repeating corridor beyond a ray plane at zero distance. */
+    if(g->phase==EC_CLEARED){
+        memset(out,127,EC_WIDTH*160);
+        memset(out+EC_WIDTH*160,124,EC_WIDTH*(EC_HEIGHT-160));
+        return;
+    }
     if(!r->initialized||abs(g->cell-r->cell)>1||g->phase==EC_TITLE){memset(r->history,0,sizeof(r->history));r->initialized=true;}
     else if(g->cell==r->cell+1){r->history[0]=r->history[1];r->history[1]=r->history[2];r->history[2]=EC_NORMAL;}
     else if(g->cell==r->cell-1){r->history[2]=r->history[1];r->history[1]=r->history[0];r->history[0]=EC_NORMAL;}
-    r->cell=g->cell;r->history[1]=g->anomaly;
+    r->cell=g->cell;r->history[1]=exiting?EC_NORMAL:g->anomaly;
     float fx=sinf(g->camera_yaw),fz=-cosf(g->camera_yaw),rx=-fz,rz=fx;
     float origin_x=g->cell*9.6f,origin_z=-g->cell*29.6f;
     float cam_x=roundf((g->x+origin_x)*1024)/1024,cam_z=roundf((g->z+origin_z)*1024)/1024;
@@ -216,6 +415,21 @@ void ec_renderer_draw(ec_renderer_t *r,const ec_game_t *g,uint8_t *image){
     for(int ci=0;ci<3;++ci)for(int w=0;w<6;++w)for(int k=0;k<4;++k){
         float origin=k%2?-(g->cell+ci-1)*29.6f:(g->cell+ci-1)*9.6f;
         world_walls[ci*6+w][k]=(int32_t)lroundf((walls[w][k]+origin)*1024);
+    }
+    if(exiting){
+        if(!g->entry_exit){
+            int32_t end_zq=(int32_t)lroundf((-11.0f+origin_z)*1024.0f);
+            world_walls[6+0][1]=end_zq;world_walls[6+1][1]=end_zq;
+            world_walls[6+2][0]=(int32_t)lroundf((-1.6f+origin_x)*1024.0f);world_walls[6+2][1]=end_zq;
+            world_walls[6+2][2]=(int32_t)lroundf((1.6f+origin_x)*1024.0f);world_walls[6+2][3]=end_zq;
+            world_walls[6+3][1]=-100000;world_walls[6+3][3]=-100000;
+        }else{
+            int32_t end_zq=(int32_t)lroundf((-13.0f+origin_z)*1024.0f);
+            world_walls[6+0][3]=end_zq;world_walls[6+1][3]=end_zq;
+            world_walls[6+4][0]=(int32_t)lroundf((-1.6f+origin_x)*1024.0f);world_walls[6+4][1]=end_zq;
+            world_walls[6+4][2]=(int32_t)lroundf((1.6f+origin_x)*1024.0f);world_walls[6+4][3]=end_zq;
+            world_walls[6+5][1]=100000;world_walls[6+5][3]=100000;
+        }
     }
     for(int x=0;x<EC_WIDTH;++x){
         int32_t dx=fq_x+rq_x*(x-120)/200,dz=fq_z+rq_z*(x-120)/200;
@@ -240,26 +454,30 @@ void ec_renderer_draw(ec_renderer_t *r,const ec_game_t *g,uint8_t *image){
             best_q=t;side=i%6;cell=i/6;
         }
         float best=best_q/1024.0f;r->depth[x]=best;
-        int top=maxi(0,160-(286720+best_q-1)/best_q),bottom=mini(319,160+317440/best_q);
+        int top=maxi(0,160-((ceiling_mm-eye_mm)*1024/5+best_q-1)/best_q);
+        int bottom=mini(319,160+eye_mm*1024/5/best_q);
         r->wall_top[x]=(int16_t)top;r->wall_bottom[x]=(int16_t)bottom;
         int shade=mini(15,maxi(1,(int)(16/(1+best*.052f))-1));
         /* A fixed face contrast keeps perpendicular plain walls distinguishable. */
         if(side>=2)shade=maxi(0,shade-1);
         int local_z=hit_z-(cell_qz[cell]>>6);
         bool red=r->history[cell]==EC_RED_LIGHTS&&local_z>=-22528&&local_z<=-2048;
-        int step=best_q*320,wy=1550*65536+(160-top)*step;
+        int step=best_q*320,wy=eye_mm*65536+(160-top)*step;
         int lz=local_z*1000/1024;
         wall_sample_t sample=wall_sample(side,lz,r->history[cell]);
+        if(exiting&&cell==1){sample.kind=0;sample.poster=-1;sample.door_u=-1;sample.vent=false;sample.notice_u=-1;}
         const uint8_t *lighting=(red?ec_red:ec_shade)[shade];
         for(int y=top;y<=bottom;++y,wy-=step)out[y*EC_WIDTH+x]=lighting[wall_color(&sample,wy>>16)];
     }
     if(r->clock_us){uint32_t now=r->clock_us();r->stages[1]=now-mark;mark=now;}
-    draw_surfaces(r,out,cam_x,cam_z,fx,fz,rx,rz,origin_qx,origin_qz,cell_qx,cell_qz);
+    draw_surfaces(r,out,cam_x,cam_z,fx,fz,rx,rz,origin_qx,origin_qz,cell_qx,cell_qz,eye_mm,ceiling_mm);
+    if(exiting)draw_exit_stairs(r,out,g,cam_x,cam_z,eye_h,fq_x,fq_z,rq_x,rq_z,origin_x,origin_z,fx,fz,rx,rz);
     if(r->clock_us){uint32_t now=r->clock_us();r->stages[0]=now-mark;mark=now;}
     /* Draw signs after floor/ceiling so floor pixels need no per-sign depth
      * tests. Vertical text sampling is a fixed-point increment, not a float
      * divide at every sign pixel. */
     for(int x=0;x<EC_WIDTH;++x){
+        if(exiting)break; /* The terminal doorway owns the single Exit 8 sign. */
         int32_t dx=fq_x+rq_x*(x-120)/200,dz=fq_z+rq_z*(x-120)/200;
         const float signs[]={-2,-14,-22.5f};
         for(int k=0;k<3;++k){
@@ -283,7 +501,7 @@ void ec_renderer_draw(ec_renderer_t *r,const ec_game_t *g,uint8_t *image){
         }
     }
     if(r->clock_us){uint32_t now=r->clock_us();r->stages[1]+=now-mark;mark=now;}
-    if(g->anomaly==EC_ABSENT_NPC)return;
+    if(g->anomaly==EC_ABSENT_NPC||exiting)return;
     float nx=g->npc_x+origin_x-cam_x,nz=g->npc_z+origin_z-cam_z,d=nx*fx+nz*fz,side=nx*rx+nz*rz;
     if(d<.25f)return;
     float rel=atan2f(-nx,-nz)-g->npc_heading;

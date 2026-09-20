@@ -5,6 +5,7 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {FirmwareCore,STATE_FIELDS} from '../prototype/exit-corridor/firmware/runtime.mjs';
 import {ThreeKeyInput} from '../prototype/exit-corridor/firmware/input.mjs';
+import {FirmwareDisplay} from '../prototype/exit-corridor/firmware/display.mjs';
 const sprite=fs.readFileSync('assets/images/exit-corridor/commuter-device.bin');
 const wasm=fs.readFileSync('prototype/exit-corridor/firmware/corridor.wasm');
 const {instance}=await WebAssembly.instantiate(wasm,{});
@@ -20,16 +21,66 @@ function tick(n,dt=.05){for(let i=0;i<n;i++)command(`T ${dt}`);}
 command('S');command('K 2');command('K 2');tick(430);command('S');
 assert.equal(core.state().walking,0);assert.ok(Math.abs(core.state().x-.85)<.001);assert.equal(core.state().passages,0);
 command('K 2');tick(140);command('S');assert.equal(core.state().score,1);assert.equal(core.state().cell,1);
+// Manual takeover at different arc fractions must retain the eight-way grid
+// in both the native build and the actual browser module, without a camera snap.
+const cornerStarts=[[0,-25.1,0],[0,1.1,Math.PI],[-1.7,2.8,Math.PI/2],[1.7,-26.8,-Math.PI/2]];
+for(const [x,z,yaw] of cornerStarts)for(const fraction of [.2,.3,.7])for(const key of [0,1]){
+  command(`R 0 ${x} ${z} ${yaw} 0 0`);command('K 2');
+  for(let i=0;i<100&&!core.state().turning;i++)tick(1,.025);
+  assert.equal(core.state().turning,1);tick(Math.floor(1.15*fraction/.025),.025);
+  command('K 2');const paused=core.state();tick(10);command('S');
+  assert.equal(core.state().x,paused.x);assert.equal(core.state().z,paused.z);
+  assert.equal(core.state().yaw,paused.yaw);
+  const before=core.state();command(`K ${key}`);const after=core.state();
+  assert.equal(after.turning,0);assert.equal(after.walking,0);
+  assert.equal(after.x,before.x);assert.equal(after.z,before.z);assert.equal(after.cameraYaw,before.cameraYaw);
+  const grid=after.yaw/(Math.PI/4);assert.ok(Math.abs(grid-Math.round(grid))<.00001);
+  assert.equal(after.passages,0);tick(20);command('S');
+  for(let i=0;i<8&&Math.cos(core.state().yaw-yaw)<.99999;i++)command('K 1');
+  assert.ok(Math.cos(core.state().yaw-yaw)>.99999);
+  command('K 2');tick(40);command('S');
+  assert.equal(core.state().cornerStop,1);assert.equal(core.state().walking,0);
+  assert.equal(core.state().passages,0);
+}
 for(let a=0;a<=8;a++){
   command(`R ${a} 0 -19.131 ${Math.PI/4} 0 0`);command('S');command('K 1');tick(30);command('S');
   assert.ok(Math.abs(core.state().z+20)<.001);assert.equal(core.state().observing,0);
   for(let entry=0;entry<=1;entry++)for(let side=0;side<=1;side++){
     command(`R ${a} ${side?4.79:-4.79} ${side?-26.8:2.8} ${side?Math.PI/2:-Math.PI/2} 7 ${entry}`);
     command('K 2');command('T 0.1');command('S');
-    const correct=(side!==entry)===(a===0);assert.equal(core.state().score,correct?8:0);assert.equal(core.state().phase,correct?2:1);
+    const correct=(side!==entry)===(a===0);assert.equal(core.state().score,correct?8:0);assert.equal(core.state().phase,correct?3:1);
   }
 }
+// Both winning portal directions lead to a playable exit, not an instant replay.
+for(let side=0;side<=1;side++){
+  command(`R ${side?0:5} ${side?4.79:-4.79} ${side?-26.8:2.8} ${side?Math.PI/2:-Math.PI/2} 7 0`);
+  command('K 2');tick(1);command('S');assert.equal(core.state().phase,3);
+  tick(130);command('S');assert.equal(core.state().phase,3);assert.equal(core.state().walking,0);
+  command('K 2');tick(65);command('S');
+  command('K 2');const paused=core.state();tick(10);command('S');
+  assert.equal(core.state().z,paused.z);assert.equal(core.state().score,8);
+  command('K 1');tick(8);command('S');command('K 0');tick(8);
+  command('K 2');tick(45);command('S');tick(120);command('S');
+  assert.equal(core.state().phase,2);assert.equal(core.state().score,8);assert.equal(core.state().passages,1);
+  tick(20);assert.equal(core.state().phase,2);
+  command('K 0');command('K 1');assert.equal(core.state().phase,2);
+  command('K 2');command('S');assert.equal(core.state().phase,1);assert.equal(core.state().score,0);assert.equal(core.state().walking,0);
+}
 command('I 123');command('K 2');command('K 2');tick(300);command('S');command('P');const p=core.state();tick(10);assert.equal(core.state().z,p.z);command('H');command('S');
+// Exercise the real Canvas composition shell: EXITING keeps the world exposed.
+for(let entry=0;entry<2;entry++)for(let turn=0;turn<8;turn++){
+  command(`R 0 0 ${entry?-17.2:-6.8} ${turn*Math.PI/4} 8 ${entry}`);command('S');
+  assert.equal(core.state().phase,3);assert.equal(core.state().score,8);
+}
+assert.throws(()=>core.review(0,0,-11,0,8,0),/无效/);
+assert.throws(()=>core.review(0,0,-13,0,8,1),/无效/);
+assert.throws(()=>core.review(0,0,-7,0,9,0),/无效/);
+const labels={},canvas={getContext:()=>({createImageData:(w,h)=>({data:new Uint8ClampedArray(w*h*4)}),putImageData:()=>{}}),setAttribute:(k,v)=>{labels[k]=v;}};
+const display=new FirmwareDisplay(canvas,JSON.parse(fs.readFileSync('prototype/exit-corridor/firmware/presentation.json','utf8')));
+const scene=Uint8Array.from(core.draw()),sceneState={...core.state(),phase:1,score:8};
+display.render(scene,sceneState);const playingPixels=Uint8ClampedArray.from(display.frame.data);
+display.render(scene,{...sceneState,phase:3});assert.deepEqual(display.frame.data,playingPixels);assert.match(labels['aria-label'],/出口 8/);
+display.render(scene,{...sceneState,phase:2});assert.notDeepEqual(display.frame.data,playingPixels);assert.match(labels['aria-label'],/已走出通道/);
 const dir=fs.mkdtempSync(path.join(os.tmpdir(),'corridor-web-test-'));
 let changed=0,pixels=0,maxColorDelta=0,maxStateError=0;
 try{

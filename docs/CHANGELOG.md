@@ -6,6 +6,14 @@
 
 ## Unreleased
 
+- Fixed manual takeover during assisted corridor turns leaving a permanent off-grid heading: left/right now target the 45-degree heading grid while preserving camera easing and the current position, so later corner assistance and wall observation remain available.
+
+- Fixed resuming after cancelling an incomplete corner incorrectly bypassing its assistance. Only a completed corner is bypassed; returning to the approach heading allows the same corner to guide the player again without resetting position.
+
+- Added a playable Exit 8 finale before the completion panel: the eighth correct decision opens a terminal corridor with stairs and daylight, retaining the same three-key walk/pause/observe controls. Only reaching the exit completes the run; score 8 remains locked during the approach, and replay requires a separate OK after completion. The shared C implementation also drives the web preview; physical-device acceptance is pending.
+
+- Fixed the Exit Corridor completion screen failing to refresh after the eighth correct decision: a phase change now schedules the final HUD redraw even when gameplay stops or the frame is throttled. Previously the screen could remain at Exit 7 while the next OK silently started a new run. Scoring and wrong-choice resets are unchanged.
+
 - Added the native Exit Corridor 3D observation game as a firmware page and default boot menu option: features three-key controls (turn left, turn right, walk/stop), eight consecutive correct passages to escape, eight original anomalies, entry-relative turn-back decisions, and Chinese HUD, title, and entrance guide text. Existing demos, duel mode, and permanent Recovery remain intact.
 
 - Implemented an optimized 240×320 software raycaster and renderer for ESP32-C3: uses fixed-point raycasting, sign projection, and surface calculations to reduce floating-point overhead on the no-FPU target. Employs continuous light-gray painted walls with subtle fixed perpendicular contrast for clear corner crease definition without subpixel grid shimmer, plus on-demand single-frame C decoding from Flash-embedded Rocketbox commuter sprites.

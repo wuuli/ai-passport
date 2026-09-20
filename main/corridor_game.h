@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-typedef enum { EC_TITLE, EC_PLAYING, EC_CLEARED } ec_phase_t;
+typedef enum { EC_TITLE, EC_PLAYING, EC_CLEARED, EC_EXITING } ec_phase_t;
 typedef enum { EC_NORMAL, EC_DOOR_MISSING, EC_POSTER_EYES, EC_POSTER_INVERTED,
     EC_EXTRA_VENT, EC_RED_LIGHTS, EC_TALL_NPC, EC_STARING_NPC, EC_ABSENT_NPC } ec_anomaly_t;
 typedef enum { EC_LEFT, EC_RIGHT, EC_OK } ec_key_t;
@@ -35,3 +35,5 @@ void ec_game_key(ec_game_t *game, ec_key_t key);
 void ec_game_tick(ec_game_t *game, float seconds);
 bool ec_game_walkable(float x, float z);
 
+float ec_game_exit_progress(const ec_game_t *game);
+float ec_game_eye_height(const ec_game_t *game);

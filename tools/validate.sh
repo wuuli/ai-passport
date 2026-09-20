@@ -37,6 +37,11 @@ run_static_checks() {
         -o "${test_dir}/test_corridor_game"
     "${test_dir}/test_corridor_game"
     "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
+        -Icomponents/bsp/include -Itests/stubs/corridor_demo \
+        tests/test_corridor_demo.c main/corridor_game.c -lm \
+        -o "${test_dir}/test_corridor_demo"
+    "${test_dir}/test_corridor_demo"
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
         tests/test_corridor_render.c main/corridor_render.c main/corridor_game.c -lm \
         -o "${test_dir}/test_corridor_render"
     "${test_dir}/test_corridor_render"

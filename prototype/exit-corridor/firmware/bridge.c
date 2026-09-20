@@ -40,11 +40,12 @@ double web_state(unsigned field) {
 }
 /* Explicit review fixtures only; normal play never calls this entry point. */
 int web_review(int anomaly,float x,float z,float yaw,unsigned score,int entry) {
-    if(anomaly<EC_NORMAL||anomaly>EC_ABSENT_NPC||score>7||!isfinite(yaw)||
+    if(anomaly<EC_NORMAL||anomaly>EC_ABSENT_NPC||score>8||!isfinite(yaw)||
        !isfinite(x)||!isfinite(z)||fabsf(x)>4.8f||z< -28.2f||z>4.2f||!ec_game_walkable(x,z))return 0;
+    if(score==8&&((entry?z>=-13:z<=-11)||fabsf(x)>1.4f))return 0;
     ec_game_init(&game,12345);
     if(renderer)ec_renderer_draw(renderer,&game,image); /* Clear renderer history before replacing a review cell. */
-    game.phase=EC_PLAYING;game.anomaly=(ec_anomaly_t)anomaly;
+    game.phase=score==8?EC_EXITING:EC_PLAYING;game.anomaly=(ec_anomaly_t)anomaly;
     game.x=x;game.z=z;game.yaw=game.camera_yaw=yaw;game.score=score;game.entry_exit=entry!=0;
     return 1;
 }

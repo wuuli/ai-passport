@@ -33,6 +33,10 @@
 
 由于当时运行的版本未记录单次异常和出口离开事件，该历史事件属于**不可归因**（无法确认是玩家选择失误还是代码逻辑缺陷）。后续诊断版本在串口添加了边界判定日志（`log_judgement`），同时保持盲玩界面不泄露答案。新增的 36 组测试覆盖了得分为 7 时的全部 9 种场景、双向进入和全部抉择路径；正确选择进 8，错误选择归 0。
 
+## 已确认的通关显示缺陷（2026-09-20）
+
+用户连接了仍显示「出口 7／行走中」的设备。被动日志记录 `before=7 after=8 correct=1 phase=2`，且 `frames=0 refreshes=0`；[屏幕](../assets/images/exit-corridor/device-validation/cleared-stale-hud-20260920.png)及[脱敏记录](../assets/images/exit-corridor/device-validation/cleared-stale-hud-20260920.json)证实本次已正确通关，但 HUD 未刷新，并非选择错误。采集过程中没有重启或发送按键。固件进入 `EC_CLEARED` 后停止重绘，却未标记画面需要更新；下一次 OK 因此会在仍显示游戏中的画面后直接重开。修复在状态切换时保留重绘请求，并跨越帧率限制。修复尚未刷写或通过真机验收。新结尾已在持续保留的通关提示页之前加入可行走的楼梯，见[网页验收](WEB_PREVIEW_EXIT_CORRIDOR.zh_CN.md)。此前没有日志的事件仍不可归因。
+
 ## 可重复的主机截图采集
 
 主机截图工具（`tools/capture_passport_screen.py`，经 `tests/test_capture_passport_screen.py` 测试）使用 `FAP_SCREENSHOT_V1` 协议。在持有 LVGL 锁时按需流式传输 120 × 160 RGB565LE 行，移除了原有的 40,800 B 常驻截图缓冲，为 LCD 双 DMA 缓冲腾出了宝贵内存。

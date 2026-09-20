@@ -10,7 +10,7 @@ function present(){
   if(!core)return;
   const state=core.state();display.render(core.draw(),state,reviewPaused());
   $('reviewPaused').hidden=!reviewPaused();
-  buttons[0].disabled=buttons[1].disabled=state.phase!==1||reviewPaused();
+  buttons[0].disabled=buttons[1].disabled=(state.phase!==1&&state.phase!==3)||reviewPaused();
   buttons[2].disabled=false;
   $('btnAction3').querySelector('span').textContent=state.phase===0?'进入通道':state.phase===2?'再走一次':state.walking?'停下':'行走';
   $('toggleReview').textContent=reviewRunning?'暂停观察':'继续观察';
@@ -23,8 +23,9 @@ function reset(){input?.clear();reviewRunning=false;if($('reviewPanel').open){$(
 function action(key){
   if(reviewPaused()){
     if(key!==2)return;reviewRunning=true;
-    if(core.state().phase!==1)core.key(2);
-    if(!core.state().walking)core.key(2);
+    const phase=core.state().phase;
+    if(phase===0||phase===2)core.key(2);
+    else if(!core.state().walking)core.key(2);
   }else core.key(key);
   present();
 }
@@ -80,7 +81,8 @@ async function start(){
     $('applySample').addEventListener('click',()=>{
       clear();const fixture=$('fixture').value;
       const views={entry:[0,-1.8,0,0,0],poster45:[0,-19.131,Math.PI/4,0,0],corner:[0,-25.1,0,0,0],
-        northPortal:[4.7,-26.8,Math.PI/2,0,0],southPortal:[-4.7,2.8,-Math.PI/2,0,0],final:[4.7,-26.8,Math.PI/2,7,0]};
+        northPortal:[4.7,-26.8,Math.PI/2,0,0],southPortal:[-4.7,2.8,-Math.PI/2,0,0],final:[4.7,-26.8,Math.PI/2,7,0],finalReturn:[-4.7,2.8,-Math.PI/2,7,0],
+        exitApproach:[0,-3.5,0,8,0],exitStairs:[0,-6.8,0,8,0],exitStairsReturn:[0,-17.2,Math.PI,8,1]};
       core.review(Number($('anomaly').value),...views[fixture]);reviewRunning=false;present();
     });
     // Read-only status for diagnostics; review controls above are the only

@@ -42,9 +42,10 @@ export class FirmwareDisplay {
     }
     this.rect(0,0,240,24,[20,25,24],204);
     const motion=state.turning&&state.walking?this.ui.turning:state.walking?this.ui.walking:this.ui.stopped;
-    this.text(state.phase===1?this.ui.status.replace('%u',state.score).replace('%s',motion):this.ui.exit,7,4);
+    const inWorld=state.phase===1||state.phase===3;
+    this.text(inWorld?this.ui.status.replace('%u',state.score).replace('%s',motion):this.ui.exit,7,4);
     this.text('--',233-this.width('--'),4);
-    if(state.phase!==1) {
+    if(!inWorld) {
       this.rect(8,77,224,166,[23,28,27],230);
       const edge=[214,185,84];this.rect(8,77,224,1,edge);this.rect(8,242,224,1,edge);
       this.rect(8,77,1,166,edge);this.rect(231,77,1,166,edge);

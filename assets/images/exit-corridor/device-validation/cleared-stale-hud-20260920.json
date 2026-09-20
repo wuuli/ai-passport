@@ -1,0 +1,19 @@
+{
+  "date": "2026-09-20",
+  "source": "passive serial diagnostics and FAP_SCREENSHOT_V1 capture",
+  "deviceReset": false,
+  "screen": "cleared-stale-hud-20260920.png",
+  "rgb565Sha256": "3f74da92a1d4486f46c1066b5c5081d88871f66feee8640a518f5aebafbe808f",
+  "screenShows": "Exit 7, walking; completion overlay absent",
+  "lastJudgement": {
+    "passage": 10, "before": 7, "after": 8, "anomaly": 5,
+    "entry_exit": 1, "crossed_exit": 1, "forward": 0,
+    "correct": 1, "phase": 2
+  },
+  "sample": {
+    "window_ms": 5003, "frames": 0, "refreshes": 0,
+    "score": 8, "passages": 10, "walking": 0
+  },
+  "conclusion": "Correct completion reached EC_CLEARED, but the firmware HUD did not refresh. This proves the current incident, not earlier unlogged resets.",
+  "fixDeviceValidation": "not yet flashed"
+}

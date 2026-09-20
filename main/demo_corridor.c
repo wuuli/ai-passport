@@ -74,7 +74,7 @@ static void hud(void){
     int charge=duel_io_battery();
     if(charge>=0)lv_label_set_text_fmt(battery,"%d%%",charge);else lv_label_set_text(battery,"--");
     if(!renderer){lv_label_set_text(status,"长按 OK 返回");return;}
-    if(game.phase==EC_PLAYING){
+    if(game.phase==EC_PLAYING||game.phase==EC_EXITING){
         lv_obj_add_flag(overlay,LV_OBJ_FLAG_HIDDEN);
         lv_label_set_text_fmt(status,"出口 %u  %s",game.score,game.turning&&game.walking?"转身中":game.walking?"行走中":"OK 行走");
     }else{
@@ -151,11 +151,14 @@ void demo_corridor_tick(int64_t now){
     int64_t tick_started=esp_timer_get_time();
 
     unsigned passages_before=game.passages;
+    ec_phase_t phase_before=game.phase;
     ec_game_tick(&game,(now-last_tick)/1000000.0f);last_tick=now;
+    /* Preserve the final redraw even after play stops or this tick is throttled. */
+    if(game.phase!=phase_before)dirty=true;
     if(game.passages!=passages_before)log_judgement("judgement");
     tick_total+=(uint64_t)(esp_timer_get_time()-tick_started);
     if(now-last_render<50000)return;
-    if(game.phase==EC_PLAYING||dirty){
+    if(game.phase==EC_PLAYING||game.phase==EC_EXITING||dirty){
         int64_t start=esp_timer_get_time();ec_renderer_draw(renderer,&game,pixels);
         render_total+=(uint64_t)(esp_timer_get_time()-start);++frame_count;
         lv_image_cache_drop(&image);lv_obj_invalidate(image_obj);hud();dirty=false;

@@ -37,6 +37,18 @@ void ec_game_init(ec_game_t *g, uint32_t seed) {
     memset(g,0,sizeof(*g)); g->rng=seed ? seed : 0x45c013u;
     g->phase=EC_TITLE; g->z=-1.8f; npc_reset(g);
 }
+
+float ec_game_exit_progress(const ec_game_t *g) {
+    if (!g || (g->phase != EC_EXITING && g->phase != EC_CLEARED)) return 0.0f;
+    float start = g->entry_exit ? -19.0f : -5.0f;
+    float p = g->entry_exit ? (g->z - start) * 0.25f : (start - g->z) * 0.25f;
+    return clampf(p, 0.0f, 1.0f);
+}
+
+float ec_game_eye_height(const ec_game_t *g) {
+    return 1.55f + ec_game_exit_progress(g) * 1.6f;
+}
+
 /* Fixed nominal fixture positions: never inspect anomaly state when choosing
  * a target, including a door that is absent or an extra vent. */
 static void observe_begin(ec_game_t *g,float previous_yaw) {
@@ -77,16 +89,29 @@ static void observe_step(ec_game_t *g,float seconds) {
 void ec_game_key(ec_game_t *g, ec_key_t key) {
     g->observing=false; /* Every physical input overrides the current alignment. */
     if (key==EC_OK) {
-        if (g->phase!=EC_PLAYING) {
+        if (g->phase==EC_TITLE || g->phase==EC_CLEARED) {
             uint32_t seed=g->rng; ec_game_init(g,seed); g->phase=EC_PLAYING;
-        } else { g->walking=!g->walking; }
-        if (g->walking) { g->bypass_id=g->corner_id; g->corner_stop=false; }
-    } else if (g->phase==EC_PLAYING) {
+        } else if (g->phase==EC_PLAYING || g->phase==EC_EXITING) {
+            g->walking=!g->walking;
+            if (g->walking) {
+                if (g->corner_stop) {
+                    g->bypass_id=g->corner_id;
+                    g->corner_stop=false;
+                }
+            }
+        }
+    } else if (g->phase==EC_PLAYING || g->phase==EC_EXITING) {
+        float base=g->turning ? roundf(angle(g->yaw)/(PI/4))*(PI/4) : g->yaw;
+        if (g->turning) {
+            g->corner_id=0;
+            g->bypass_id=0;
+            g->corner_stop=false;
+        }
         g->turning=false; /* Manual observation/turn-back always overrides assistance. */
         float previous_yaw=g->yaw;
-        g->yaw=angle(g->yaw+(key==EC_RIGHT ? PI/4 : -PI/4));
+        g->yaw=angle(base+(key==EC_RIGHT ? PI/4 : -PI/4));
         g->walking=false;
-        observe_begin(g,previous_yaw);
+        if (g->phase==EC_PLAYING) observe_begin(g,previous_yaw);
     }
 }
 static void cross(ec_game_t *g, bool exit_side) {
@@ -99,7 +124,11 @@ static void cross(ec_game_t *g, bool exit_side) {
     else { g->x+=9.6f; g->z-=29.6f; --g->cell; }
     g->entry_exit=!exit_side;
     g->corner_id=0; g->bypass_id=0; g->corner_stop=false;g->turning=false;g->observing=false;
-    if (g->score>=8) { g->score=8; g->phase=EC_CLEARED; g->walking=false; return; }
+    if (g->score>=8) {
+        g->score=8;
+        g->phase=EC_EXITING;
+        return;
+    }
     ec_anomaly_t old=g->anomaly;
     if ((random_next(g)&1u)==0) g->anomaly=EC_NORMAL;
     else {
@@ -167,13 +196,46 @@ static void move_step(ec_game_t *g,float seconds) {
         turn_step(g,seconds);return;
     }
     float nx=g->x+sinf(g->yaw)*travel,nz=g->z-cosf(g->yaw)*travel;
-    if(ec_game_walkable(nx,g->z))g->x=nx;
-    if(ec_game_walkable(g->x,nz))g->z=nz;
-    if(g->x>4.8f&&g->z>=-28.2f&&g->z<=-25.4f)cross(g,true);
-    else if(g->x< -4.8f&&g->z>=1.4f&&g->z<=4.2f)cross(g,false);
+    bool x_ok=ec_game_walkable(nx,g->z);
+    if(g->phase==EC_EXITING){
+        if(!g->entry_exit && nx<-4.8f) x_ok=false;
+        if(g->entry_exit && nx>4.8f) x_ok=false;
+    }
+    if(x_ok) g->x=nx;
+
+    bool z_ok=ec_game_walkable(g->x,nz);
+    if(g->phase==EC_EXITING){
+        if(!g->entry_exit){
+            if(nz<=-11.0f){
+                if(fabsf(g->x)<=1.4f){
+                    g->z=-11.0f;
+                    g->phase=EC_CLEARED;
+                    g->walking=false;
+                    return;
+                }
+                z_ok=false;
+            }
+        }else{
+            if(nz>=-13.0f){
+                if(fabsf(g->x)<=1.4f){
+                    g->z=-13.0f;
+                    g->phase=EC_CLEARED;
+                    g->walking=false;
+                    return;
+                }
+                z_ok=false;
+            }
+        }
+    }
+    if(z_ok) g->z=nz;
+
+    if(g->phase==EC_PLAYING){
+        if(g->x>4.8f&&g->z>=-28.2f&&g->z<=-25.4f)cross(g,true);
+        else if(g->x< -4.8f&&g->z>=1.4f&&g->z<=4.2f)cross(g,false);
+    }
 }
 void ec_game_tick(ec_game_t *g,float seconds) {
-    if(g->phase!=EC_PLAYING || !isfinite(seconds) || seconds<=0) return;
+    if((g->phase!=EC_PLAYING && g->phase!=EC_EXITING) || !isfinite(seconds) || seconds<=0) return;
     seconds=fminf(seconds,.25f);
     if(g->observing)observe_step(g,seconds);
     float remaining=seconds;
@@ -182,6 +244,7 @@ void ec_game_tick(ec_game_t *g,float seconds) {
     }
     float blend=1-expf(-14*seconds);
     g->camera_yaw=angle(g->camera_yaw+angle(g->yaw-g->camera_yaw)*blend);
+    if(g->phase!=EC_PLAYING) return;
     if(g->anomaly==EC_STARING_NPC) {
         float target=atan2f(g->x-g->npc_x,g->z-g->npc_z);
         g->npc_heading=angle(g->npc_heading+angle(target-g->npc_heading)*blend);

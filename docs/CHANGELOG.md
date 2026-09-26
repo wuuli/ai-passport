@@ -6,6 +6,22 @@
 
 ## Unreleased
 
+- Start the Exit 8 community firmware directly on the game's title screen instead of the generic BSP menu. Holding OK during play now returns to that title; the diagnostic menu remains available only if the game cannot allocate its renderer.
+
+- Point the Exit 8 preview documentation to its HTTP entry and show a local-server hint when the HTML is opened as a `file://` page, where the browser blocks module and asset loading.
+
+- Made the in-world overhead EXIT signs readable from either travel direction, including both final stair routes. Opposite faces now sample the same lettering in screen order instead of mirroring it; the shared firmware renderer and browser preview use the same fix.
+
+- Delayed the Exit 8 HUD number after a passage decision until the camera rounds the corner and faces the next corridor. The decision and in-world sign still use the new score immediately; the HUD now follows what the player can see.
+
+- Added a compact control guide to the Exit 8 opening screen. It maps the physical buttons by position—top turns left, middle turns right, and bottom OK toggles walking—and explains that corners automatically turn and stop until OK is pressed again. The firmware and browser preview share the copy.
+
+- Refined the Exit 8 opening and completion UI for the 240x320 screen: a four-glyph 30px title subset, quiet dark entrance, daylight-colored completion, separated action/footer placement, and a one-shot prompt fade instead of continuous pulsing. Browser and firmware use the same font bitmaps and copy; stair geometry, daylight opening, gameplay, and replay rules are unchanged.
+
+- Replaced the Exit 8 stair handrails with wall-mounted continuous metallic tubes that follow the stair slope, land with short horizontal returns, and are carried by sparse wall brackets, matching the original Exit 8 stairwell instead of per-step vertical balusters. The white daylight opening and `EXIT 8` sign are unchanged.
+
+- Reworked the Exit Corridor entrance into an in-game title screen for The Exit 8: the corridor remains visible behind a quiet dim layer, the `OK` prompt fades in gently, and the browser preview follows the LVGL title/clear layout.
+
 - Fixed manual takeover during assisted corridor turns leaving a permanent off-grid heading: left/right now target the 45-degree heading grid while preserving camera easing and the current position, so later corner assistance and wall observation remain available.
 
 - Fixed resuming after cancelling an incomplete corner incorrectly bypassing its assistance. Only a completed corner is bypassed; returning to the approach heading allows the same corner to guide the player again without resetting position.

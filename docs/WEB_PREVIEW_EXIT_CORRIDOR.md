@@ -2,13 +2,13 @@ English | [简体中文](WEB_PREVIEW_EXIT_CORRIDOR.zh_CN.md)
 
 # Exit Corridor firmware web preview
 
-The main [preview](../prototype/exit-corridor.html) executes the current firmware game and renderer as WebAssembly. This replaces the independent JavaScript prototype, including visits with `?renderer=webgl`. The earlier JavaScript prototype runtime has been retired; character baking tools and package validation tests are retained.
+The main [preview](http://127.0.0.1:8098/) executes the current firmware game and renderer as WebAssembly. Start the local server below before opening it; direct `file://` access cannot load the WebAssembly module and assets. This replaces the independent JavaScript prototype, including visits with `?renderer=webgl`. The earlier JavaScript prototype runtime has been retired; character baking tools and package validation tests are retained.
 
 ## Shared code and assets
 
 - `main/corridor_game.c` and `main/corridor_render.c` compile unchanged. Three-key movement, rounded corners, diagonal-visible observation centering, entry-relative decisions, wrong-choice resets, and eight-success completion use the same C implementation.
-- The browser loads the same 312,689-byte `commuter-device.bin`. Palette, sprite lookup and notice data compile from the firmware includes. Walls use plain light-gray paint with depth lighting and skirting, without a tiled lookup or PNG atlas. Transverse connector walls (`side >= 2`) dim by one shade for corner face contrast. Native C and Wasm parity is verified; 64 same-camera portal seams and dual-corner contrast tests pass. This corner contrast refinement is verified in tests and Wasm web preview, but has not yet been flashed to the physical device (the device currently runs the 2026-09-20 plain-wall installation).
-- Generated `presentation.json` extracts the firmware bitmap font and validates title/HUD copy against `demo_corridor.c`. The Canvas shell expands indexed pixels with RGB565 quantization and draws the UI at native 240×320.
+- The browser loads the same 312,689-byte `commuter-device.bin`. Palette, sprite lookup and notice data compile from the firmware includes. Walls use plain light-gray paint with depth lighting and skirting, without a tiled lookup or PNG atlas. Transverse connector walls (`side >= 2`) dim by one shade for corner face contrast. Native C and Wasm parity is verified; 64 same-camera portal seams and dual-corner contrast tests pass. The current firmware, including this contrast refinement, was installed on the physical device on 2026-09-27; its direct-to-title boot screen was captured over serial.
+- Generated `presentation.json` extracts the 16px body and four-glyph 30px title fonts and validates title/HUD copy against `demo_corridor.c`. The Canvas shell expands indexed pixels with RGB565 quantization and draws the dark opening, daylight-colored completion, and HUD at native 240×320. The opening describes the physical keys by position (top, middle, bottom OK) and explains automatic corner stops; both endpoint layouts keep the action at y=252 and return hint at y=287. The action fades in once over 800ms and remains steady. Stair and exit rendering are unchanged by the UI.
 - `manifest.json` records source and artifact SHA-256 hashes. Startup validates the Wasm, presentation and sprite bytes. The static gate rejects a stale build after native source changes.
 
 The thin C bridge exposes input, ticks, output and explicit review fixtures. Browser glue handles pointer/keyboard input, visibility, loading, display and development controls. It does not implement another game state machine.
@@ -39,11 +39,13 @@ Keep `corridor.wasm`, `presentation.json` and `manifest.json` together. Runtime 
 
 ## Controls and review
 
-UP / up arrow turns left 45 degrees on press; DOWN / down arrow turns right 45 degrees on press; short OK / Space / Enter enters or toggles walking on release; holding OK for one second returns to the web title. Only one key acts at a time. Focus loss, hidden tabs and cancelled touches stop walking.
+UP / up arrow turns left 45 degrees on press; DOWN / down arrow turns right 45 degrees on press; short OK / Space / Enter enters from the title screen or toggles walking on release; holding OK for one second returns to the web title. Only one key acts at a time. Focus loss, hidden tabs and cancelled touches stop walking.
 
-Development review is closed by default, reveals answers and pauses play when opened. It provides all nine normal/anomaly fixtures, the reported 45-degree poster case, corner approaches and boundary/final-round cases. Resume simulation to inspect, or press OK to start walking. Returning to blind play starts fresh at zero; injected fixtures cannot be carried into a blind run. Magnification changes CSS size only.
+Development review is closed by default, reveals answers and pauses play when opened. It provides all nine normal/anomaly fixtures, paired forward/return views of the overhead sign, the reported 45-degree poster case, corner approaches and boundary/final-round cases. Resume simulation to inspect, or press OK to start walking. Returning to blind play starts fresh at zero; injected fixtures cannot be carried into a blind run. Magnification changes CSS size only.
 
 During an assisted corner, OK pauses/resumes the arc. Left/right cancels it and stops translation; the target heading uses the nearest 45-degree grid direction plus the requested turn, with the camera easing toward it. Position and displayed camera heading do not snap on that keypress. Normal manual turns remain relative 45-degree steps.
+
+The passage decision updates the game score as soon as the boundary is crossed. The upper-left number keeps the previous value until the camera has turned toward the next corridor near its centerline, so the HUD does not reveal the new exit before the in-world sign comes into view. Manual turning can reveal it too; once revealed, the number remains stable if the player looks back.
 
 ## Exit sequence
 

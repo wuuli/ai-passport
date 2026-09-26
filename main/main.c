@@ -1,9 +1,9 @@
-// main/main.c —— FoloToy AI Passport BSP 驱动参考示例:初始化 + 菜单 + 按键分发。
+// main/main.c —— FoloToy AI Passport BSP 驱动参考示例:初始化 + 按键分发。
 //
 // 按键语义(全局统一):
 //   上/下 短按   菜单中=移动选中项;演示页中=该页自定义
 //   确定  短按   菜单中=进入选中项;演示页中=该页自定义
-//   确定  长按   演示页中=返回菜单(由本文件统一拦截)
+//   确定  长按   Corridor=返回游戏标题;其他演示页=返回诊断菜单
 #include "bsp_i2c.h"
 #include "bsp_display.h"
 #include "bsp_button.h"
@@ -97,8 +97,9 @@ static void enter_menu(void) {
 
 static void process_key(bsp_btn_t btn, bsp_btn_ev_t ev, int64_t timestamp_us) {
     if (s_active >= 0) {
-        if (btn == BSP_BTN_OK && ev == BSP_BTN_LONG) {     // 统一返回
+        if (btn == BSP_BTN_OK && ev == BSP_BTN_LONG) {
             atomic_fetch_add(&s_generation, 1);
+            if (DEMOS[s_active].tick == demo_corridor_tick && demo_corridor_return_to_title()) return;
             DEMOS[s_active].exit();
             enter_menu();
         } else if (DEMOS[s_active].key_at) {
@@ -190,8 +191,11 @@ void app_main(void) {
     if (!duel_io_init(s_ok[2], s_ok[3])) ESP_LOGW(TAG, "Challenge sound/battery worker unavailable");
 
     if (bsp_lvgl_lock(1000)) {
+        // Community firmware boots into its own title. The diagnostics menu
+        // remains reachable from the allocation-error screen with a long OK.
         s_sel = 8;
-        enter_menu();
+        s_active = s_sel;
+        DEMOS[s_active].enter();
         if (s_input_queue) {
             xQueueReset(s_input_queue);
             lv_timer_create(process_input, 10, NULL);

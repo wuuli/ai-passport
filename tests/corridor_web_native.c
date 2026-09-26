@@ -20,7 +20,7 @@ int main(void){
         case 'T':assert(sscanf(line+1,"%f",&dt)==1);web_tick(dt);break;
         case 'P':web_pause();break;case 'H':web_title();break;
         case 'R':assert(sscanf(line+1,"%d %f %f %f %u %d",&a,&x,&z,&yaw,&score,&entry)==6);assert(web_review(a,x,z,yaw,score,entry));break;
-        case 'S':for(unsigned i=0;i<25;i++){double d=web_state(i);assert(fwrite(&d,sizeof(d),1,stdout)==1);}
+        case 'S':for(unsigned i=0;i<27;i++){double d=web_state(i);assert(fwrite(&d,sizeof(d),1,stdout)==1);}
             assert(fwrite(web_draw(),1,EC_IMAGE_BYTES,stdout)==EC_IMAGE_BYTES);break;
         default:abort();
         }

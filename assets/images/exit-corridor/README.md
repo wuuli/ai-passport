@@ -10,6 +10,7 @@ This directory contains the baked 2D character sprite atlas, metadata, and licen
 
 ## Files and layout
 
+- `exit-corridor-promo-cover-v6.png`: the current 3:4 cover for community project 562 (`community-fb9b47f2`). It is promotional art rather than a device capture and is not loaded by the firmware or web renderer. [Edit prompt](promo-cover-v6-prompt.txt).
 - `commuter-device.bin` / `.json`: default runtime ECSP package and metadata; **312,689 B**, 8 directions × (16 walk + 1 standing) = 136 frames.
 - `sprite-atlas-16.png` / `.json`: offline 16-direction × 16-gait source, 768×1632, 272 cells, PNG **813,591 B**. Retained as the master offline bake source.
 - `sprite-atlas.png` / `.json`: earlier 8-direction × 8-gait comparison, 384×864, 72 cells, PNG **219,522 B**. Retained as a historical comparison source.

@@ -19,6 +19,32 @@ int main(void){
     assert(ec_game_exit_progress(&g)==0.0f&&fabsf(ec_game_eye_height(&g)-1.55f)<.001f);
     ec_game_key(&g,EC_OK);assert(g.phase==EC_PLAYING&&g.anomaly==EC_NORMAL&&!g.walking);
     assert(ec_game_exit_progress(&g)==0.0f&&fabsf(ec_game_eye_height(&g)-1.55f)<.001f);
+    /* The rule changes at the passage boundary, but the HUD waits until the
+     * player has rounded the corner and can look down the new corridor. */
+    for(int side=0;side<2;++side)for(int correct=0;correct<2;++correct){
+        ec_game_init(&g,123);ec_game_key(&g,EC_OK);
+        g.score=g.hud_score=7;
+        g.anomaly=(side==correct)?EC_NORMAL:EC_RED_LIGHTS;
+        portal(&g,side!=0);
+        assert(g.score==(correct?8u:0u));
+        assert(g.hud_score==7&&g.hud_score_pending);
+        ec_game_key(&g,EC_OK);ec_game_tick(&g,.5f);
+        assert(!g.walking&&g.hud_score==7&&g.hud_score_pending);
+        ec_game_key(&g,EC_OK);until_stop(&g);
+        assert(g.corner_stop&&g.hud_score==g.score&&!g.hud_score_pending);
+    }
+    ec_game_init(&g,123);ec_game_key(&g,EC_OK);
+    g.score=g.hud_score=7;g.anomaly=EC_NORMAL;
+    portal(&g,true);ec_game_key(&g,EC_OK);
+    assert(g.hud_score==7&&g.hud_score_pending);
+    g.x=-1.0f;g.z=2.0f; /* At the new corridor opening, with room to observe. */
+    ec_game_key(&g,EC_LEFT);ec_game_key(&g,EC_LEFT);
+    ec_game_tick(&g,.25f);
+    assert(g.hud_score==8&&!g.hud_score_pending);
+    ec_game_key(&g,EC_RIGHT);ec_game_key(&g,EC_RIGHT);
+    ec_game_tick(&g,.25f);
+    assert(g.hud_score==8&&!g.hud_score_pending);
+    ec_game_init(&g,123);ec_game_key(&g,EC_OK);
     ec_game_key(&g,EC_OK);until_stop(&g);
     assert(g.corner_stop&&fabsf(g.x-.85f)<.001f&&fabsf(g.z+26.8f)<.001f&&fabsf(g.yaw-PI/2)<.001f&&g.score==0);
     ec_game_key(&g,EC_OK);until_stop(&g);

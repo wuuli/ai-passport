@@ -3,13 +3,14 @@
 #pragma once
 
 #include "bsp_button.h"
+#include <stdbool.h>
 #include <stdint.h>
 
 typedef struct {
     const char *name;
     void (*enter)(void);                          // 建自己的屏并载入
     void (*exit)(void);                           // 删屏、停定时器、释放资源
-    void (*key)(bsp_btn_t btn, bsp_btn_ev_t ev);  // 收按键(长按确定已被 main 拦截)
+    void (*key)(bsp_btn_t btn, bsp_btn_ev_t ev);  // 收按键(长按确定由 main 分发或拦截)
     void (*key_at)(bsp_btn_t btn, bsp_btn_ev_t ev, int64_t timestamp_us);
     void (*tick)(int64_t now_us);
 } demo_entry_t;
@@ -48,3 +49,4 @@ void demo_corridor_exit(void);
 void demo_corridor_key(bsp_btn_t button, bsp_btn_ev_t event);
 void demo_corridor_tick(int64_t now_us);
 void demo_corridor_input_lost(void);
+bool demo_corridor_return_to_title(void);

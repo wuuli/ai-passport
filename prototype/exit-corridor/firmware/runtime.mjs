@@ -1,6 +1,6 @@
 export const STATE_FIELDS = ['phase','anomaly','x','z','yaw','cameraYaw','walking','turning','observing',
   'score','passages','cell','entryExit','npcX','npcZ','npcHeading','npcDistance','npcTurn','rng',
-  'scoreBefore','lastAnomaly','correct','forward','cornerStop','cornerId'];
+  'scoreBefore','lastAnomaly','correct','forward','cornerStop','cornerId','hudScore','hudScorePending'];
 export class FirmwareCore {
   constructor(instance, sprite, seed = 1) {
     this.wasm = instance.exports;

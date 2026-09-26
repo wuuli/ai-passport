@@ -118,6 +118,9 @@ static void cross(ec_game_t *g, bool exit_side) {
     bool forward = exit_side != g->entry_exit;
     bool correct = forward == (g->anomaly==EC_NORMAL);
     g->last_judgement=(ec_judgement_t){g->score,g->anomaly,g->entry_exit,exit_side,forward,correct};
+    /* Keep the old HUD number until the new corridor is actually in view. */
+    g->hud_score=g->score;
+    g->hud_score_pending=true;
     g->score=correct ? g->score+1 : 0;
     ++g->passages;
     if (exit_side) { g->x-=9.6f; g->z+=29.6f; ++g->cell; }
@@ -244,6 +247,11 @@ void ec_game_tick(ec_game_t *g,float seconds) {
     }
     float blend=1-expf(-14*seconds);
     g->camera_yaw=angle(g->camera_yaw+angle(g->yaw-g->camera_yaw)*blend);
+    if(g->hud_score_pending && fabsf(g->x)<=1.4f &&
+       fabsf(angle(g->camera_yaw-(g->entry_exit?PI:0)))<=PI/6){
+        g->hud_score=g->score;
+        g->hud_score_pending=false;
+    }
     if(g->phase!=EC_PLAYING) return;
     if(g->anomaly==EC_STARING_NPC) {
         float target=atan2f(g->x-g->npc_x,g->z-g->npc_z);

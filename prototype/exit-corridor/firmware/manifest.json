@@ -6,22 +6,23 @@
     320
   ],
   "sources": {
-    "main/corridor_game.c": "947f2ff770acfb16a9cbe963b6372deca889b05b1d023a8bc9c96b88deb82169",
-    "main/corridor_game.h": "f4d8a5ec0d21e592a9cf8595ef063f856526afe358aef5428faf09f55985b7e5",
-    "main/corridor_render.c": "4a9e22919480cff01a819acdd8c113f9e929c6bbf3ac75df5afb82a8732cbffc",
+    "main/corridor_game.c": "3d6c712b489359dabe97fed75a70f38eb474ab0472abc3859a6e2783e380bc83",
+    "main/corridor_game.h": "98f323456d4ea44ce6fd1d8188bfacf389a782704f9b7be446e086dc974cd8b2",
+    "main/corridor_render.c": "8cab09744bf0d74b2bb28bd3f950f454d586b240b79febcdd103b4de4c9fff95",
     "main/corridor_render.h": "04149768d5a7cbdd1a137cc9d3c62d30697b567d3836cdd06f24fa95493283c5",
     "main/corridor_palette.inc": "e57da4669a7fe741e668e1d782595583d80ae71d845623a624db631d2a82e8d2",
     "main/corridor_sprite_lut.inc": "e456f6d10133b3404d45244ea85bcc3c7b0a8c5dfa9999a363479d0881c7016d",
     "main/corridor_notice.inc": "1eb52c0eb15345035fe878d411013efc585a5b61058faf054c3ca4e875cc15f0",
-    "main/corridor_font.c": "5ae50d1ca23e1ef81494ef0ea879e510e83aa07660be79792fc2f3bebd0f2eca",
-    "main/demo_corridor.c": "57c5719b3e5625fbbc32f3434ef626ea243168568095b051bcc98714aca0a1fa",
-    "prototype/exit-corridor/firmware/bridge.c": "04107ae03246d0bec57a5f733b946c107f208369f503a722dd375bb7793d2d85",
+    "main/corridor_font.c": "6b69850cb4ccbdc88b9bdc51cfeb13584a4da0d5240f4d2b7bd1eb3ddd798d2d",
+    "main/corridor_title_font.c": "3ae1a1f864a99b8635b872b5745ad69bcd3b0d5ed4228ab793fc9ffea948ad95",
+    "main/demo_corridor.c": "f1256e725f8c08f9dbf3e69a0992cde1873a932d12f2b79a4775359eb0fe0ed4",
+    "prototype/exit-corridor/firmware/bridge.c": "0bfcffa99b7be937639a01a38331f6c75091517b28dcc0fcbaf461b7095d637d",
     "assets/images/exit-corridor/commuter-device.bin": "57103150daa85a913788951388cb3feba62e823dca2426a0a40f28802318251f",
-    "tools/build_corridor_web.py": "8a9887003fbcd22dc7c379838e74e6acc158fe98def32f977be86f3bfac27d66"
+    "tools/build_corridor_web.py": "2f202b000a8abb52a1373f7bcdaf3bd10b9ebe6354573e3c66905721d5590523"
   },
   "artifacts": {
-    "corridor.wasm": "0a05beb56d964614171529028ed1e86268d4d85793109c10bd5c65603291dc26",
-    "presentation.json": "6deb6f12ee8a3173df66cfc52333aa8548f2cf4ca490e1f41f9a55861cf417e7"
+    "corridor.wasm": "2c644c4d8181d35e495da729631cd383c557a14e922aeb7cf95c6285046972e2",
+    "presentation.json": "0e07f97592b3e77094e446ffb651b7553e7a3cadb95681c55ff8075d4b6e3baf"
   },
   "spriteBytes": 312689,
   "spriteUrl": "/assets/images/exit-corridor/commuter-device.bin",

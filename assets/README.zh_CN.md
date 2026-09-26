@@ -57,4 +57,4 @@
 - 人物世界取景为 1×2 米、身高 1.76 米、脚底锚点 0.95。16 帧步态周期 1.067 秒；固件通过 `target_add_binary_data` 将 `commuter-device.bin` 直接链接进 Flash，由 C 渲染器按需仅解码当前活跃帧（`r->frame` 4,608 B + `r->alpha` 576 B）。
 - 详细溯源、格式和可复现命令见[人物素材说明](images/exit-corridor/README.zh_CN.md)。
 
-当前地下通道网页直接使用固件素材包与 C 渲染，生成字体数据来自 `main/corridor_font.c`；共享源码、重建与边界见[网页同步说明](../docs/WEB_PREVIEW_EXIT_CORRIDOR.zh_CN.md)。
+当前地下通道网页直接使用固件素材包与 C 渲染。生成的 `main/corridor_font.c`（16 px）与 `main/corridor_title_font.c`（30 px，仅含 `8号出口`）使用上文对决字体相同的 Noto Sans SC 源文件及 [OFL 许可](fonts/time-duel/OFL.txt)。使用 `tools/generate_corridor_font.py --font /path/to/NotoSansSC-Regular.otf --converter /path/to/lv_font_conv` 复现；标题子集另加 `--title`。两者均为 Flash 常量，不新增帧缓冲。共享源码、重建与边界见[网页同步说明](../docs/WEB_PREVIEW_EXIT_CORRIDOR.zh_CN.md)。

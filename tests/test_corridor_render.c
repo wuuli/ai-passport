@@ -6,6 +6,17 @@
 #include <stdlib.h>
 #include <string.h>
 static unsigned hash(const uint8_t *p,size_t n){unsigned h=2166136261u;for(size_t i=0;i<n;++i)h=(h^p[i])*16777619u;return h;}
+static void assert_sign_faces_match(const uint8_t *a,const uint8_t *b,int y0,int y1){
+    int ink_a=0,ink_b=0,different=0;
+    for(int y=y0;y<y1;++y)for(int x=75;x<165;++x){
+        int at=EC_PALETTE_BYTES+y*EC_WIDTH+x;
+        bool front=a[at]==12,back=b[at]==12;
+        ink_a+=front;ink_b+=back;different+=front!=back;
+    }
+    /* Opposite faces are projected from equal distances. A few edge pixels
+     * differ through integer rounding, but mirrored lettering differs widely. */
+    assert(ink_a>120&&ink_b>120&&different<=20);
+}
 int main(void){
     FILE *f=fopen("assets/images/exit-corridor/commuter-device.bin","rb");assert(f);fseek(f,0,SEEK_END);size_t n=(size_t)ftell(f);rewind(f);
     uint8_t *asset=malloc(n);assert(asset&&fread(asset,1,n,f)==n);fclose(f);
@@ -59,6 +70,18 @@ int main(void){
         }
     }
     printf("Corridor corner faces: both outer corners retain visible contrast PASS\n");
+    /* The repeated overhead sign must read the same from either corridor
+     * direction, rather than showing mirrored EXIT lettering on the return. */
+    ec_game_init(&g,1);g.phase=EC_PLAYING;g.anomaly=EC_ABSENT_NPC;
+    g.x=0;g.z=-10;g.yaw=g.camera_yaw=0;ec_renderer_draw(r,&g,old);
+    g.z=-18;g.yaw=g.camera_yaw=3.14159265358979323846f;ec_renderer_draw(r,&g,b);
+    assert_sign_faces_match(old,b,95,132);
+    /* Both possible final stair routes also need a readable EXIT 8 face. */
+    ec_game_init(&g,1);g.phase=EC_EXITING;g.score=8;g.anomaly=EC_ABSENT_NPC;
+    g.x=0;g.z=-7;g.entry_exit=false;g.yaw=g.camera_yaw=0;ec_renderer_draw(r,&g,old);
+    g.z=-17;g.entry_exit=true;g.yaw=g.camera_yaw=3.14159265358979323846f;ec_renderer_draw(r,&g,b);
+    assert_sign_faces_match(old,b,40,110);
+    printf("Corridor overhead signs: readable from both directions PASS\n");
 /* Exit sequence rendering tests: EC_EXITING and EC_CLEARED in both directions */
     for (int dir = 0; dir < 2; ++dir) {
         bool entry_exit = dir != 0;

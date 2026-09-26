@@ -10,6 +10,7 @@
 
 ## 文件与布局
 
+- `exit-corridor-promo-cover-v6.png`：社区项目 562（`community-fb9b47f2`）当前使用的 3:4 封面。这是宣传插画，不是真机截图，固件和网页渲染器均不加载它。[编辑提示词](promo-cover-v6-prompt.txt)。
 - `commuter-device.bin` / `.json`：默认运行时 ECSP 帧包及元数据；**312,689 B**，8 方向 × (16 行走 + 1 站立) = 136 帧。
 - `sprite-atlas-16.png` / `.json`：离线 16 方向 × 16 步态源图，768×1632、272 单元格，PNG **813,591 B**；保留为离线主烘焙源图。
 - `sprite-atlas.png` / `.json`：早期 8 方向 × 8 步态对照，384×864、72 单元格，PNG **219,522 B**；保留为历史对照源图。

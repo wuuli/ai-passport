@@ -9,8 +9,13 @@
 
 #define LV_IMAGE_HEADER_MAGIC 0x1234
 #define LV_COORD_MIN (-32768)
+#define LV_OPA_TRANSP 0
 #define LV_OPA_80 204
 #define LV_OPA_90 230
+#define LV_OPA_70 178
+#define LV_OPA_60 153
+#define LV_OPA_30 76
+#define LV_OPA_COVER 255
 
 typedef enum {
     LV_RESULT_INVALID = 0,
@@ -112,6 +117,9 @@ struct lv_obj_s {
     uint32_t flags;
     char text[256];
     int32_t x, y, w, h;
+    lv_color_t bg_color, text_color;
+    lv_opa_t bg_opa, text_opa;
+    const lv_font_t *font;
     struct lv_obj_s *parent;
     struct lv_obj_s *next;
     struct lv_obj_s *children;
@@ -181,14 +189,17 @@ static inline void lv_obj_remove_style_all(lv_obj_t *obj) { (void)obj; }
 static inline void lv_obj_set_size(lv_obj_t *obj, int32_t w, int32_t h) { if (obj) { obj->w = w; obj->h = h; } }
 static inline void lv_obj_set_pos(lv_obj_t *obj, int32_t x, int32_t y) { if (obj) { obj->x = x; obj->y = y; } }
 static inline void lv_obj_center(lv_obj_t *obj) { (void)obj; }
-static inline void lv_obj_align(lv_obj_t *obj, lv_align_t a, int32_t x, int32_t y) { (void)obj; (void)a; (void)x; (void)y; }
-static inline void lv_obj_set_style_bg_color(lv_obj_t *obj, lv_color_t v, lv_style_selector_t s) { (void)obj; (void)v; (void)s; }
+static inline void lv_obj_align(lv_obj_t *obj, lv_align_t a, int32_t x, int32_t y) { (void)a; if (obj) { obj->x=x; obj->y=y; } }
+static inline void lv_obj_move_foreground(lv_obj_t *obj) { (void)obj; }
+static inline void lv_obj_set_style_bg_color(lv_obj_t *obj, lv_color_t v, lv_style_selector_t s) { (void)s; if (obj) obj->bg_color=v; }
 static inline void lv_obj_set_style_pad_all(lv_obj_t *obj, int32_t v, lv_style_selector_t s) { (void)obj; (void)v; (void)s; }
 static inline void lv_obj_set_style_border_width(lv_obj_t *obj, int32_t v, lv_style_selector_t s) { (void)obj; (void)v; (void)s; }
 static inline void lv_obj_set_style_border_color(lv_obj_t *obj, lv_color_t v, lv_style_selector_t s) { (void)obj; (void)v; (void)s; }
-static inline void lv_obj_set_style_bg_opa(lv_obj_t *obj, lv_opa_t v, lv_style_selector_t s) { (void)obj; (void)v; (void)s; }
-static inline void lv_obj_set_style_text_font(lv_obj_t *obj, const lv_font_t *f, lv_style_selector_t s) { (void)obj; (void)f; (void)s; }
-static inline void lv_obj_set_style_text_color(lv_obj_t *obj, lv_color_t c, lv_style_selector_t s) { (void)obj; (void)c; (void)s; }
+static inline void lv_obj_set_style_bg_opa(lv_obj_t *obj, lv_opa_t v, lv_style_selector_t s) { (void)s; if (obj) obj->bg_opa=v; }
+static inline void lv_obj_set_style_opa(lv_obj_t *obj, lv_opa_t v, lv_style_selector_t s) { (void)obj; (void)v; (void)s; }
+static inline void lv_obj_set_style_text_opa(lv_obj_t *obj, lv_opa_t v, lv_style_selector_t s) { (void)s; if (obj) obj->text_opa=v; }
+static inline void lv_obj_set_style_text_font(lv_obj_t *obj, const lv_font_t *f, lv_style_selector_t s) { (void)s; if (obj) obj->font=f; }
+static inline void lv_obj_set_style_text_color(lv_obj_t *obj, lv_color_t c, lv_style_selector_t s) { (void)s; if (obj) obj->text_color=c; }
 static inline void lv_obj_set_style_text_align(lv_obj_t *obj, lv_text_align_t a, lv_style_selector_t s) { (void)obj; (void)a; (void)s; }
 static inline void lv_obj_invalidate(const lv_obj_t *obj) { (void)obj; }
 static inline void lv_screen_load(lv_obj_t *scr) { (void)scr; }

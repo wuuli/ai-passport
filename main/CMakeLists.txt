@@ -15,6 +15,7 @@ idf_component_register(
          "corridor_game.c"
          "corridor_render.c"
          "corridor_font.c"
+         "corridor_title_font.c"
          "demo_corridor.c"
          "demo_display.c"
          "demo_button.c"

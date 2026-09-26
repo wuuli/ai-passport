@@ -14,7 +14,7 @@
 
 extern const uint8_t ec_sprite_start[] asm("_binary_commuter_device_bin_start");
 extern const uint8_t ec_sprite_end[] asm("_binary_commuter_device_bin_end");
-static lv_obj_t *screen,*image_obj,*status,*battery,*overlay,*title,*caption;
+static lv_obj_t *screen,*image_obj,*status,*battery,*overlay,*subtitle,*title,*caption,*prompt,*footer,*rule,*bar;
 static uint8_t *pixels;
 static ec_renderer_t *renderer;
 static ec_game_t game;
@@ -61,12 +61,25 @@ static lv_result_t image_area(lv_image_decoder_t *dec,lv_image_decoder_dsc_t *ds
 }
 
 extern const lv_font_t corridor_font;
+extern const lv_font_t corridor_title_font;
 
-static lv_obj_t *label(lv_obj_t *parent,const char *text,int y,const lv_font_t *font){
+static lv_obj_t *label(lv_obj_t *parent,const char *text,int y,const lv_font_t *font,lv_color_t color){
     lv_obj_t *obj=lv_label_create(parent);
     lv_obj_set_style_text_font(obj,font,0);
-    lv_obj_set_style_text_color(obj,lv_color_hex(0xefeee8),0);
+    lv_obj_set_style_text_color(obj,color,0);
     lv_label_set_text(obj,text);lv_obj_align(obj,LV_ALIGN_TOP_MID,0,y);return obj;
+}
+static lv_opa_t prompt_opacity=LV_OPA_COVER;
+static int presentation_phase=-1;
+static int64_t presentation_started;
+static void update_title_prompt(int64_t now){
+    if(!visible||!renderer||!prompt||(game.phase!=EC_TITLE&&game.phase!=EC_CLEARED))return;
+    float t=(now-presentation_started)/800000.0f;
+    if(t<0)t=0;
+    if(t>1)t=1;
+    t=t*t*(3-2*t);
+    lv_opa_t opacity=(lv_opa_t)(LV_OPA_60+(LV_OPA_COVER-LV_OPA_60)*t);
+    if(opacity!=prompt_opacity){lv_obj_set_style_text_opa(prompt,opacity,0);prompt_opacity=opacity;}
 }
 static uint32_t render_clock(void){return (uint32_t)esp_timer_get_time();}
 static void hud(void){
@@ -74,14 +87,45 @@ static void hud(void){
     int charge=duel_io_battery();
     if(charge>=0)lv_label_set_text_fmt(battery,"%d%%",charge);else lv_label_set_text(battery,"--");
     if(!renderer){lv_label_set_text(status,"长按 OK 返回");return;}
+    if(presentation_phase!=(int)game.phase){
+        presentation_phase=game.phase;presentation_started=esp_timer_get_time();
+        bool world=game.phase==EC_PLAYING||game.phase==EC_EXITING;
+        bool end=game.phase==EC_CLEARED;
+        lv_color_t ink=lv_color_hex(end?0x242b2b:0xefeee8);
+        lv_color_t secondary=lv_color_hex(end?0x586161:0xb6bdbd);
+        lv_obj_set_style_bg_opa(bar,world?LV_OPA_80:LV_OPA_TRANSP,0);
+        lv_obj_set_style_text_color(battery,ink,0);
+        lv_obj_set_style_bg_color(overlay,lv_color_hex(end?0xf3f4f0:0x080d0d),0);
+        lv_obj_set_style_bg_opa(overlay,end?LV_OPA_90:LV_OPA_70,0);
+        lv_obj_set_style_text_color(title,ink,0);
+        lv_obj_set_style_text_color(subtitle,secondary,0);
+        lv_obj_set_style_text_color(caption,secondary,0);
+        lv_obj_set_style_text_color(footer,secondary,0);
+        lv_obj_set_style_text_color(prompt,end?ink:lv_color_hex(0xe7cd70),0);
+        lv_obj_set_style_bg_color(rule,lv_color_hex(end?0x8c9694:0xd6b954),0);
+        prompt_opacity=LV_OPA_60;lv_obj_set_style_text_opa(prompt,prompt_opacity,0);
+    }
     if(game.phase==EC_PLAYING||game.phase==EC_EXITING){
         lv_obj_add_flag(overlay,LV_OBJ_FLAG_HIDDEN);
-        lv_label_set_text_fmt(status,"出口 %u  %s",game.score,game.turning&&game.walking?"转身中":game.walking?"行走中":"OK 行走");
+        lv_label_set_text_fmt(status,"出口 %u  %s",game.hud_score,game.turning&&game.walking?"转身中":game.walking?"行走中":"OK 行走");
     }else{
         lv_obj_remove_flag(overlay,LV_OBJ_FLAG_HIDDEN);
-        lv_label_set_text(title,game.phase==EC_TITLE?"地下通道":"8 号出口");
-        lv_label_set_text(caption,game.phase==EC_TITLE?"找到 8 号出口。\n\n按 OK 进入":"你已走出通道。\n\n按 OK 再走一次");
-        lv_label_set_text(status,"长按 OK 返回");
+        if(game.phase==EC_TITLE){
+            lv_label_set_text(subtitle,"地下通道");
+            lv_label_set_text(title,"8号出口");
+            lv_obj_align(caption,LV_ALIGN_TOP_MID,0,160);
+            lv_label_set_text(caption,"顶部键：左转\n中部键：右转\n底部 OK 键：行走／停步\n拐角自动转向，停后按 OK");
+            lv_label_set_text(prompt,"按 OK 进入");
+            lv_obj_remove_flag(prompt,LV_OBJ_FLAG_HIDDEN);
+        }else{
+            lv_label_set_text(subtitle,"");
+            lv_label_set_text(title,"8号出口");
+            lv_obj_align(caption,LV_ALIGN_TOP_MID,0,166);
+            lv_label_set_text(caption,"你已走出通道");
+            lv_label_set_text(prompt,"按 OK 再走一次");
+            lv_obj_remove_flag(prompt,LV_OBJ_FLAG_HIDDEN);
+        }
+        lv_label_set_text(status,"");
     }
 }
 void demo_corridor_enter(void){
@@ -104,16 +148,27 @@ void demo_corridor_enter(void){
         image_obj=lv_image_create(screen);lv_image_set_src(image_obj,&image);lv_obj_set_pos(image_obj,0,0);
         }else{ec_renderer_destroy(renderer);renderer=NULL;free(pixels);pixels=NULL;}
     }else{free(pixels);pixels=NULL;}
-    lv_obj_t *bar=lv_obj_create(screen);lv_obj_remove_style_all(bar);lv_obj_set_size(bar,240,24);lv_obj_set_pos(bar,0,0);
+    bar=lv_obj_create(screen);lv_obj_remove_style_all(bar);lv_obj_set_size(bar,240,24);lv_obj_set_pos(bar,0,0);
     lv_obj_set_style_bg_color(bar,lv_color_hex(0x141918),0);lv_obj_set_style_bg_opa(bar,LV_OPA_80,0);
-    status=label(bar,"",4,&corridor_font);lv_obj_align(status,LV_ALIGN_TOP_LEFT,7,4);
-    battery=label(bar,"--",4,&corridor_font);lv_obj_align(battery,LV_ALIGN_TOP_RIGHT,-7,4);
-    overlay=lv_obj_create(screen);lv_obj_remove_style_all(overlay);lv_obj_set_size(overlay,224,166);lv_obj_center(overlay);
-    lv_obj_set_style_bg_color(overlay,lv_color_hex(0x171c1b),0);lv_obj_set_style_bg_opa(overlay,LV_OPA_90,0);
-    lv_obj_set_style_border_color(overlay,lv_color_hex(0xd6b954),0);lv_obj_set_style_border_width(overlay,1,0);
-    title=label(overlay,"地下通道",24,&corridor_font);
-    caption=label(overlay,"",67,&corridor_font);lv_obj_set_style_text_align(caption,LV_TEXT_ALIGN_CENTER,0);
-    if(!renderer){lv_label_set_text(title,"内存不足");lv_label_set_text(caption,"长按 OK 返回");}
+    lv_color_t paper=lv_color_hex(0xefeee8),muted=lv_color_hex(0xb6bdbd),gold=lv_color_hex(0xd6b954);
+    status=label(bar,"",4,&corridor_font,paper);lv_obj_align(status,LV_ALIGN_TOP_LEFT,7,4);
+    battery=label(bar,"--",4,&corridor_font,paper);lv_obj_align(battery,LV_ALIGN_TOP_RIGHT,-7,4);
+    overlay=lv_obj_create(screen);lv_obj_remove_style_all(overlay);lv_obj_set_size(overlay,240,320);lv_obj_set_pos(overlay,0,0);
+    lv_obj_set_style_bg_color(overlay,lv_color_hex(0x080d0d),0);lv_obj_set_style_bg_opa(overlay,LV_OPA_70,0);
+    subtitle=label(overlay,"地下通道",66,&corridor_font,muted);
+    title=label(overlay,"8号出口",94,&corridor_title_font,paper);
+    rule=lv_obj_create(overlay);lv_obj_remove_style_all(rule);lv_obj_set_size(rule,32,2);lv_obj_set_pos(rule,104,145);
+    lv_obj_set_style_bg_color(rule,gold,0);lv_obj_set_style_bg_opa(rule,LV_OPA_60,0);
+    caption=label(overlay,"",166,&corridor_font,muted);lv_obj_set_style_text_align(caption,LV_TEXT_ALIGN_CENTER,0);
+    prompt=label(overlay,"",252,&corridor_font,gold);
+    footer=label(overlay,"长按 OK 返回",287,&corridor_font,muted);
+    lv_obj_move_foreground(bar);
+    if(!renderer){
+        lv_label_set_text(subtitle,"");lv_obj_set_style_text_font(title,&corridor_font,0);lv_label_set_text(title,"内存不足");
+        lv_label_set_text(caption,"长按 OK 返回");lv_obj_add_flag(prompt,LV_OBJ_FLAG_HIDDEN);
+    }
+    prompt_opacity=LV_OPA_COVER;
+    presentation_phase=-1;
     duel_io_activate(true);duel_io_sound(false,false,DUEL_CUE_NONE);
     visible=true;dirty=true;last_tick=esp_timer_get_time();last_render=last_log=last_tick;frame_count=0;render_total=0;
     tick_total=refresh_total=0;refresh_count=decoded_chunks=0;refresh_started=0;
@@ -130,7 +185,7 @@ void demo_corridor_exit(void){
     if(screen)lv_obj_delete(screen);
     if(image_decoder){lv_image_decoder_delete(image_decoder);image_decoder=NULL;}
     ec_renderer_destroy(renderer);free(pixels);
-    renderer=NULL;pixels=NULL;screen=image_obj=status=battery=overlay=title=caption=NULL;
+    renderer=NULL;pixels=NULL;screen=image_obj=status=battery=overlay=subtitle=title=caption=prompt=footer=rule=bar=NULL;
 }
 void demo_corridor_key(bsp_btn_t button,bsp_btn_ev_t event){
     if(!visible||!renderer)return;
@@ -141,6 +196,15 @@ void demo_corridor_key(bsp_btn_t button,bsp_btn_ev_t event){
     dirty=true;hud();
 }
 void demo_corridor_input_lost(void){if(visible){game.walking=false;game.observing=false;dirty=true;hud();}}
+bool demo_corridor_return_to_title(void){
+    if(!visible||!renderer)return false;
+    ec_game_init(&game,esp_random());
+    dirty=true;
+    last_tick=esp_timer_get_time();
+    last_render=0;
+    hud();
+    return true;
+}
 static void log_judgement(const char *kind){
     const ec_judgement_t *j=&game.last_judgement;
     ESP_LOGI(TAG,"%s passage=%u before=%u after=%u anomaly=%d entry_exit=%d crossed_exit=%d forward=%d correct=%d phase=%d",
@@ -149,6 +213,7 @@ static void log_judgement(const char *kind){
 void demo_corridor_tick(int64_t now){
     if(!visible||!renderer)return;
     int64_t tick_started=esp_timer_get_time();
+    update_title_prompt(now);
 
     unsigned passages_before=game.passages;
     ec_phase_t phase_before=game.phase;

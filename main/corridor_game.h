@@ -19,6 +19,8 @@ typedef struct {
     int npc_dir;
     int cell;
     unsigned score;
+    unsigned hud_score;
+    bool hud_score_pending;
     uint32_t rng;
     bool walking, entry_exit, corner_stop;
     int corner_id, bypass_id;

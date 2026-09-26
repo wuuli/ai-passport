@@ -35,7 +35,8 @@ double web_state(unsigned field) {
     case 16:return game.npc_distance;case 17:return game.npc_turn;case 18:return game.rng;
     case 19:return game.last_judgement.score_before;case 20:return game.last_judgement.anomaly;
     case 21:return game.last_judgement.correct;case 22:return game.last_judgement.forward;
-    case 23:return game.corner_stop;case 24:return game.corner_id;default:return 0;
+    case 23:return game.corner_stop;case 24:return game.corner_id;
+    case 25:return game.hud_score;case 26:return game.hud_score_pending;default:return 0;
     }
 }
 /* Explicit review fixtures only; normal play never calls this entry point. */
@@ -46,6 +47,6 @@ int web_review(int anomaly,float x,float z,float yaw,unsigned score,int entry) {
     ec_game_init(&game,12345);
     if(renderer)ec_renderer_draw(renderer,&game,image); /* Clear renderer history before replacing a review cell. */
     game.phase=score==8?EC_EXITING:EC_PLAYING;game.anomaly=(ec_anomaly_t)anomaly;
-    game.x=x;game.z=z;game.yaw=game.camera_yaw=yaw;game.score=score;game.entry_exit=entry!=0;
+    game.x=x;game.z=z;game.yaw=game.camera_yaw=yaw;game.score=game.hud_score=score;game.entry_exit=entry!=0;
     return 1;
 }

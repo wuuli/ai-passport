@@ -254,6 +254,8 @@ static void draw_exit_stairs(ec_renderer_t *r, uint8_t *out, const ec_game_t *g,
                         int s_top = 160 - (int)lroundf(200.0f * (4.15f - eye_h) / d_door);
                         int sy1 = maxi(0, s_top), sy2 = mini(319, s_bot);
                         int u = (int)((x_door + 0.65f) * 96.0f / 1.30f);
+                        /* The stair sign has a readable face on either exit route. */
+                        if (!north) u = 95 - u;
                         for (int y = sy1; y <= sy2; ++y) {
                             int v = (y - s_top) * 28 / maxi(1, s_bot - s_top);
                             bool ink = text_at("EXIT", (u - 8) / 2, (v - 7) / 2) ||
@@ -338,45 +340,66 @@ static void draw_exit_stairs(ec_renderer_t *r, uint8_t *out, const ec_game_t *g,
         }
     }
 
-    const float rail_x[2] = {-1.45f, 1.45f};
+    /* Wall-mounted handrails like the Exit 8 stairwell: a slim metallic tube
+     * follows the slope and the two landings, carried by sparse wall
+     * brackets. The old per-step vertical balusters read as a cheap fence. */
     for (int side_i = 0; side_i < 2; ++side_i) {
-        float rx_pos = rail_x[side_i];
-        int prev_px = -1, prev_py = -1;
-        float prev_d = -1;
-        for (int k = 0; k <= 10; ++k) {
-            float zk = (k < 10) ? (z_start + k * z_step) : z_end;
-            float yk = k * 0.16f;
-            float rdx = rx_pos + origin_x - cam_x;
-            float rdz = zk + origin_z - cam_z;
-            float d = rdx * fx + rdz * fz;
-            float s = rdx * rx + rdz * rz;
+        const float tube_x = side_i ? 1.45f : -1.45f;
+        const float wall_x = side_i ? 1.57f : -1.57f;
+        struct ec_rail_pt { float x, z, y; } pts[16];
+        int n = 0;
+        const float bottom_back = z_step < 0.0f ? 0.5f : -0.5f; /* short lower return */
+        const float top_forward = z_step < 0.0f ? -0.35f : 0.35f; /* short upper return */
+        pts[n++] = (struct ec_rail_pt){tube_x, z_start + bottom_back, 0.0f};
+        for (int k = 0; k <= 10; ++k)
+            pts[n++] = (struct ec_rail_pt){tube_x, (k < 10) ? z_start + k * z_step : z_end, k * 0.16f};
+        (void)z_door;
+        pts[n++] = (struct ec_rail_pt){tube_x, z_end + top_forward, 1.6f};
+
+        int sx[16], sy[16]; float sd[16];
+        for (int i = 0; i < n; ++i) {
+            float pdx = pts[i].x + origin_x - cam_x, pdz = pts[i].z + origin_z - cam_z;
+            float d = pdx * fx + pdz * fz, s = pdx * rx + pdz * rz;
             if (d > 0.25f) {
-                int px = 120 + (int)lroundf(200.0f * s / d);
-                int py_top = 160 - (int)lroundf(200.0f * (yk + 0.90f - eye_h) / d);
-                int py_bot = 160 - (int)lroundf(200.0f * (yk - eye_h) / d);
-                if (px >= 0 && px < EC_WIDTH && d < r->depth[px]) {
-                    int ya = maxi(0, mini(py_top, py_bot)), yb = mini(319, maxi(py_top, py_bot));
-                    int col1 = maxi(0, px - 1), col2 = mini(239, px);
-                    for (int c = col1; c <= col2; ++c) for (int y = ya; y <= yb; ++y) out[y * EC_WIDTH + c] = 115;
-                }
-                if (prev_px >= 0 && (d < 25.0f || prev_d < 25.0f)) {
-                    int x0 = prev_px, y0 = prev_py, x1 = px, y1 = py_top;
-                    int steps = maxi(abs(x1 - x0), abs(y1 - y0));
-                    int depth_start=(int)(prev_d*1024),depth_delta=(int)((d-prev_d)*1024);
-                    if (steps > 0 && steps < 300) {
-                        for (int st = 0; st <= steps; ++st) {
-                            int cx = x0 + (x1 - x0) * st / steps;
-                            int cy = y0 + (y1 - y0) * st / steps;
-                            int cd=depth_start+depth_delta*st/steps;
-                            if (cx >= 0 && cx < EC_WIDTH && cy >= 0 && cy < EC_HEIGHT && cd < (int)(r->depth[cx]*1024)) {
-                                out[cy * EC_WIDTH + cx] = 124;
-                                if (cy + 1 < EC_HEIGHT) out[(cy + 1) * EC_WIDTH + cx] = 95;
-                            }
-                        }
-                    }
-                }
-                prev_px = px; prev_py = py_top; prev_d = d;
-            } else { prev_px = -1; }
+                sx[i] = 120 + (int)lroundf(200.0f * s / d);
+                sy[i] = 160 - (int)lroundf(200.0f * (pts[i].y + 0.90f - eye_h) / d);
+                sd[i] = d;
+            } else { sx[i] = -1000; sy[i] = 0; sd[i] = -1.0f; }
+        }
+        for (int i = 1; i < n; ++i) {
+            if (sx[i - 1] < -100 || sx[i] < -100) continue;
+            int x0 = sx[i-1], y0 = sy[i-1], x1 = sx[i], y1 = sy[i];
+            int steps = maxi(abs(x1 - x0), abs(y1 - y0));
+            if (steps <= 0 || steps >= 400) continue;
+            for (int st = 0; st <= steps; ++st) {
+                int cx = x0 + (x1 - x0) * st / steps;
+                int cy = y0 + (y1 - y0) * st / steps;
+                float cd = sd[i-1] + (sd[i] - sd[i-1]) * st / steps;
+                if (cx < 0 || cx >= EC_WIDTH || cd >= r->depth[cx]) continue;
+                if (cy >= 0 && cy < EC_HEIGHT) out[cy * EC_WIDTH + cx] = 124;      /* tube highlight */
+                if (cy + 1 < EC_HEIGHT) out[(cy + 1) * EC_WIDTH + cx] = 115;  /* tube body */
+                if (cd < 6.0f && cy + 2 < EC_HEIGHT) out[(cy + 2) * EC_WIDTH + cx] = 95; /* near under-edge */
+            }
+        }
+        /* Short brackets reach out of the tiled wall every two risers. */
+        for (int k = 1; k <= 9; k += 2) {
+            float zk = z_start + k * z_step, by = k * 0.16f + 0.84f;
+            float wdx = wall_x + origin_x - cam_x, wdz = zk + origin_z - cam_z;
+            float tdx = tube_x + origin_x - cam_x;
+            float d0 = wdx * fx + wdz * fz, s0 = wdx * rx + wdz * rz;
+            float d1 = tdx * fx + wdz * fz, s1 = tdx * rx + wdz * rz;
+            if (d0 <= 0.25f || d1 <= 0.25f) continue;
+            int wx = 120 + (int)lroundf(200.0f * s0 / d0), wy = 160 - (int)lroundf(200.0f * (by - eye_h) / d0);
+            int tx = 120 + (int)lroundf(200.0f * s1 / d1), ty = 160 - (int)lroundf(200.0f * (by + 0.02f - eye_h) / d1);
+            int steps = maxi(abs(tx - wx), abs(ty - wy));
+            if (steps <= 0 || steps >= 80) continue;
+            for (int st = 0; st <= steps; ++st) {
+                int cx = wx + (tx - wx) * st / steps, cy = wy + (ty - wy) * st / steps;
+                float cd = d0 + (d1 - d0) * st / steps;
+                if (cx < 0 || cx >= EC_WIDTH || cd >= r->depth[cx]) continue;
+                if (cy >= 0 && cy < EC_HEIGHT) out[cy * EC_WIDTH + cx] = 115;
+                if (cy + 1 < EC_HEIGHT) out[(cy + 1) * EC_WIDTH + cx] = 95;
+            }
         }
     }
 }
@@ -492,6 +515,9 @@ void ec_renderer_draw(ec_renderer_t *r,const ec_game_t *g,uint8_t *image){
             if(a>b)continue;
             r->sign_depth[k][x]=tq/1024.0f;r->sign_top[k][x]=(int16_t)a;r->sign_bottom[k][x]=(int16_t)b;
             int u=(xx+691)*96/1382,step=tq*8960/380;
+            /* Local X reverses on screen when the player faces back down the
+             * corridor. Use the other sign face instead of mirroring letters. */
+            if(dz>0)u=95-u;
             int vq=(1100*28*65536)/380-(160-a)*step;
             for(int y=a;y<=b;++y,vq+=step){
                 int v=vq/65536;

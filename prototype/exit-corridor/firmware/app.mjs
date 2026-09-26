@@ -12,7 +12,7 @@ function present(){
   $('reviewPaused').hidden=!reviewPaused();
   buttons[0].disabled=buttons[1].disabled=(state.phase!==1&&state.phase!==3)||reviewPaused();
   buttons[2].disabled=false;
-  $('btnAction3').querySelector('span').textContent=state.phase===0?'进入通道':state.phase===2?'再走一次':state.walking?'停下':'行走';
+  $('btnAction3').querySelector('span').textContent=state.phase===0?'开始游戏':state.phase===2?'再玩一次':state.walking?'停下':'行走';
   $('toggleReview').textContent=reviewRunning?'暂停观察':'继续观察';
   if($('reviewPanel').open){
     $('reviewState').textContent=`出口 ${state.score} · ${anomalyNames[state.anomaly]} · X ${state.x.toFixed(3)} / Z ${state.z.toFixed(3)} · ${(state.cameraYaw*180/Math.PI).toFixed(1)}° · ${state.turning?'圆弧转弯':state.observing?'观察对中':state.walking?'行走':'停止'}`;
@@ -80,7 +80,7 @@ async function start(){
     $('toggleReview').addEventListener('click',resume);$('resumeReview').addEventListener('click',()=>{reviewRunning=true;lastTime=0;present();});
     $('applySample').addEventListener('click',()=>{
       clear();const fixture=$('fixture').value;
-      const views={entry:[0,-1.8,0,0,0],poster45:[0,-19.131,Math.PI/4,0,0],corner:[0,-25.1,0,0,0],
+      const views={entry:[0,-1.8,0,0,0],signForward:[0,-10,0,0,0],signReturn:[0,-18,Math.PI,0,0],poster45:[0,-19.131,Math.PI/4,0,0],corner:[0,-25.1,0,0,0],
         northPortal:[4.7,-26.8,Math.PI/2,0,0],southPortal:[-4.7,2.8,-Math.PI/2,0,0],final:[4.7,-26.8,Math.PI/2,7,0],finalReturn:[-4.7,2.8,-Math.PI/2,7,0],
         exitApproach:[0,-3.5,0,8,0],exitStairs:[0,-6.8,0,8,0],exitStairsReturn:[0,-17.2,Math.PI,8,1]};
       core.review(Number($('anomaly').value),...views[fixture]);reviewRunning=false;present();

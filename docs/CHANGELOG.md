@@ -6,6 +6,8 @@
 
 ## Unreleased
 
+- Show the measured battery level on the Exit 8 title screen from the first frame when the gauge is ready, and refresh the label if a reading arrives after startup. A failed reading continues to show `--` until the worker obtains a valid value.
+
 - Start the Exit 8 community firmware directly on the game's title screen instead of the generic BSP menu. Holding OK during play now returns to that title; the diagnostic menu remains available only if the game cannot allocate its renderer.
 
 - Point the Exit 8 preview documentation to its HTTP entry and show a local-server hint when the HTML is opened as a `file://` page, where the browser blocks module and asset loading.

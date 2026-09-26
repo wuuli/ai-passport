@@ -15,7 +15,7 @@
     "main/corridor_notice.inc": "1eb52c0eb15345035fe878d411013efc585a5b61058faf054c3ca4e875cc15f0",
     "main/corridor_font.c": "6b69850cb4ccbdc88b9bdc51cfeb13584a4da0d5240f4d2b7bd1eb3ddd798d2d",
     "main/corridor_title_font.c": "3ae1a1f864a99b8635b872b5745ad69bcd3b0d5ed4228ab793fc9ffea948ad95",
-    "main/demo_corridor.c": "f1256e725f8c08f9dbf3e69a0992cde1873a932d12f2b79a4775359eb0fe0ed4",
+    "main/demo_corridor.c": "811f48d04a51645663da8c065c97282aa633a9eae1532484b87dd2480843b3b0",
     "prototype/exit-corridor/firmware/bridge.c": "0bfcffa99b7be937639a01a38331f6c75091517b28dcc0fcbaf461b7095d637d",
     "assets/images/exit-corridor/commuter-device.bin": "57103150daa85a913788951388cb3feba62e823dca2426a0a40f28802318251f",
     "tools/build_corridor_web.py": "2f202b000a8abb52a1373f7bcdaf3bd10b9ebe6354573e3c66905721d5590523"

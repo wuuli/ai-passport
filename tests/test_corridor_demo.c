@@ -119,6 +119,22 @@ static void test_title_screen(void) {
     printf("test_title_screen PASS\n");
 }
 
+static void test_title_battery_appears_after_boot(void) {
+    s_battery = -1;
+    demo_corridor_enter();
+    assert(game.phase == EC_TITLE);
+    assert(strcmp(battery->text, "--") == 0);
+    s_now_us += 60000;
+    demo_corridor_tick(s_now_us); /* finish the initial dirty frame */
+    assert(!dirty);
+    s_battery = 64; /* the I/O worker publishes its first successful reading */
+    s_now_us += 60000;
+    demo_corridor_tick(s_now_us);
+    assert(strcmp(battery->text, "64%") == 0);
+    demo_corridor_exit();
+    s_battery = 85;
+}
+
 static void test_clear_with_dirty_false(void) {
     printf("--- Running test_clear_with_dirty_false ---\n");
     setup_exit_7(false);
@@ -321,6 +337,7 @@ static void test_oom_fallback(void) {
 }
 
 int main(void) {
+    test_title_battery_appears_after_boot();
     test_title_screen();
     test_reentry_lifecycle();
     test_return_to_title();

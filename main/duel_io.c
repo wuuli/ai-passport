@@ -67,6 +67,9 @@ bool duel_io_init(bool audio_ready, bool battery_ready)
     if (s_queue) return true;
     atomic_store(&s_audio_ready, audio_ready);
     s_battery_ready = battery_ready;
+    /* Battery setup has already completed in app_main. Publish the first SOC
+     * before the game title is drawn; the worker handles later readings. */
+    atomic_store(&s_battery, battery_ready ? bsp_battery_soc() : -1);
     s_queue = xQueueCreate(1, sizeof(sound_message_t));
     if (!s_queue) return false;
     if (xTaskCreate(io_task, "duel_io", 3072, NULL, 3, NULL) != pdPASS) {

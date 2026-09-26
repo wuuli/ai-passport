@@ -72,6 +72,15 @@ static lv_obj_t *label(lv_obj_t *parent,const char *text,int y,const lv_font_t *
 static lv_opa_t prompt_opacity=LV_OPA_COVER;
 static int presentation_phase=-1;
 static int64_t presentation_started;
+static int displayed_battery=-2;
+static void update_battery(void){
+    if(!battery)return;
+    int charge=duel_io_battery();
+    if(charge==displayed_battery)return;
+    displayed_battery=charge;
+    if(charge>=0)lv_label_set_text_fmt(battery,"%d%%",charge);
+    else lv_label_set_text(battery,"--");
+}
 static void update_title_prompt(int64_t now){
     if(!visible||!renderer||!prompt||(game.phase!=EC_TITLE&&game.phase!=EC_CLEARED))return;
     float t=(now-presentation_started)/800000.0f;
@@ -84,8 +93,7 @@ static void update_title_prompt(int64_t now){
 static uint32_t render_clock(void){return (uint32_t)esp_timer_get_time();}
 static void hud(void){
     if(!screen)return;
-    int charge=duel_io_battery();
-    if(charge>=0)lv_label_set_text_fmt(battery,"%d%%",charge);else lv_label_set_text(battery,"--");
+    update_battery();
     if(!renderer){lv_label_set_text(status,"长按 OK 返回");return;}
     if(presentation_phase!=(int)game.phase){
         presentation_phase=game.phase;presentation_started=esp_timer_get_time();
@@ -153,6 +161,7 @@ void demo_corridor_enter(void){
     lv_color_t paper=lv_color_hex(0xefeee8),muted=lv_color_hex(0xb6bdbd),gold=lv_color_hex(0xd6b954);
     status=label(bar,"",4,&corridor_font,paper);lv_obj_align(status,LV_ALIGN_TOP_LEFT,7,4);
     battery=label(bar,"--",4,&corridor_font,paper);lv_obj_align(battery,LV_ALIGN_TOP_RIGHT,-7,4);
+    displayed_battery=-2;
     overlay=lv_obj_create(screen);lv_obj_remove_style_all(overlay);lv_obj_set_size(overlay,240,320);lv_obj_set_pos(overlay,0,0);
     lv_obj_set_style_bg_color(overlay,lv_color_hex(0x080d0d),0);lv_obj_set_style_bg_opa(overlay,LV_OPA_70,0);
     subtitle=label(overlay,"地下通道",66,&corridor_font,muted);
@@ -213,6 +222,7 @@ static void log_judgement(const char *kind){
 void demo_corridor_tick(int64_t now){
     if(!visible||!renderer)return;
     int64_t tick_started=esp_timer_get_time();
+    update_battery();
     update_title_prompt(now);
 
     unsigned passages_before=game.passages;

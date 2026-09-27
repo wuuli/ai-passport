@@ -2,6 +2,8 @@ English | [简体中文](TASKS_EXIT_CORRIDOR.zh_CN.md)
 
 # Exit Corridor development tickets and acceptance
 
+The delivery and measurement records below belong to the earlier game candidates. The upstream integration now uses a single 40-row display buffer and independent game navigation; see [current integration and pending device checks](assets/game-integration.md).
+
 **Current entry (EC-32):** The web preview ([`prototype/exit-corridor.html`](../prototype/exit-corridor.html)) executes firmware C code directly as WebAssembly; see [sync and rebuild instructions](WEB_PREVIEW_EXIT_CORRIDOR.md). Earlier JavaScript prototype runtimes have been retired; character baking tools and package validation tests (`packed-sprites.js` / `.test.cjs`) are retained.
 
 Development baseline: `feature/exit-corridor`, local `main` at `2e6813b`. Core research and design rationale are documented in [reference research](RESEARCH_EXIT_CORRIDOR.md).

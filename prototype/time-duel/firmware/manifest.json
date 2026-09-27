@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "compiler": "clang version 23.1.0-wasi-sdk (https://github.com/llvm/llvm-project 895aa2c896ada719451be2e3673c83da8ddf1141)",
+  "sources": {
+    "main/demo_duel.c": "887f814e9070b828b1b05596d4edcbb3385f91288b359d04c3cdc27460476c6c",
+    "main/duel_assets.c": "3899ac53f7503dc0ec4024577a9dbb052b2b554c5bcb58e3f555a3fabe8910e2",
+    "main/duel_clock.c": "356e0e26d50ac4da1b7979e46a1f36ce25fea49d7468103c31ff7bd6aa433d27",
+    "main/duel_clock.h": "9955d7eb0e994aead51f021ef0da2a118213466c7825da40b0f0c4896508bdb7",
+    "main/duel_font.c": "7483c6074d852d9bbfda64d33af8f5af4ef06125832cc47e1ec21aa6ed0914c9",
+    "main/duel_title_font.c": "c527dda037a9d2f07bcec9257ce3d395bd4f2d9941fb6fadd55f02012d6312cd",
+    "main/duel_ui.c": "f387704c0b28d25607b4b82c68bb97517f75314a15372fa2c04efe2ea0d32ea2",
+    "tools/build_duel_web.py": "537327be464dbd435c038b7c6f63dc2b329b4c874657dd517df35ebe1c41f2ef",
+    "tools/duel_web_bridge.c": "4536e20798c5b55c8a9a666246a7d061c1eea8c0cce3f91eb19bd35bec0cd1c0"
+  },
+  "artifacts": {
+    "duel.wasm": "be4e40c27ced788c19c8a8ce363a5ac2a4e5f0115777fb0f4e95f11e573311d0"
+  },
+  "boundary": "Shared C duel_clock state machine; UI and asset sources tracked as visual/layout references. Browser UI/audio/input shell; browser timing is not device timing."
+}

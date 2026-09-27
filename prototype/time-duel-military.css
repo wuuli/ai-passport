@@ -35,7 +35,7 @@ main { max-width:1280px; margin:auto; padding:35px 40px 28px; }
 .quick-rule { margin-top:20px; font-size:10px; color:var(--muted); display:flex; align-items:center; gap:10px; }
 .rule-pill { border:1px solid #65694e; padding:2px 6px; color:#d8c59b; }
 .device-stage { position:relative; display:flex; align-items:center; flex-direction:column; padding:8px 0 0; }
-.device-stage::before { content:''; position:absolute; width:324px; height:420px; top:45px; border:1px solid #616b40; background:repeating-linear-gradient(135deg,#a9904533 0 7px,transparent 7px 14px); border-radius:10px; transform:rotate(-3deg); }
+.device-stage::before { content:''; position:absolute; width:324px; height:450px; top:45px; border:1px solid #616b40; background:repeating-linear-gradient(135deg,#a9904533 0 7px,transparent 7px 14px); border-radius:10px; transform:rotate(-3deg); }
 .game-round { z-index:1; font-size:10px; color:#c9c09a; margin-bottom:17px; }
 .device { position:relative; z-index:2; width:288px; padding:17px 23px 19px; border:2px solid #7a8161; border-bottom:7px solid #141a11; border-radius:12px 12px 19px 19px; background:linear-gradient(120deg,#566046,#3a4430 53%,#343d2b); box-shadow:0 22px 30px -16px #000d,inset 0 0 0 3px #323c2a,inset 0 5px #abb08255; }
 .device::before,.device::after { content:'⊕'; position:absolute; color:#20291b; text-shadow:0 1px #8e9471; font:13px monospace; bottom:13px; }
@@ -44,7 +44,7 @@ main { max-width:1280px; margin:auto; padding:35px 40px 28px; }
 .device-brand b { font:800 9px "Courier New",monospace; letter-spacing:1px; }
 .device-brand>span { display:flex; align-items:center; font:7px "Courier New",monospace; color:#c4c9ad; }
 .device-led { width:5px; height:5px; background:#cde087; margin-left:5px; box-shadow:0 0 5px #cde08777; }
-.screen { width:240px; height:320px; border-radius:2px; background:#252a20; color:#f1dca4; position:relative; overflow:hidden; outline:4px solid #12170e; box-shadow:0 0 0 6px #8d8c67; font:400 16px/20px "PingFang SC","Microsoft YaHei",sans-serif; }
+.screen { width:240px; height:320px; border-radius:30px; background:#252a20; color:#f1dca4; position:relative; overflow:hidden; outline:4px solid #12170e; box-shadow:0 0 0 6px #8d8c67; font:400 16px/20px "PingFang SC","Microsoft YaHei",sans-serif; user-select:none; -webkit-user-select:none; }
 .screen.dimmed { filter:brightness(.15); }
 .fw-background { position:absolute; top:28px; width:240px; height:240px; background:linear-gradient(#252a20b3,#252a20b3),url('../assets/images/time-duel/device/duel_outpost.png'); image-rendering:pixelated; }
 .fw-header { position:absolute; inset:0 0 auto; height:28px; background:#11160f; }
@@ -65,14 +65,18 @@ main { max-width:1280px; margin:auto; padding:35px 40px 28px; }
 .fw-player-0 { --agent-color:#cca266; }
 .fw-player-1 { --agent-color:#8faeb7; }
 .fw-player-color { color:var(--agent-color); }
-.fw-hint { position:absolute; top:274px; left:12px; width:216px; height:28px; padding-top:4px; color:#11160f; background:#cba65e; text-align:center; }
+.fw-hint { position:absolute; top:274px; left:12px; width:216px; height:28px; padding-top:4px; color:#11160f; background:#cba65e; text-align:center; border-radius:2px; }
 .audio-note { margin:6px 0 0; font-size:10px; color:#b4b79d; position:relative; }
 .preview-state { margin-top:16px; display:flex; flex-direction:column; align-items:flex-start; gap:9px; color:#d4c697; font-size:10px; }
-.device-controls { display:flex; align-items:center; justify-content:space-between; margin-top:21px; padding:0 4px; gap:14px; }
-.nav-key { background:#252f20; border:1px solid #87916b; border-bottom:3px solid #12190e; width:31px; height:28px; border-radius:3px; font-size:10px; color:#d4d9b5; }
-.hardware-key { background:linear-gradient(#c56b44,#ac4c2e); color:#ffedcc; border:1px solid #df9670; border-bottom:5px solid #5d2e1b; border-radius:50%; width:54px; height:49px; font-weight:800; font-size:12px; box-shadow:inset 0 2px #e6a17a; user-select:none; }
-.hardware-key:active,.hardware-key.pressed { transform:translateY(3px); border-bottom-width:2px; }
-.speaker { width:26px; height:17px; background:repeating-linear-gradient(90deg,#202b18 0 2px,transparent 2px 6px); transform:rotate(-18deg); margin-left:6px; }
+.device-controls { position:relative; display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:18px; padding:0 2px; }
+.nav-key { background:#252f20; border:1px solid #87916b; border-bottom:3px solid #12190e; flex:1; height:36px; border-radius:4px; font-size:11px; font-weight:600; color:#d4d9b5; display:inline-flex; align-items:center; justify-content:center; user-select:none; -webkit-user-select:none; white-space:nowrap; padding:0 4px; }
+.nav-key:hover:not(:disabled) { background:#343e2b; border-color:#a4b082; }
+.nav-key:active,.nav-key.pressed { transform:translateY(2px); border-bottom-width:1px; background:#303a27; }
+.nav-key:focus-visible { outline:2px solid var(--blue); outline-offset:2px; }
+.hardware-key { background:linear-gradient(#c56b44,#ac4c2e); color:#ffedcc; border:1px solid #df9670; border-bottom:4px solid #5d2e1b; border-radius:6px; flex:1.25; height:36px; font-weight:700; font-size:11px; box-shadow:inset 0 1px #e6a17a; display:inline-flex; align-items:center; justify-content:center; user-select:none; -webkit-user-select:none; white-space:nowrap; padding:0 4px; }
+.hardware-key:active,.hardware-key.pressed { transform:translateY(2px); border-bottom-width:2px; }
+.hardware-key:focus-visible { outline:2px solid var(--blue); outline-offset:2px; }
+.speaker { position:absolute; right:4px; bottom:-16px; width:22px; height:12px; background:repeating-linear-gradient(90deg,#202b18 0 2px,transparent 2px 5px); transform:rotate(-18deg); opacity:.8; pointer-events:none; }
 .device-note { margin:17px 0 0; position:relative; z-index:2; color:#b4b79d; font-size:10px; }
 kbd { font:9px/1.4 -apple-system,sans-serif; background:#252d20; border:1px solid #626b4c; border-bottom-width:2px; border-radius:2px; padding:2px 5px; margin:0 2px; }
 .match-panel { min-width:0; }
@@ -131,3 +135,9 @@ summary { cursor:pointer; }
 [hidden] { display:none !important; }
 @media (max-width:380px) { main { padding-inline:12px; } .topbar { padding-inline:12px; } .brand { font-size:12px; gap:5px; } .text-button { padding-inline:6px; } .flow { grid-template-columns:repeat(3,1fr); } .seats { gap:8px; } .seat { grid-template-columns:minmax(0,1fr) 24px; } .seat-avatar { display:none; } }
 @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; scroll-behavior:auto !important; } }
+
+/* Keep the simulated physical buttons in their top / middle / bottom order. */
+.device-controls { flex-direction:column; align-items:stretch; }
+.device-controls .nav-key { flex:none; width:100%; height:28px; }
+.device-controls .hardware-key { flex:none; width:100%; height:32px; border-radius:4px; }
+.device-controls .speaker { display:none; }

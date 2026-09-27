@@ -32,6 +32,22 @@ def asset_descriptor(name):
     return match.group(1)
 
 
+def sparse_cmap_chars(source):
+    chars = set()
+    for match in re.finditer(
+        r"\{[^{}]*\.range_start\s*=\s*(\d+)[^{}]*\.unicode_list\s*=\s*(unicode_list_\d+)[^{}]*\}",
+        source,
+        re.S,
+    ):
+        range_start = int(match.group(1))
+        list_name = match.group(2)
+        list_match = re.search(rf"{list_name}\[\]\s*=\s*\{{(.*?)\}};", source, re.S)
+        if list_match:
+            offsets = [int(x, 16) for x in re.findall(r"0x([0-9a-fA-F]+)", list_match.group(1))]
+            chars.update(chr(range_start + offset) for offset in offsets)
+    return chars
+
+
 class DuelAssetTest(unittest.TestCase):
     def test_color_formats_and_data_sizes(self):
         for name, (width, height, color_format) in ASSETS.items():
@@ -50,6 +66,29 @@ class DuelAssetTest(unittest.TestCase):
                 alpha = asset_bytes(name)[width * height * 2:]
                 self.assertIn(0, alpha)
                 self.assertIn(255, alpha)
+
+    def test_duel_font_covers_all_ui_glyphs(self):
+        font_source = (ROOT / "main/duel_font.c").read_text()
+        ui_source = (ROOT / "main/duel_ui.c").read_text()
+        font_chars = sparse_cmap_chars(font_source)
+        ui_chars = set(c for c in ui_source if ord(c) > 127)
+        missing = ui_chars - font_chars
+        self.assertEqual(missing, set(), f"duel_font missing glyphs from duel_ui.c: {missing}")
+
+    def test_duel_title_font_covers_title_glyphs(self):
+        title_font_source = (ROOT / "main/duel_title_font.c").read_text()
+        ui_source = (ROOT / "main/duel_ui.c").read_text()
+        title_chars = sparse_cmap_chars(title_font_source)
+        expected = set("掐秒挑战训练优胜")
+        self.assertTrue(expected.issubset(title_chars), "duel_title_font missing required title glyphs")
+
+        for match in re.finditer(r'label\([^,]+,\s*"([^"]+)"[^)]*&duel_title_font', ui_source):
+            label_text = match.group(1)
+            label_non_ascii = set(c for c in label_text if ord(c) > 127)
+            self.assertTrue(
+                label_non_ascii.issubset(title_chars),
+                f"duel_title_font missing glyphs for title label {label_text}",
+            )
 
 
 if __name__ == "__main__":

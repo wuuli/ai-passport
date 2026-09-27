@@ -11,6 +11,8 @@ usage() {
 run_static_checks() {
     local actionlint_bin
     local test_dir
+    local dead_code_flag="-Wl,--gc-sections"
+    if [[ "$(uname -s)" == Darwin ]]; then dead_code_flag="-Wl,-dead_strip"; fi
 
     python3 tools/check_repo.py
 
@@ -59,11 +61,57 @@ run_static_checks() {
         -o "${test_dir}/test_fap_screenshot_protocol"
     "${test_dir}/test_fap_screenshot_protocol"
     python3 tests/test_duel_assets.py
-    python3 tests/test_verify_firmware.py
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_capture_passport_screen.py
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
+        tests/test_demo_navigation.c main/demo_navigation.c \
+        -o "${test_dir}/test_demo_navigation"
+    "${test_dir}/test_demo_navigation"
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Itests/game_main_stubs -Imain \
+        tests/test_game_main.c main/demo_navigation.c \
+        -o "${test_dir}/test_game_main"
+    "${test_dir}/test_game_main"
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Icomponents/bsp/src \
+        tests/test_bsp_display_rounding.c components/bsp/src/bsp_display_rounding.c \
+        -o "${test_dir}/test_bsp_display_rounding"
+    "${test_dir}/test_bsp_display_rounding"
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Icomponents/bsp/src \
+        tests/test_bsp_es8311_sleep_check.c components/bsp/src/bsp_es8311_sleep_check.c \
+        -o "${test_dir}/test_bsp_es8311_sleep_check"
+    "${test_dir}/test_bsp_es8311_sleep_check"
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror \
+        -Itests/bsp_stubs -Icomponents/bsp/include \
+        tests/test_bsp_button.c -o "${test_dir}/test_bsp_button"
+    "${test_dir}/test_bsp_button"
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror \
+        -Itests/bsp_stubs -Icomponents/bsp/include \
+        tests/test_bsp_lvgl_init.c components/bsp/src/bsp_display_rounding.c \
+        -o "${test_dir}/test_bsp_lvgl_init"
+    "${test_dir}/test_bsp_lvgl_init"
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror \
+        -Itests/audio_stubs -Icomponents/bsp/include -Icomponents/bsp/src \
+        tests/test_bsp_audio_recovery.c components/bsp/src/bsp_es8311_sleep_check.c \
+        -o "${test_dir}/test_bsp_audio_recovery"
+    "${test_dir}/test_bsp_audio_recovery"
+    for demo in audio low_power ble wifi; do
+        "${CC:-cc}" -std=c11 -Wall -Wextra -Werror \
+            -ffunction-sections -fdata-sections -Itests/demo_stubs -Imain \
+            "tests/test_demo_${demo}_runtime.c" "${dead_code_flag}" \
+            -o "${test_dir}/test_demo_${demo}_runtime"
+        "${test_dir}/test_demo_${demo}_runtime"
+    done
+    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_deep_sleep_contract.py
+    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_check_repo.py
+    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_verify_firmware.py
+    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_archive_firmware.py
+    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_install_passport_skills.py
     rm -rf "${test_dir}"
     python3 tools/build_corridor_web.py --check
     node tests/test_corridor_web.mjs
+    python3 tools/build_duel_web.py --check
+    node tests/test_duel_web.mjs
+    node tests/test_duel_preview.mjs
+    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_web_build_manifest.py
+    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_game_preview_server.py
     echo "Host tests: PASS"
 }
 
@@ -84,6 +132,8 @@ run_firmware_checks() (
     idf.py -B "${validation_build_dir}" merge-bin \
         -o "${validation_build_dir}/FoloToy-AI-Passport-full.bin"
     python3 tools/verify_firmware.py "${validation_build_dir}"
+    PYTHONDONTWRITEBYTECODE=1 python3 tools/archive_firmware.py create \
+        "${validation_build_dir}" --archive-root "${repo_root}/build/firmware"
     mkdir -p "${repo_root}/build"
     install -m 0644 \
         "${validation_build_dir}/FoloToy-AI-Passport-full.bin" \

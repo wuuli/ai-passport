@@ -10,16 +10,16 @@
 
 Time Challenge turns one AI Passport into a shared time-sense contest. Two players see the same target from 1.0 to 6.0 seconds, then take turns pressing OK to start and stop without a visible clock. The smaller error wins the round; the first to three wins the match.
 
-The release includes same-device pass-and-play, sealed results, separate round and match celebrations, original arcade music, button feedback, and a live battery indicator.
+The release includes same-device pass-and-play, sealed results, separate round and match celebrations, original arcade music, button feedback, and a live battery indicator. An interactive [firmware web preview](WEB_PREVIEW_TIME_DUEL.md) is available on loopback via `python3 tools/serve_corridor_web.py --port 8098` for evaluating game flow and visuals.
 
 ## How to play
 
-1. On the hardware menu, select Challenge and press OK.
+1. The firmware boots into Exit 8 by default. On the Corridor title screen, hold OK for one second to open the game selector (or in play, hold OK to return to title first). Use UP / DOWN to select Time Challenge, then press OK to enter.
 2. On the game home screen, press DOWN to toggle sound.
 3. Press OK to begin. Remember the target, press OK to start timing, and press OK again when the duration feels right.
 4. In two-player mode, pass the device. The second player presses OK once to start and once to stop.
 5. After both attempts are sealed, press OK to reveal the winner. The result page waits for OK before continuing.
-6. Hold OK for one second to return to the hardware menu.
+6. Hold OK for one second to return to the game selector.
 
 ## Install the shared firmware
 
@@ -40,7 +40,7 @@ Activate ESP-IDF 5.5.3, then run:
 ./tools/validate.sh
 ```
 
-The complete gate runs repository checks and host tests, builds the application, verifies the partition contract and 3 MB application limit, and produces `build/FoloToy-AI-Passport-full.bin` for flashing from `0x0`.
+The complete gate runs repository checks and host tests, builds the application, verifies the configured layout (this fork retains a 3 MB application partition), and produces `build/FoloToy-AI-Passport-full.bin` for flashing from `0x0`.
 
 ## Community publish profile
 

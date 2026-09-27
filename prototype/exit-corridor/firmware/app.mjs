@@ -47,7 +47,7 @@ function frame(now){
 }
 function clear(){input?.clear();lastTime=0;if(core)present();}
 function setupInput(){
-  input=new ThreeKeyInput({key:action,exit:()=>{core.title();present();},pause:()=>core.pause(),
+  input=new ThreeKeyInput({key:action,exit:()=>{if(core.state().phase===0){location.assign('/games.html');return;}core.title();present();},pause:()=>core.pause(),
     changed:hold=>buttons.forEach((button,key)=>button.classList.toggle('pressed',hold?.key===key))});
   for(const [key,button] of buttons.entries()){
     button.addEventListener('pointerdown',event=>{event.preventDefault();if(button.disabled)return;

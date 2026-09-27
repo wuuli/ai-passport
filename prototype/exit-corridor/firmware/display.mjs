@@ -60,9 +60,9 @@ export class FirmwareDisplay {
     }
     if(inWorld){
       this.rect(0,0,240,24,[20,25,24],204);
-      this.text(this.ui.status.replace('%u',state.hudScore).replace('%s',motion),7,4);
+      this.text(this.ui.status.replace('%u',state.hudScore).replace('%s',motion),18,4);
     }
-    this.text('--',233-this.width('--'),4,false,ink);
+    this.text('--',222-this.width('--'),4,false,ink);
     this.context.putImageData(this.frame,0,0);
     this.canvas.setAttribute('aria-label',state.phase===0?`8号出口，${this.ui.guide.replaceAll('\n','，')}，按 OK 进入`:state.phase===2?'已走出通道，按 OK 再走一次':`出口 ${state.hudScore}，${paused?'评审暂停':motion}`);
   }

@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#171915">
+<title>GAMES · AI Passport 游戏选择</title>
+<style>
+:root {
+  color-scheme: dark;
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Noto Sans SC", sans-serif;
+  color: #e6e7dc;
+  background: #171915;
+  --yellow: #d6b954;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+header {
+  max-width: 820px;
+  margin: auto;
+  padding: 20px 24px;
+  border-bottom: 1px solid #35392f;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.brand {
+  background: var(--yellow);
+  color: #191b16;
+  font: bold 22px/40px monospace;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  border-radius: 4px;
+}
+header h1 { font-size: 19px; margin: 0; letter-spacing: 2px; }
+header p { font-size: 12px; margin: 0; color: #a4aa99; }
+main { max-width: 520px; padding: 22px 16px; margin: auto; }
+.caption {
+  display: flex;
+  justify-content: space-between;
+  color: #a4aa99;
+  font-size: 12px;
+  margin: 0 0 16px;
+}
+.device {
+  width: max-content;
+  max-width: 100%;
+  margin: auto;
+  padding: 18px;
+  background: #252920;
+  border: 1px solid #464d3e;
+  border-radius: 18px;
+  box-shadow: 0 12px 30px #0006;
+}
+.screen {
+  position: relative;
+  width: 240px;
+  height: 320px;
+  background: #101314;
+  border-radius: 30px;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.scr-header {
+  position: absolute;
+  top: 8px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font: 600 14px/16px "Montserrat", -apple-system, sans-serif;
+  color: #8A9696;
+  letter-spacing: 0.5px;
+}
+.card {
+  position: absolute;
+  left: 12px;
+  width: 216px;
+  height: 118px;
+  border-radius: 6px;
+  text-decoration: none;
+  display: block;
+  transition: background 0.1s, border-color 0.1s;
+  outline: none;
+}
+#card0 {
+  top: 30px;
+  background: #131A18;
+  border: 1px solid #24302C;
+}
+#card0 .c-title { color: #788585; }
+#card0 .c-sub   { color: #4A6B60; }
+#card0 .c-desc  { color: #3E544C; }
+#card0 .c-tag   { color: #00E676; visibility: hidden; }
+#card0.selected {
+  background: #152822;
+  border: 2px solid #00E676;
+}
+#card0.selected .c-title { color: #FFFFFF; }
+#card0.selected .c-sub   { color: #00E676; }
+#card0.selected .c-desc  { color: #8CD9B3; }
+#card0.selected .c-tag   { visibility: visible; }
+
+#card1 {
+  top: 156px;
+  background: #161512;
+  border: 1px solid #302B20;
+}
+#card1 .c-title { color: #7C7462; }
+#card1 .c-sub   { color: #61563F; }
+#card1 .c-desc  { color: #4A4232; }
+#card1 .c-tag   { color: #CBA65E; visibility: hidden; }
+#card1.selected {
+  background: #242016;
+  border: 2px solid #CBA65E;
+}
+#card1.selected .c-title { color: #F1DCA4; }
+#card1.selected .c-sub   { color: #CBA65E; }
+#card1.selected .c-desc  { color: #D6C18E; }
+#card1.selected .c-tag   { visibility: visible; }
+
+.c-title {
+  position: absolute;
+  left: 14px;
+  top: 10px;
+  font-size: 24px;
+  line-height: 28px;
+  font-weight: 700;
+}
+.c-sub {
+  position: absolute;
+  left: 14px;
+  top: 45px;
+  font: 600 13px/16px "Montserrat", -apple-system, sans-serif;
+  letter-spacing: 0.4px;
+}
+.c-desc {
+  position: absolute;
+  left: 14px;
+  top: 66px;
+  font-size: 15px;
+  line-height: 20px;
+}
+.c-tag {
+  position: absolute;
+  left: 14px;
+  top: 91px;
+  font: 600 13px/16px "Montserrat", monospace, sans-serif;
+}
+
+.hint-box {
+  position: absolute;
+  left: 12px;
+  top: 282px;
+  width: 216px;
+  height: 30px;
+  background: #171C1D;
+  border: 1px solid #242D2E;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 500 13px/16px "Montserrat", -apple-system, sans-serif;
+  color: #8A9696;
+  white-space: nowrap;
+}
+
+.keys {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  margin-top: 14px;
+}
+.keys button {
+  font: inherit;
+  color: inherit;
+  border: 1px solid #495040;
+  background: #22271e;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 4px;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.keys button:hover { border-color: var(--yellow); }
+.keys button:focus-visible { outline: 2px solid var(--yellow); outline-offset: 2px; }
+.keys button.pressed { background: #615638; border-color: var(--yellow); }
+.keys button b { font-size: 15px; color: var(--yellow); line-height: 1.2; }
+.keys button span { font-size: 12px; margin-top: 2px; }
+.keys button small { color: #a4aa99; font-size: 10px; }
+
+.controls, .boundary {
+  text-align: center;
+  margin-top: 14px;
+  color: #bfc5b4;
+  font-size: 12px;
+}
+.boundary {
+  color: #858d7b;
+  font-size: 11px;
+  margin-top: 6px;
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">G</div>
+  <div>
+    <h1>AI PASSPORT</h1>
+    <p>双游戏启动器 · 240 × 320 预览外壳</p>
+  </div>
+</header>
+<main>
+  <div class="caption">
+    <span>240 × 320 · 三键操作</span>
+    <span>网页静态选择外壳</span>
+  </div>
+  <section class="device" aria-label="AI Passport 游戏选择预览">
+    <div class="screen" id="screen" role="listbox" aria-label="游戏列表">
+      <div class="scr-header">
+        <span>GAMES</span>
+        <span id="battery" aria-label="电量占位">--%</span>
+      </div>
+
+      <a id="card0" class="card selected" href="/" role="option" aria-selected="true">
+        <div class="c-title">8号出口</div>
+        <div class="c-sub">EXIT 8</div>
+        <div class="c-desc">地下通道</div>
+        <div class="c-tag">[ READY ]</div>
+      </a>
+
+      <a id="card1" class="card" href="/time-duel-v2.html" role="option" aria-selected="false">
+        <div class="c-title">掐秒挑战</div>
+        <div class="c-sub">TIME CHALLENGE</div>
+        <div class="c-desc">精准掐秒 · 双人对抗</div>
+        <div class="c-tag">[ READY ]</div>
+      </a>
+
+      <div class="hint-box">UP/DOWN select · OK enter</div>
+    </div>
+
+    <div class="keys" role="group" aria-label="实体三键">
+      <button type="button" id="btnUp" aria-label="顶部键：选择上项">
+        <b>▲</b><span>顶部键选择</span><small>UP / ↑</small>
+      </button>
+      <button type="button" id="btnDown" aria-label="中部键：选择下项">
+        <b>▼</b><span>中部键选择</span><small>DOWN / ↓</small>
+      </button>
+      <button type="button" id="btnOk" aria-label="底部 OK 键：OK 进入">
+        <b>●</b><span>底部进入</span><small>OK / Enter</small>
+      </button>
+    </div>
+  </section>
+  <p class="controls">顶部/中部键（↑ / ↓）切换游戏 · 底部 OK（Enter）进入所选游戏</p>
+  <p class="boundary">静态 H5 外壳，--% 电量为网页占位；点击卡片或按 OK 跳转对应预览页。</p>
+</main>
+<script>
+(function () {
+  var cards = [
+    document.getElementById('card0'),
+    document.getElementById('card1')
+  ];
+  var btnUp = document.getElementById('btnUp');
+  var btnDown = document.getElementById('btnDown');
+  var btnOk = document.getElementById('btnOk');
+  var params = new URLSearchParams(window.location.search);
+  var selected = params.get('selected') === '1' ? 1 : 0;
+
+  function render() {
+    for (var i = 0; i < cards.length; i++) {
+      var isSel = (i === selected);
+      cards[i].classList.toggle('selected', isSel);
+      cards[i].setAttribute('aria-selected', isSel ? 'true' : 'false');
+    }
+  }
+
+  function stepSelection(delta) {
+    selected = (selected + cards.length + delta) % cards.length;
+    render();
+  }
+
+  function enterSelected() {
+    var target = cards[selected];
+    if (target && target.getAttribute('href')) {
+      window.location.assign(target.getAttribute('href'));
+    }
+  }
+
+  var held = null;
+  var buttons = [btnUp, btnDown, btnOk];
+  function activate(key) {
+    if (key === 2) enterSelected();
+    else stepSelection(key === 0 ? -1 : 1);
+  }
+  function clearHold() {
+    buttons.forEach(function (button) { button.classList.remove('pressed'); });
+    held = null;
+  }
+  function press(source, key) {
+    if (held) return;
+    held = { source: source, key: key, at: performance.now() };
+    buttons[key].classList.add('pressed');
+  }
+  function release(source, cancelled) {
+    if (!held || held.source !== source) return;
+    var saved = held;
+    clearHold();
+    // The device selector consumes CLICK, not PRESS or LONG.
+    if (!cancelled && performance.now() - saved.at < 1000) activate(saved.key);
+  }
+  buttons.forEach(function (button, key) {
+    button.addEventListener('pointerdown', function (event) {
+      event.preventDefault();
+      button.setPointerCapture(event.pointerId);
+      press('p' + event.pointerId, key);
+    });
+    button.addEventListener('pointerup', function (event) {
+      event.preventDefault(); release('p' + event.pointerId, false);
+    });
+    ['pointercancel', 'lostpointercapture'].forEach(function (type) {
+      button.addEventListener(type, function (event) { release('p' + event.pointerId, true); });
+    });
+    button.addEventListener('click', function (event) {
+      if (event.detail === 0 && !held) activate(key);
+    });
+  });
+  cards.forEach(function (card, idx) {
+    card.addEventListener('click', function (event) {
+      if (selected !== idx) { event.preventDefault(); selected = idx; render(); }
+    });
+  });
+  var keys = { ArrowUp: 0, ArrowDown: 1, Enter: 2, Space: 2 };
+  window.addEventListener('keydown', function (event) {
+    if (keys[event.code] === undefined || event.ctrlKey || event.metaKey || event.altKey) return;
+    event.preventDefault();
+    if (!event.repeat) press('k' + event.code, keys[event.code]);
+  });
+  window.addEventListener('keyup', function (event) {
+    if (keys[event.code] === undefined) return;
+    event.preventDefault(); release('k' + event.code, false);
+  });
+  window.addEventListener('blur', clearHold);
+  document.addEventListener('visibilitychange', clearHold);
+
+  render();
+})();
+</script>
+</body>
+</html>

@@ -2,6 +2,8 @@
 
 # 走廊原型开发任务与验收
 
+下列交付与测量记录对应此前游戏版本。上游集成版已采用单个 40 行显示缓冲与独立游戏导航，见[当前集成方式与真机待验项](assets/game-integration.zh_CN.md)。
+
 **当前入口（EC-32）**：网页端（[`prototype/exit-corridor.html`](../prototype/exit-corridor.html)）现已直接运行编译为 WebAssembly 的固件 C 代码与素材，见[同步与重建说明](WEB_PREVIEW_EXIT_CORRIDOR.zh_CN.md)。早期 JavaScript 原型运行时已停用归档；角色烘焙工具与帧包校验测试（`packed-sprites.js` / `.test.cjs`）继续保留。
 
 开发基线为 `feature/exit-corridor` 分支，起点为本地 `main` 的 `2e6813b`。核心调研依据与设计边界见[走廊玩法研究](RESEARCH_EXIT_CORRIDOR.zh_CN.md)。

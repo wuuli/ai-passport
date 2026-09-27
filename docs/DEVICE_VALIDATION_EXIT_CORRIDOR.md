@@ -2,6 +2,8 @@ English | [简体中文](DEVICE_VALIDATION_EXIT_CORRIDOR.zh_CN.md)
 
 # Exit Corridor device validation
 
+These device records validate their original candidates. The upstream integration changes the display buffer, SPI configuration and game navigation; it requires fresh device acceptance. See [current integration](assets/game-integration.md).
+
 Status: Firmware installed on 2026-09-20. The current installation runs the verified 2,312,240-byte plain-wall build at `0x10000`. Startup is verified, while long-session physical play and the latest corner face contrast refinement remain unverified on hardware.
 
 ## Current installation status

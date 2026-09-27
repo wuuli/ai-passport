@@ -36,9 +36,9 @@ The useful design hypothesis is **recognition -> comparison -> doubt -> physical
 
 | Target constraint | Shipping implementation fact |
 | --- | --- |
-| ESP32-C3, no PSRAM; 8 MB Flash, 3 MB app partition | Entire game engine, font subset, and character assets live within the application Flash image (~2.31 MB). Two 40-row display DMA buffers (38,400 B total) reside in internal RAM. Flash assets: commuter package 305.36 KiB, RGB565 sprite LUT 64 KiB, Noto Sans SC font subset. Plain walls require 0 B Flash LUT. |
-| ST7789P3, 240 x 320 portrait RGB565, 40 MHz SPI | Full native resolution rendering. The native indexed framebuffer is 77,824 B (including a 1,024 B ARGB8888 palette). |
-| Two 240 x 40 RGB565 DMA buffers (38,400 B total) | Two 40-row double buffers overlap rendering with SPI transmission, funded by replacing the former 40,800 B capture copy with on-demand serial row streaming (`FAP_SCREENSHOT_V1`). |
+| ESP32-C3, no PSRAM; 8 MB Flash, 3 MB app partition | Entire game engine, font subset, and character assets live within the application Flash image (1,502,336 B in the current integration build). One 40-row display DMA buffer (19,200 B) reside in internal RAM. Flash assets: commuter package 305.36 KiB, RGB565 sprite LUT 64 KiB, Noto Sans SC font subset. Plain walls require 0 B Flash LUT. |
+| ST7789P3, 240 x 320 portrait RGB565, 80 MHz SPI | Full native resolution rendering. The native indexed framebuffer is 77,824 B (including a 1,024 B ARGB8888 palette). |
+| One 240 x 40 RGB565 DMA buffer (19,200 B) | Uses the upstream single-buffer display path. On-demand serial row streaming (`FAP_SCREENSHOT_V1`) is retained. Earlier dual-buffer performance samples do not validate this configuration; see [integration](assets/game-integration.md). |
 | Working memory in internal heap | Renderer working state occupies 13,264 B split allocations on a 64-bit host (device structure size is target-specific and reported in runtime logs), including a 576 B 1-bit transparency mask. Scanout uses five RGB565 rows and palette (2,912 B static RAM). Free internal heap was recorded at 27,500–27,572 B (minimum 23,060 B, largest block 14,848 B) in historical runtime samples. |
 | Three ADC keys on GPIO0 | Non-blocking ADC input handling. Direction keys turn immediately on press; short OK acts on release; 1-second OK hold exits. |
 

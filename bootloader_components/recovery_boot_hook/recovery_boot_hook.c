@@ -1,6 +1,6 @@
-// Bootloader hook shared by every AI Passport community firmware derivative.
-// Holding the UP-key ADC GPIO low for five seconds boots the factory-installed
-// permanent Recovery image. This project never owns or writes that image.
+// Legacy recovery entry retained by this game fork for installed devices.
+// Holding the UP-key ADC GPIO low for five seconds attempts the reserved image.
+// This project does not provision it; availability requires device validation.
 #include "bootloader_common.h"
 #include "bootloader_config.h"
 #include "bootloader_utility.h"

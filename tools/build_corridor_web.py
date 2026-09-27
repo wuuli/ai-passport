@@ -48,25 +48,18 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--sdk',default=os.environ.get('WASI_SDK_PATH'))
     parser.add_argument('--check',action='store_true',help='Verify shipped artifact/source hashes without a compiler')
-    parser.add_argument('--presentation-only',action='store_true',help='Regenerate presentation/manifest metadata without compiling Wasm')
     args=parser.parse_args()
     manifest_path=OUT/'manifest.json'
     if args.check:
         m=json.loads(manifest_path.read_text())
+        assert set(m['sources']) == set(SOURCES), 'Browser manifest source set mismatch'
+        assert set(m['artifacts']) == {'corridor.wasm', 'presentation.json'}, 'Browser manifest artifact set mismatch'
         for p,h in m['sources'].items(): assert digest(ROOT/p)==h, f'Stale browser build: {p}'
         for p,h in m['artifacts'].items(): assert digest(OUT/p)==h, f'Changed browser artifact: {p}'
         print('Firmware browser source/artifact parity: PASS');return
-    if not args.presentation_only and not args.sdk:parser.error('Set WASI_SDK_PATH or --sdk to wasi-sdk (tested: 34.0)')
+    if not args.sdk:parser.error('Set WASI_SDK_PATH or --sdk to wasi-sdk (tested: 34.0)')
     presentation_path=OUT/'presentation.json'
     presentation_path.write_text(json.dumps({'font':font_data(),'titleFont':font_data('main/corridor_title_font.c'),'ui':ui_data()},ensure_ascii=False,separators=(',',':'))+'\n')
-    if args.presentation_only:
-        m=json.loads(manifest_path.read_text())
-        m['sources']={p:digest(ROOT/p) for p in SOURCES}
-        m['artifacts']['presentation.json']=digest(presentation_path)
-        m['spriteBytes']=(ROOT/'assets/images/exit-corridor/commuter-device.bin').stat().st_size
-        manifest_path.write_text(json.dumps(m,indent=2)+'\n')
-        print('Updated browser presentation metadata')
-        return
     sdk=Path(args.sdk);clang=sdk/'bin/clang';sprite=ROOT/'assets/images/exit-corridor/commuter-device.bin'
     cmd=[str(clang),'-O2','-ffp-contract=off','-mexec-model=reactor','-Imain',
          '-D_POSIX_C_SOURCE=200809L',f'-DEC_SPRITE_BYTES={sprite.stat().st_size}',

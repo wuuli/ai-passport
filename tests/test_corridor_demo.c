@@ -300,6 +300,7 @@ static void test_reentry_lifecycle(void) {
 
 static void test_return_to_title(void) {
     demo_corridor_enter();
+    assert(!demo_corridor_return_to_title());
     demo_corridor_key(BSP_BTN_OK, BSP_BTN_CLICK);
     demo_corridor_key(BSP_BTN_OK, BSP_BTN_CLICK);
     assert(game.phase == EC_PLAYING && game.walking);
@@ -307,6 +308,7 @@ static void test_return_to_title(void) {
     assert(game.phase == EC_TITLE && game.score == 0 && !game.walking);
     assert(!lv_obj_has_flag(overlay, LV_OBJ_FLAG_HIDDEN));
     assert(strcmp(prompt->text, "按 OK 进入") == 0);
+    assert(!demo_corridor_return_to_title());
     demo_corridor_key(BSP_BTN_OK, BSP_BTN_CLICK);
     assert(game.phase == EC_PLAYING && !game.walking);
     demo_corridor_exit();

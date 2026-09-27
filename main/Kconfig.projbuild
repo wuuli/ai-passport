@@ -1,0 +1,10 @@
+menu "Passport application"
+
+config PASSPORT_HARDWARE_DEMO
+    bool "Build the reference hardware diagnostics instead of the games"
+    default n
+    help
+        Keep the upstream diagnostic application available for board testing.
+        Normal game builds use independent game screens and navigation.
+
+endmenu

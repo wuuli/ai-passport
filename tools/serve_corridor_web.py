@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Serve only the corridor preview and its public assets on loopback."""
+"""Serve the two game previews and their public assets on loopback."""
 import argparse
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -10,7 +10,13 @@ class Handler(SimpleHTTPRequestHandler):
         path=unquote(urlsplit(path).path)
         if path in ('/','/index.html','/exit-corridor.html'):
             return str(ROOT/'prototype/exit-corridor.html')
+        if path in ('/games.html', '/time-duel-v2.html', '/time-duel-engine.js',
+                    '/time-duel-preview.js', '/time-duel-audio.js',
+                    '/time-duel-military.css'):
+            return str(ROOT/'prototype'/path[1:])
         prefixes={'/exit-corridor/':ROOT/'prototype/exit-corridor',
+                  '/time-duel/':ROOT/'prototype/time-duel',
+                  '/assets/images/time-duel/':ROOT/'assets/images/time-duel',
                   '/assets/images/exit-corridor/':ROOT/'assets/images/exit-corridor'}
         for prefix,base in prefixes.items():
             if path.startswith(prefix):

@@ -115,8 +115,8 @@ bool duel_ui_create(void)
     lv_obj_t *shade = box(s_screen, 0, 28, 240, 240, DUEL_OLIVE);
     lv_obj_set_style_bg_opa(shade, LV_OPA_70, 0);
     box(s_screen, 0, 0, 240, 28, DUEL_INK);
-    s_status = label(s_screen, "", 5, 5, 180, &duel_font, DUEL_PAPER);
-    s_battery = label(s_screen, "--%", 185, 7, 50, &lv_font_montserrat_14, DUEL_PAPER);
+    s_status = label(s_screen, "", 18, 5, 160, &duel_font, DUEL_PAPER);
+    s_battery = label(s_screen, "--%", 182, 7, 40, &lv_font_montserrat_14, DUEL_PAPER);
     s_battery_value = -1;
     s_body = box(s_screen, 0, 31, 240, 235, DUEL_OLIVE);
     lv_obj_set_style_bg_opa(s_body, LV_OPA_TRANSP, 0);

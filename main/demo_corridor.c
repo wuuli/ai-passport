@@ -159,8 +159,8 @@ void demo_corridor_enter(void){
     bar=lv_obj_create(screen);lv_obj_remove_style_all(bar);lv_obj_set_size(bar,240,24);lv_obj_set_pos(bar,0,0);
     lv_obj_set_style_bg_color(bar,lv_color_hex(0x141918),0);lv_obj_set_style_bg_opa(bar,LV_OPA_80,0);
     lv_color_t paper=lv_color_hex(0xefeee8),muted=lv_color_hex(0xb6bdbd),gold=lv_color_hex(0xd6b954);
-    status=label(bar,"",4,&corridor_font,paper);lv_obj_align(status,LV_ALIGN_TOP_LEFT,7,4);
-    battery=label(bar,"--",4,&corridor_font,paper);lv_obj_align(battery,LV_ALIGN_TOP_RIGHT,-7,4);
+    status=label(bar,"",4,&corridor_font,paper);lv_obj_align(status,LV_ALIGN_TOP_LEFT,18,4);
+    battery=label(bar,"--",4,&corridor_font,paper);lv_obj_align(battery,LV_ALIGN_TOP_RIGHT,-18,4);
     displayed_battery=-2;
     overlay=lv_obj_create(screen);lv_obj_remove_style_all(overlay);lv_obj_set_size(overlay,240,320);lv_obj_set_pos(overlay,0,0);
     lv_obj_set_style_bg_color(overlay,lv_color_hex(0x080d0d),0);lv_obj_set_style_bg_opa(overlay,LV_OPA_70,0);
@@ -207,6 +207,7 @@ void demo_corridor_key(bsp_btn_t button,bsp_btn_ev_t event){
 void demo_corridor_input_lost(void){if(visible){game.walking=false;game.observing=false;dirty=true;hud();}}
 bool demo_corridor_return_to_title(void){
     if(!visible||!renderer)return false;
+    if(game.phase==EC_TITLE)return false;
     ec_game_init(&game,esp_random());
     dirty=true;
     last_tick=esp_timer_get_time();

@@ -1,5 +1,13 @@
+if(CONFIG_PASSPORT_HARDWARE_DEMO)
+    set(app_entry "main.c")
+else()
+    set(app_entry "game_main.c")
+endif()
+
 idf_component_register(
-    SRCS "main.c"
+    SRCS ${app_entry}
+         "game_launcher.c"
+         "demo_navigation.c"
          "ui_pixel.c"
          "ui_pixel_math.c"
          "duel_clock.c"

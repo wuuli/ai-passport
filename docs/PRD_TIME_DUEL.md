@@ -8,9 +8,9 @@
 
 Two players share **one AI Passport** and estimate the same target duration. The estimate with the smaller absolute error wins the round. The first player to win three rounds wins the match.
 
-The [interactive browser preview](../prototype/time-duel-v2.html) now follows the implemented firmware screens and flow, including subsequent playtest refinements. [The task register](TASKS_TIME_DUEL.md) separates implementation from device evidence. No device communication is needed; the earlier two-device BLE concept is superseded.
+The [interactive browser preview](../prototype/time-duel-v2.html) (detailed in the [firmware web preview guide](WEB_PREVIEW_TIME_DUEL.md)) runs the firmware game state machine (`duel_clock.c`) compiled to WebAssembly via WASI SDK, with screen layouts and pixel art matching the firmware implementation. [The task register](TASKS_TIME_DUEL.md) separates implementation from device evidence. No device communication is needed; the earlier two-device BLE concept is superseded.
 
-The nine-step navigator and five scenarios pause on selected screens with explicitly labeled example data; OK resumes interaction, while the playback button starts real-time phase transitions. Free play uses the shared OK button or Space/Enter. The browser mirrors sealed confirmation, separate 1.5-second round celebration, persistent numeric results, and 3.5-second match victory returning home. It also models 60-second idle dimming and wake-only input. Browser fonts, audio output, the illustrative battery value, and the hardware-menu boundary are not device measurements. Run `node --test tests/test_duel_preview.cjs` (Node 22 or later) for portable browser-flow and cue-parity checks.
+Free play uses the shared OK button or Space/Enter, with DOWN toggling sound on the home screen. The browser mirrors sealed confirmation, separate 1.5-second round celebration, persistent numeric results, and 3.5-second match victory returning home. It also models 60-second idle dimming and wake-only input. Browser fonts, Web Audio synthesis, the illustrative battery value (`--%`), and the game selector boundary are not device measurements. Run `python3 tools/build_duel_web.py --check` and `node tests/test_duel_web.mjs` for build manifest and native C state parity checks.
 
 The handover screen removes the two-agent VS artwork and reuses the target screen's duration card at the same position and 40 px number size. First-player results stay sealed and one OK still starts timing. Firmware and browser now share this layout; the firmware's two screens call the same card builder.
 
@@ -38,7 +38,7 @@ The board's UP, DOWN, and OK buttons share one ADC resistor ladder. The BSP defi
 5. Once both attempts finish, keep results sealed and wait for a separate OK. Until confirmation, do not disclose the winner, estimates, errors, or a changed score; play no win/loss cue.
 6. On confirmation, compare `abs(estimate - target)`, update the score, and play the separate round-win animation (or neutral tie presentation). After 1.5 seconds, automatically show both estimates, errors, and score; OK may skip the animation. Do not merge the animation and detailed-result pages. The detailed result stays until OK, never automatically starting another round.
 7. Press OK to continue. Alternate the starting player on each attempt, including tied replays. A tie retains the target, score, and round number.
-8. Once either player reaches three wins, show the final-round celebration and result first, followed by the match victory screen. After 3.5 seconds, return to game home; OK can return sooner. Only another OK on home starts a new match. Preserve duo/AI mode. Holding OK for one second exits to the hardware menu, with an explicitly illustrative menu boundary in the browser.
+8. Once either player reaches three wins, show the final-round celebration and result first, followed by the match victory screen. After 3.5 seconds, return to game home; OK can return sooner. Only another OK on home starts a new match. Preserve duo/AI mode. Holding OK for one second exits to the game selector, with an explicitly illustrative selector boundary in the browser.
 
 ### Timing and fairness
 
@@ -60,7 +60,7 @@ The task is interval production: start and stop a specified duration without an 
 
 Every round is labeled Time-sense Training, regardless of the target duration. Do not map targets to fictional missions or add an operational story. Reveal the target, ask the player to remember it, and use Start Timing and Stop Timing for the OK hints. Being early or late by the same amount has the same penalty.
 
-Training briefing and target reveal lead into the timing challenge, sealed results and handover, a round-win celebration, the training report, and the match result. Use the same training vocabulary on the home screen, buttons, scenario previews, and both settlement screens. Keep the introduction short enough to read before timing; no extra cutscene or countdown interrupts an attempt. Single-player practice uses an AI Instructor in the same setting.
+Training briefing and target reveal lead into the timing challenge, sealed results and handover, a round-win celebration, the training report, and the match result. Use the same training vocabulary on the home screen, buttons, and both settlement screens. Keep the introduction short enough to read before timing; no extra cutscene or countdown interrupts an attempt. Single-player practice uses an AI Instructor in the same setting.
 
 ## Visuals and sound
 

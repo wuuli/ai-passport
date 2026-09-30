@@ -16,6 +16,13 @@ static unsigned feed(fap_screenshot_matcher_t *matcher, const char *input)
 
 int main(void)
 {
+    assert(fap_input_parse("FAP_KEY_V1 LEFT")==FAP_INPUT_LEFT);
+    assert(fap_input_parse("FAP_KEY_V1 RIGHT")==FAP_INPUT_RIGHT);
+    assert(fap_input_parse("FAP_KEY_V1 OK")==FAP_INPUT_OK);
+    assert(fap_input_parse("FAP_KEY_V1 BACK")==FAP_INPUT_BACK);
+    assert(fap_input_parse("prefix FAP_KEY_V1 OK")==FAP_INPUT_NONE);
+    assert(fap_input_parse("FAP_KEY_V1 OKextra")==FAP_INPUT_NONE);
+    assert(fap_input_parse(NULL)==FAP_INPUT_NONE);
     fap_screenshot_matcher_t matcher;
     fap_screenshot_matcher_reset(&matcher);
     assert(feed(&matcher, "FAP_SCREENSHOT_V1\n") == 1);

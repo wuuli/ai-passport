@@ -2,7 +2,7 @@ English | [简体中文](WEB_PREVIEW_TIME_DUEL.zh_CN.md)
 
 # Time Challenge firmware web preview
 
-The interactive [web preview](http://127.0.0.1:8098/time-duel-v2.html) runs the firmware game state machine as WebAssembly. Start the local server below before opening it; direct `file://` access cannot load the WebAssembly module and assets. The integrated multi-game launcher is also available at [games.html](http://127.0.0.1:8098/games.html).
+The interactive [web preview](http://127.0.0.1:8098/time-duel-v2.html) runs the firmware game state machine as WebAssembly. Start the local server below before opening it; direct `file://` access cannot load the WebAssembly module and assets. Each game has its own standalone demo page.
 
 ## Shared code and architecture
 
@@ -21,7 +21,7 @@ Local preview checks require Python 3.10+ and Node.js 18+. Viewing the built pre
 
 ```bash
 python3 tools/serve_corridor_web.py --port 8098
-# Open http://127.0.0.1:8098/time-duel-v2.html or http://127.0.0.1:8098/games.html
+# Open http://127.0.0.1:8098/time-duel-v2.html
 python3 tools/build_duel_web.py --check
 node tests/test_duel_web.mjs
 node tests/test_duel_preview.mjs
@@ -44,7 +44,7 @@ Keep `duel.wasm`, `runtime.mjs`, and `manifest.json` together in `prototype/time
 
 In the Time Challenge web preview:
 - **Short OK** (Space / Enter / button click, triggered on press): performs in-game phase actions on key press (ensuring timing starts and stops immediately on press rather than release), including starting the match from the home screen, starting and stopping duration timing, confirming sealed results, skipping celebration animations, and advancing to the next round.
-- **Hold OK for 1 second**: exits directly to the game selector boundary.
+- **Hold OK for 1 second**: cancels the current match and returns to this demo's home screen.
 - **DOWN key**: toggles chiptune music and sound cues on the home screen.
 - **UP key**: disabled during play; toggles duo / AI mode on the home screen.
 
@@ -56,7 +56,7 @@ The unified firmware entry point `main/game_main.c` integrates all games:
 3. Holding OK on the Corridor title screen opens the Game Launcher selector (`main/game_launcher.c`).
 4. In the Game Launcher, press UP / DOWN to navigate between Exit 8 and Time Challenge, then press OK to enter the selected game.
 5. In Time Challenge, holding OK for one second exits directly back to the Game Launcher selector.
-6. The browser launcher at `prototype/games.html` mirrors this selector UI and navigation flow.
+6. Browser demos are independent pages. Holding OK returns to the current game's home screen; firmware-level game selection is outside their scope.
 
 ### Pass-and-play round flow
 
@@ -68,7 +68,7 @@ The unified firmware entry point `main/game_main.c` integrates all games:
 
 The web preview is intended for visual, auditory, and interaction flow evaluation; browser execution does not constitute physical hardware device acceptance. The test suite verifies native C and WebAssembly state parity, not hardware gameplay feel or physical timing precision.
 
-Deterministic trace parity between native C and WebAssembly is verified by `node tests/test_duel_web.mjs`, passing across 39 snapshots and 95 trace commands with zero state error. A browser smoke check on 2026-09-27 covered selector navigation, duo timeout and sealed-result confirmation, detailed results, return home, and AI mode/startup without console errors. Full blind-player acceptance and device validation remain pending; these checks do not establish LVGL rendering equivalence.
+Deterministic trace parity between native C and WebAssembly is verified by `node tests/test_duel_web.mjs`, passing across 39 snapshots and 95 trace commands with zero state error. A browser smoke check on 2026-09-27 covered the then-existing selector navigation, duo timeout and sealed-result confirmation, detailed results, return home, and AI mode/startup without console errors. Full blind-player acceptance and device validation remain pending; these checks do not establish LVGL rendering equivalence.
 
 Key differences from physical hardware:
 - **Battery**: the web preview displays a mocked `--%` indicator; the physical device reads live battery voltage via ADC.
@@ -77,4 +77,4 @@ Key differences from physical hardware:
 - **Hardware and partition constraints**: the browser does not simulate ESP32-C3 hardware constraints (no PSRAM), the fork's configured 3 MB application partition boundary, SPI/DMA display bus timing, resistor ladder button debounce, or deep sleep power management.
 - **Firmware safety**: the web build does not alter or flash device partitions.
 
-The browser input adapter is checked with the real Wasm core and a controlled clock by `node tests/test_duel_preview.mjs`: press/release and repeat handling, sealed results, mode changes, input interruption, and long-press exit. These checks do not measure physical key latency.
+The browser input adapter is checked with the real Wasm core and a controlled clock by `node tests/test_duel_preview.mjs`: press/release and repeat handling, sealed results, mode changes, input interruption, and long-press return home. These checks do not measure physical key latency.

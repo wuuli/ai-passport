@@ -2,7 +2,7 @@
 
 # 掐秒挑战固件网页预览
 
-交互式[网页预览](http://127.0.0.1:8098/time-duel-v2.html)通过 WebAssembly 运行固件游戏状态机。请先启动下文的本地服务；直接用 `file://` 打开无法加载 WebAssembly 模块与素材。集成多游戏选择页位于 [games.html](http://127.0.0.1:8098/games.html)。
+交互式[网页预览](http://127.0.0.1:8098/time-duel-v2.html)通过 WebAssembly 运行固件游戏状态机。请先启动下文的本地服务；直接用 `file://` 打开无法加载 WebAssembly 模块与素材。每个游戏使用独立的 Demo 网页。
 
 ## 共用代码与架构
 
@@ -21,7 +21,7 @@
 
 ```bash
 python3 tools/serve_corridor_web.py --port 8098
-# 打开 http://127.0.0.1:8098/time-duel-v2.html 或 http://127.0.0.1:8098/games.html
+# 打开 http://127.0.0.1:8098/time-duel-v2.html
 python3 tools/build_duel_web.py --check
 node tests/test_duel_web.mjs
 node tests/test_duel_preview.mjs
@@ -44,7 +44,7 @@ python3 tools/build_duel_web.py --sdk /path/to/wasi-sdk
 
 在《掐秒挑战》网页预览中：
 - **短按 OK**（空格／Enter／点击屏幕按键，按下即触发）：在按键按下时立即触发游戏阶段动作（避免误导为松手才计时），包括首页开始比赛、开始与停止掐秒、确认封存成绩、跳过庆祝动画以及进入下一回合。
-- **长按 OK 1 秒**：直接退出至游戏选择页边界。
+- **长按 OK 1 秒**：取消本场比赛，返回当前 Demo 的游戏首页。
 - **DOWN 键**：在首页开关芯片音乐与提示音效。
 - **UP 键**：游戏中未启用；在首页切换双人对抗与 AI 练习模式。
 
@@ -56,7 +56,7 @@ python3 tools/build_duel_web.py --sdk /path/to/wasi-sdk
 3. 在走廊标题页长按 OK 键打开游戏选择页（`main/game_launcher.c`）。
 4. 在游戏选择页中，按 UP／DOWN 在《8号出口》与《掐秒挑战》之间切换，按 OK 进入选中游戏。
 5. 在《掐秒挑战》中，长按 OK 键一秒直接退回游戏选择页。
-6. `prototype/games.html` 网页选择界面完整复现此选择器 UI 与按键导航逻辑。
+6. 网页 Demo 各自独立；长按 OK 返回当前游戏首页，不模拟固件层的游戏选择。
 
 ### 轮流传递对决流程
 
@@ -68,7 +68,7 @@ python3 tools/build_duel_web.py --sdk /path/to/wasi-sdk
 
 网页预览仅供视觉、音效与交互流程评估，浏览器运行表现不能作为物理硬件设备的验收凭据。测试套件验证原生 C 与 WebAssembly 的状态一致性，而非硬件手感或物理计时精度。
 
-后端测试套件（`node tests/test_duel_web.mjs`）通过原生 C 与 Wasm 之间的确定性轨迹对齐测试（39 个快照、95 条指令、状态差值为零）。2026-09-27 的浏览器冒烟检查覆盖选择页导航、双人超时与封存确认、详细成绩、返回首页及 AI 模式切换／开局，未见控制台错误。完整盲玩验收与真机验证仍待完成；这些检查不代表 LVGL 渲染等价。
+后端测试套件（`node tests/test_duel_web.mjs`）通过原生 C 与 Wasm 之间的确定性轨迹对齐测试（39 个快照、95 条指令、状态差值为零）。2026-09-27 的浏览器冒烟检查覆盖当时的选择页导航、双人超时与封存确认、详细成绩、返回首页及 AI 模式切换／开局，未见控制台错误。完整盲玩验收与真机验证仍待完成；这些检查不代表 LVGL 渲染等价。
 
 相较于真实物理硬件的核心差异：
 - **电量**：网页预览使用示意 `--%` 电量显示；真机通过 ADC 读取物理电池电压。
@@ -77,4 +77,4 @@ python3 tools/build_duel_web.py --sdk /path/to/wasi-sdk
 - **硬件与分区约束**：浏览器不模拟 ESP32-C3 硬件限制（无 PSRAM）、本分支配置的 3 MB 应用分区边界、SPI／DMA 屏幕总线时序、电阻分压按键去抖及低功耗电源管理。
 - **固件安全**：网页构建过程不修改也无法刷写物理设备分区。
 
-`node tests/test_duel_preview.mjs` 使用真实 Wasm 核心与受控时钟验证网页输入适配层，覆盖按下／松开与重复输入、封存成绩、模式切换、输入中断及长按退出。这些检查不测量实体按键延迟。
+`node tests/test_duel_preview.mjs` 使用真实 Wasm 核心与受控时钟验证网页输入适配层，覆盖按下／松开与重复输入、封存成绩、模式切换、输入中断及长按返回首页。这些检查不测量实体按键延迟。

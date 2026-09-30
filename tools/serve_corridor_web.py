@@ -10,7 +10,7 @@ class Handler(SimpleHTTPRequestHandler):
         path=unquote(urlsplit(path).path)
         if path in ('/','/index.html','/exit-corridor.html'):
             return str(ROOT/'prototype/exit-corridor.html')
-        if path in ('/games.html', '/time-duel-v2.html', '/time-duel-engine.js',
+        if path in ('/time-duel-v2.html', '/time-duel-engine.js',
                     '/time-duel-preview.js', '/time-duel-audio.js',
                     '/time-duel-military.css'):
             return str(ROOT/'prototype'/path[1:])

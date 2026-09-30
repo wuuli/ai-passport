@@ -3,8 +3,11 @@
 #include "bsp_display.h"
 #include "bsp_display_rounding.h"
 #include "bsp_pins.h"
+#include "esp_lcd_panel_io.h"
 #include "esp_lvgl_port.h"
 #include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
 #include <string.h>
 
 static const char *TAG = "bsp_lvgl";
@@ -12,8 +15,35 @@ static const char *TAG = "bsp_lvgl";
 #define BSP_LVGL_DRAW_BUFFER_LINES 40
 
 static lv_display_t *s_disp;
+static SemaphoreHandle_t s_flush_sem;
 static bool s_port_initialized;
 static bool s_port_init_failed;
+static bool s_io_cb_live;
+
+static bool bsp_lvgl_color_trans_done_cb(esp_lcd_panel_io_handle_t panel_io,
+                                         esp_lcd_panel_io_event_data_t *edata,
+                                         void *user_ctx)
+{
+    (void)panel_io;
+    (void)edata;
+    BaseType_t high_task_woken = pdFALSE;
+    SemaphoreHandle_t sem = (SemaphoreHandle_t)user_ctx;
+    if (sem) {
+        // Signal completion via semaphore only; do not call lv_display_flush_ready()
+        // here so LVGL's wait_for_flushing() invokes flush_wait_cb and clears
+        // disp->flushing after blocking/taking the token.
+        xSemaphoreGiveFromISR(sem, &high_task_woken);
+    }
+    return high_task_woken == pdTRUE;
+}
+
+static void bsp_lvgl_flush_wait_cb(lv_display_t *disp)
+{
+    (void)disp;
+    if (s_flush_sem) {
+        (void)xSemaphoreTake(s_flush_sem, portMAX_DELAY);
+    }
+}
 
 static void rounded_flush_event(lv_event_t *event)
 {
@@ -55,7 +85,11 @@ static void rounded_flush_event(lv_event_t *event)
 
 lv_display_t *bsp_lvgl_init(void) {
     if (s_disp) return s_disp;
-    if (!bsp_display_panel()) {
+    if (s_port_init_failed) {
+        ESP_LOGE(TAG, "LVGL 初始化未完成或处于不可恢复故障，需重启后重试");
+        return NULL;
+    }
+    if (!bsp_display_panel() || !bsp_display_io()) {
         ESP_LOGE(TAG, "请先成功调用 bsp_display_init()");
         return NULL;
     }
@@ -63,10 +97,6 @@ lv_display_t *bsp_lvgl_init(void) {
     if (!s_port_initialized) {
         // Port 2.9.0 has no public completion handshake for asynchronous deinit.
         // Never overwrite a possibly live context after a partial port failure.
-        if (s_port_init_failed) {
-            ESP_LOGE(TAG, "LVGL port 初始化未完成，需重启后重试");
-            return NULL;
-        }
         const lvgl_port_cfg_t pc = ESP_LVGL_PORT_INIT_CONFIG();
         if (lvgl_port_init(&pc) != ESP_OK) {
             s_port_init_failed = true;
@@ -74,6 +104,16 @@ lv_display_t *bsp_lvgl_init(void) {
             return NULL;
         }
         s_port_initialized = true;
+    }
+
+    if (!s_flush_sem) {
+        s_flush_sem = xSemaphoreCreateBinary();
+        if (!s_flush_sem) {
+            ESP_LOGE(TAG, "创建 LVGL flush 信号量失败");
+            return NULL;
+        }
+    } else {
+        (void)xSemaphoreTake(s_flush_sem, 0);
     }
 
     const lvgl_port_display_cfg_t dc = {
@@ -90,26 +130,61 @@ lv_display_t *bsp_lvgl_init(void) {
         // swap_bytes:LVGL 输出小端 RGB565,ST7789 走 SPI 要大端 → 需交换高低字节。
         .flags = { .buff_dma = true, .swap_bytes = true },
     };
-    // The port mutex is recursive. Keep registration and the mask callback in
-    // one critical section, before the new display can produce its first flush.
+    // The port mutex is recursive. Keep registration, flush-wait setup, and the
+    // mask callback in one critical section, before the new display can produce
+    // its first flush.
     if (!lvgl_port_lock(0)) {
         ESP_LOGE(TAG, "LVGL 初始化加锁失败");
+        if (!s_io_cb_live) {
+            vSemaphoreDelete(s_flush_sem);
+            s_flush_sem = NULL;
+        }
         return NULL;
     }
     lv_display_t *disp = lvgl_port_add_disp(&dc);
+    bool io_cb_registered = false;
     bool mask_registered = false;
     if (disp) {
-        // LVGL 9.5 returns void here; check the list while still holding the lock.
-        const uint32_t count = lv_display_get_event_count(disp);
-        lv_display_add_event_cb(disp, rounded_flush_event, LV_EVENT_FLUSH_START, NULL);
-        mask_registered = lv_display_get_event_count(disp) == count + 1;
+        const esp_lcd_panel_io_callbacks_t cbs = {
+            .on_color_trans_done = bsp_lvgl_color_trans_done_cb,
+        };
+        if (esp_lcd_panel_io_register_event_callbacks(bsp_display_io(), &cbs, s_flush_sem) == ESP_OK) {
+            io_cb_registered = true;
+            s_io_cb_live = true;
+            lv_display_set_flush_wait_cb(disp, bsp_lvgl_flush_wait_cb);
+            // LVGL 9.5 returns void here; check the list while still holding the lock.
+            const uint32_t count = lv_display_get_event_count(disp);
+            lv_display_add_event_cb(disp, rounded_flush_event, LV_EVENT_FLUSH_START, NULL);
+            mask_registered = lv_display_get_event_count(disp) == count + 1;
+        }
     }
-    if (!mask_registered) {
-        ESP_LOGE(TAG, "LVGL display 或圆角回调注册失败");
-        if (disp) lvgl_port_remove_disp(disp);
+    if (!io_cb_registered || !mask_registered) {
+        ESP_LOGE(TAG, "LVGL display、flush 同步或圆角回调注册失败");
+        // esp_lvgl_port_add_disp already registered a default callback referencing disp;
+        // clear it before removing display. If unregister fails, retain display and
+        // semaphore and delete the refresh timer so no ISR accesses a dangling callback
+        // or freed context, and mark port failed to disallow unsafe retry.
+        const esp_lcd_panel_io_callbacks_t empty_cbs = { 0 };
+        esp_err_t unreg_err = esp_lcd_panel_io_register_event_callbacks(bsp_display_io(), &empty_cbs, NULL);
+        if (unreg_err == ESP_OK) {
+            s_io_cb_live = false;
+            if (disp) {
+                lv_display_set_flush_wait_cb(disp, NULL);
+                lvgl_port_remove_disp(disp);
+            }
+            if (s_flush_sem) {
+                vSemaphoreDelete(s_flush_sem);
+                s_flush_sem = NULL;
+            }
+        } else {
+            ESP_LOGE(TAG, "注销 LCD IO 回调失败，保留 display 与信号量以防 ISR 野指针");
+            if (disp) {
+                lv_display_delete_refr_timer(disp);
+            }
+            s_port_init_failed = true;
+        }
         lvgl_port_unlock();
-        // Retain the initialized port for retry. Deinit is asynchronous and can
-        // race the next init (or even run before the task sets running=true).
+        // Retain the initialized port for retry when safe.
         return NULL;
     }
 

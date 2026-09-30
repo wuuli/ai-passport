@@ -101,6 +101,17 @@ static void on_key(bsp_btn_t button, bsp_btn_ev_t event, void *user)
     }
 }
 
+/* USB acceptance tests use the same bounded input queue and LVGL dispatcher
+ * as physical buttons, never call the UI directly from the serial worker. */
+static void usb_game_input(fap_input_t input)
+{
+    if(input==FAP_INPUT_BACK){on_key(BSP_BTN_OK,BSP_BTN_LONG,NULL);return;}
+    if(input<FAP_INPUT_LEFT||input>FAP_INPUT_OK)return;
+    const bsp_btn_t button=input==FAP_INPUT_LEFT?BSP_BTN_UP:input==FAP_INPUT_RIGHT?BSP_BTN_DOWN:BSP_BTN_OK;
+    on_key(button,BSP_BTN_PRESS,NULL);
+    on_key(button,BSP_BTN_CLICK,NULL);
+}
+
 static void process_input(lv_timer_t *timer)
 {
     (void)timer;
@@ -163,5 +174,5 @@ void app_main(void)
     if (timer) atomic_store(&s_input_ready, true);
     else ESP_LOGE(TAG, "Input timer allocation failed");
     bsp_lvgl_unlock();
-    if (fap_screenshot_start() != ESP_OK) ESP_LOGW(TAG, "Screenshot service unavailable");
+    if (fap_screenshot_start(usb_game_input) != ESP_OK) ESP_LOGW(TAG, "Screenshot service unavailable");
 }

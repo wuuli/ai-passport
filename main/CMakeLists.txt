@@ -21,6 +21,7 @@ idf_component_register(
          "fap_screenshot_protocol.c"
          "demo_duel.c"
          "corridor_game.c"
+         "corridor_sound.c"
          "corridor_render.c"
          "corridor_font.c"
          "corridor_title_font.c"

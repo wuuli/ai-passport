@@ -40,7 +40,7 @@ run_static_checks() {
     "${test_dir}/test_corridor_game"
     "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
         -Icomponents/bsp/include -Itests/stubs/corridor_demo \
-        tests/test_corridor_demo.c main/corridor_game.c -lm \
+        tests/test_corridor_demo.c main/corridor_game.c main/corridor_sound.c -lm \
         -o "${test_dir}/test_corridor_demo"
     "${test_dir}/test_corridor_demo"
     "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
@@ -51,6 +51,10 @@ run_static_checks() {
         tests/test_duel_sound.c main/duel_sound.c \
         -o "${test_dir}/test_duel_sound"
     "${test_dir}/test_duel_sound"
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
+        tests/test_corridor_sound.c main/corridor_sound.c main/corridor_game.c -lm \
+        -o "${test_dir}/test_corridor_sound"
+    "${test_dir}/test_corridor_sound"
     "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
         -Itests/duel_demo/stubs -Icomponents/bsp/include \
         tests/test_demo_duel.c main/demo_duel.c main/duel_clock.c -lm \
@@ -107,6 +111,7 @@ run_static_checks() {
     rm -rf "${test_dir}"
     python3 tools/build_corridor_web.py --check
     node tests/test_corridor_web.mjs
+    node tests/test_corridor_audio.mjs
     python3 tools/build_duel_web.py --check
     node tests/test_duel_web.mjs
     node tests/test_duel_preview.mjs

@@ -18,6 +18,8 @@ static int64_t s_now_us = 1000000;
 int64_t esp_timer_get_time(void) { return s_now_us; }
 uint32_t esp_random(void) { return 42; }
 
+static ec_sound_scene_t s_sound;
+void duel_io_corridor_sound(const ec_sound_scene_t *scene) { s_sound = *scene; }
 static int s_battery = 85;
 int duel_io_battery(void) { return s_battery; }
 void duel_io_activate(bool active) { (void)active; }
@@ -57,6 +59,7 @@ static void setup_exit_7(bool anomaly) {
     demo_corridor_tick(s_now_us);
     assert(!dirty);
     assert(game.phase == EC_PLAYING);
+    assert(s_sound.enabled && s_sound.ambient);
     assert(lv_obj_has_flag(overlay, LV_OBJ_FLAG_HIDDEN));
 
     game.score = game.hud_score = 7;
@@ -112,6 +115,7 @@ static void test_title_screen(void) {
 
     demo_corridor_key(BSP_BTN_OK, BSP_BTN_CLICK);
     assert(game.phase == EC_PLAYING);
+    assert(s_sound.enabled && s_sound.ambient);
     assert(lv_obj_has_flag(overlay, LV_OBJ_FLAG_HIDDEN));
     assert(bar->bg_opa == LV_OPA_80);
     demo_corridor_exit();
@@ -247,6 +251,7 @@ static void test_wrong_exit_remains_playing(void) {
 
     assert(game.score == 0);
     assert(game.phase == EC_PLAYING);
+    assert(s_sound.enabled && s_sound.ambient);
     assert(lv_obj_has_flag(overlay, LV_OBJ_FLAG_HIDDEN));
     assert(strstr(status->text, "出口 7") != NULL);
     assert(game.hud_score_pending);
@@ -279,6 +284,7 @@ static void test_reentry_lifecycle(void) {
     printf("--- Running test_reentry_lifecycle ---\n");
     demo_corridor_enter();
     assert(game.phase == EC_TITLE);
+    assert(!s_sound.enabled);
     assert(presentation_phase == EC_TITLE);
     assert(prompt->text_opa == LV_OPA_60);
     demo_corridor_key(BSP_BTN_OK, BSP_BTN_CLICK);
@@ -290,6 +296,7 @@ static void test_reentry_lifecycle(void) {
     /* Re-entering should cleanly re-initialize state and prompt fade */
     demo_corridor_enter();
     assert(game.phase == EC_TITLE);
+    assert(!s_sound.enabled);
     assert(presentation_phase == EC_TITLE);
     assert(prompt->text_opa == LV_OPA_60);
     assert(!lv_obj_has_flag(overlay, LV_OBJ_FLAG_HIDDEN));

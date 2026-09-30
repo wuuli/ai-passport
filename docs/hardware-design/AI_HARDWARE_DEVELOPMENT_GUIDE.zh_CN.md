@@ -239,6 +239,8 @@ Audio demo 的工作任务在 PCM 分块之间检查取消状态，并在页面�
 - **任务供给不及时：** 同时测量 PCM 最大供给间隔、重绘和保存耗时。6 个 DMA descriptor、每个 240 frame，在 16 kHz 且缓冲填满时最多容纳 `6 * 240 / 16000 = 90 ms`；实际剩余余量可能更小。按键回调和 LVGL 锁内不做阻塞操作，纯焦点移动不写 Flash，音频工作任务相对刷屏任务应有足够优先级。任务仍须阻塞或让出 CPU；不要忙循环，也不要未检查应用任务就照抄优先级数值。仍在有意义的状态变化时保存。
 - **Flash/cache 停顿：** Flash 写入或擦除可能关闭缓存，延后默认 I2S 中断。播放与保存并行时，启用 `CONFIG_I2S_ISR_IRAM_SAFE=y`，并核对生成的 `sdkconfig`（只改 defaults 不会覆盖已有配置）。注册的 I2S 回调及其调用链必须满足 IRAM 安全要求，访问的数据放在内部 DRAM；只给回调加 `IRAM_ATTR` 不够。回调中不要打印日志、分配内存或读取 Flash 素材。参见 [ESP-IDF 5.5.3 I2S IRAM 安全说明](https://docs.espressif.com/projects/esp-idf/en/v5.5.3/esp32c3/api-reference/peripherals/i2s.html#iram-safe)。
 
+在 SPI 显示路径上，LVGL 9.5 与 esp_lvgl_port 2.9 未设置 flush-wait 回调时，LVGL 会在等待 DMA 完成期间空转。连续全屏重绘可能因此饿死低优先级 PCM 任务和空闲任务。BSP 安装阻塞式 flush-wait 回调：SPI 完成中断释放二值信号量，LVGL 等待者消费信号，再由 LVGL 自身清除 flushing 状态。该中断不能同时调用 flush-ready，否则在进入等待前完成的传输会留下未消费信号，干扰下一次传输。回调注册须持有 LVGL 锁，并保留单绘图缓冲。
+
 中断放入 IRAM 并不能让位于 Flash 的音频生产任务持续运行，也不代表缓冲无限。应根据实测停顿和内部 RAM 预算准备排队的 PCM，或在安全的播放边界保存。在最终应用固件上，持续播放 BGM，反复切换选项并确认会实际写入 NVS 的操作，再验证保存和重新载入。对照供给间隔并实机试听：日志无告警或单独播放音调成功，都不能证明并发播放没有杂音。
 
 ## 9. CW2017 电池计

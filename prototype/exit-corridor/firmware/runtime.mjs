@@ -19,6 +19,12 @@ export class FirmwareCore {
     if (!this.wasm.web_review(anomaly, x, z, yaw, score, entry)) throw new Error('无效的评审位置');
   }
   draw() { return new Uint8Array(this.wasm.memory.buffer, this.wasm.web_draw(), 77824); }
+  audioEnabled(enabled) { this.wasm.web_audio_enabled(enabled ? 1 : 0); }
+  audioRunning() { return !!this.wasm.web_audio_running(); }
+  audioRender(count) {
+    if (!Number.isInteger(count) || count < 1 || count > 1024) throw new RangeError('PCM block size');
+    return new Int16Array(this.wasm.memory.buffer, this.wasm.web_audio_render(count), count);
+  }
   destroy() { this.wasm.web_destroy(); }
 }
 export async function loadFirmware(base = new URL('./', import.meta.url)) {
@@ -40,7 +46,9 @@ export async function loadFirmware(base = new URL('./', import.meta.url)) {
     throw new Error('缓存中的代码或素材版本不一致，请重新加载');
   }
   const presentation = JSON.parse(new TextDecoder().decode(presentationBytes));
-  const { instance } = await WebAssembly.instantiate(binary, {});
+  const module = await WebAssembly.compile(binary);
+  const createCore = () => new FirmwareCore(new WebAssembly.Instance(module, {}), new Uint8Array(sprite), 12345);
+  const instance = new WebAssembly.Instance(module, {});
   const seed = crypto.getRandomValues(new Uint32Array(1))[0];
-  return { core: new FirmwareCore(instance, new Uint8Array(sprite), seed), presentation, manifest };
+  return { core: new FirmwareCore(instance, new Uint8Array(sprite), seed), createCore, presentation, manifest };
 }

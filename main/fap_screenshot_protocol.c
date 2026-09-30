@@ -4,6 +4,16 @@
 
 static const char SCREENSHOT_COMMAND[] = "FAP_SCREENSHOT_V1";
 
+fap_input_t fap_input_parse(const char *line)
+{
+    if (!line) return FAP_INPUT_NONE;
+    if (!strcmp(line,"FAP_KEY_V1 LEFT")) return FAP_INPUT_LEFT;
+    if (!strcmp(line,"FAP_KEY_V1 RIGHT")) return FAP_INPUT_RIGHT;
+    if (!strcmp(line,"FAP_KEY_V1 OK")) return FAP_INPUT_OK;
+    if (!strcmp(line,"FAP_KEY_V1 BACK")) return FAP_INPUT_BACK;
+    return FAP_INPUT_NONE;
+}
+
 void fap_screenshot_matcher_reset(fap_screenshot_matcher_t *matcher)
 {
     matcher->matched = 0;

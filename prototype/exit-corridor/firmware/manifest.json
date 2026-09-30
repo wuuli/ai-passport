@@ -6,6 +6,8 @@
     320
   ],
   "sources": {
+    "main/corridor_sound.c": "10c532de3284fcdf0f227c5f5bd63959a9874b2a0ddf5da3a1399041c436fbf5",
+    "main/corridor_sound.h": "e0fa28804de140ce695e118df0c5a3442aac4137dadf53851a35998a1c602862",
     "main/corridor_game.c": "3d6c712b489359dabe97fed75a70f38eb474ab0472abc3859a6e2783e380bc83",
     "main/corridor_game.h": "98f323456d4ea44ce6fd1d8188bfacf389a782704f9b7be446e086dc974cd8b2",
     "main/corridor_render.c": "8cab09744bf0d74b2bb28bd3f950f454d586b240b79febcdd103b4de4c9fff95",
@@ -15,16 +17,16 @@
     "main/corridor_notice.inc": "1eb52c0eb15345035fe878d411013efc585a5b61058faf054c3ca4e875cc15f0",
     "main/corridor_font.c": "6b69850cb4ccbdc88b9bdc51cfeb13584a4da0d5240f4d2b7bd1eb3ddd798d2d",
     "main/corridor_title_font.c": "3ae1a1f864a99b8635b872b5745ad69bcd3b0d5ed4228ab793fc9ffea948ad95",
-    "main/demo_corridor.c": "a0f1c58758f2066f01f4bee810b5c41087b6fb471c451bff433494fafeec4066",
-    "prototype/exit-corridor/firmware/bridge.c": "0bfcffa99b7be937639a01a38331f6c75091517b28dcc0fcbaf461b7095d637d",
+    "main/demo_corridor.c": "f171765327448474215331fbca62120f4e28f81468ac6e4fbb17594a01cae440",
+    "prototype/exit-corridor/firmware/bridge.c": "8d40ce7d52391d6db7965b9c58172f63b88213052c25d6df5575437047e6f686",
     "assets/images/exit-corridor/commuter-device.bin": "57103150daa85a913788951388cb3feba62e823dca2426a0a40f28802318251f",
-    "tools/build_corridor_web.py": "a25e474ae0f11df9750ae4a1a796e66e3c2d7c49765d907092b76963dd66a267"
+    "tools/build_corridor_web.py": "ae657b6140fa44844cc488e33238976e1e81c57d7372135a607852698cc0e746"
   },
   "artifacts": {
-    "corridor.wasm": "2c644c4d8181d35e495da729631cd383c557a14e922aeb7cf95c6285046972e2",
+    "corridor.wasm": "6caf9133a69da4060805db07780382d1c34f2812a152fcd68c6355f96670a041",
     "presentation.json": "0e07f97592b3e77094e446ffb651b7553e7a3cadb95681c55ff8075d4b6e3baf"
   },
   "spriteBytes": 312689,
   "spriteUrl": "/assets/images/exit-corridor/commuter-device.bin",
-  "boundary": "Shared C game and renderer; browser input/display shell. Browser timing is not device timing."
+  "boundary": "Shared C game, renderer and audio; browser input/display/PCM transport shell. Browser timing is not device timing."
 }

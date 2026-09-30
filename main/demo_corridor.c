@@ -18,6 +18,11 @@ static lv_obj_t *screen,*image_obj,*status,*battery,*overlay,*subtitle,*title,*c
 static uint8_t *pixels;
 static ec_renderer_t *renderer;
 static ec_game_t game;
+static ec_sound_tracker_t sound_tracker;
+static void sync_sound(void){
+    ec_sound_track(&sound_tracker,&game);
+    duel_io_corridor_sound(&sound_tracker.scene);
+}
 static lv_image_dsc_t image;
 static int64_t last_tick,last_render,last_log;
 static unsigned frame_count;
@@ -178,7 +183,8 @@ void demo_corridor_enter(void){
     }
     prompt_opacity=LV_OPA_COVER;
     presentation_phase=-1;
-    duel_io_activate(true);duel_io_sound(false,false,DUEL_CUE_NONE);
+    duel_io_activate(true);ec_sound_track_init(&sound_tracker,&game);
+    sync_sound();
     visible=true;dirty=true;last_tick=esp_timer_get_time();last_render=last_log=last_tick;frame_count=0;render_total=0;
     tick_total=refresh_total=0;refresh_count=decoded_chunks=0;refresh_started=0;
     lv_display_add_event_cb(lv_display_get_default(),refresh_event,LV_EVENT_RENDER_START,NULL);
@@ -202,13 +208,14 @@ void demo_corridor_key(bsp_btn_t button,bsp_btn_ev_t event){
     if(button==BSP_BTN_OK&&event==BSP_BTN_CLICK)ec_game_key(&game,EC_OK);
     else if(button!=BSP_BTN_OK&&event==BSP_BTN_PRESS)ec_game_key(&game,button==BSP_BTN_UP?EC_LEFT:EC_RIGHT);
     else return;
-    dirty=true;hud();
+    sync_sound();dirty=true;hud();
 }
-void demo_corridor_input_lost(void){if(visible){game.walking=false;game.observing=false;dirty=true;hud();}}
+void demo_corridor_input_lost(void){if(visible){game.walking=false;game.observing=false;sync_sound();dirty=true;hud();}}
 bool demo_corridor_return_to_title(void){
     if(!visible||!renderer)return false;
     if(game.phase==EC_TITLE)return false;
     ec_game_init(&game,esp_random());
+    sync_sound();
     dirty=true;
     last_tick=esp_timer_get_time();
     last_render=0;
@@ -229,6 +236,7 @@ void demo_corridor_tick(int64_t now){
     unsigned passages_before=game.passages;
     ec_phase_t phase_before=game.phase;
     ec_game_tick(&game,(now-last_tick)/1000000.0f);last_tick=now;
+    sync_sound();
     /* Preserve the final redraw even after play stops or this tick is throttled. */
     if(game.phase!=phase_before)dirty=true;
     if(game.passages!=passages_before)log_judgement("judgement");

@@ -75,7 +75,7 @@ const descriptions = {
           + text(view.score.join(' : '), 189, 8, 224, 'fw-number fw-gold');
         hint = 'OK 返回首页'; break;
     }
-    return `<div class="fw-background"></div><div class="fw-header">${text(status, 5, 18, 160)}${text('--%', 7, 182, 40, 'fw-small')}</div><div class="fw-body">${body}</div><div class="fw-hint">${hint}</div>${text('长按 OK 返回游戏选择', 300)}`;
+    return `<div class="fw-background"></div><div class="fw-header">${text(status, 5, 18, 160)}${text('--%', 7, 182, 40, 'fw-small')}</div><div class="fw-body">${body}</div><div class="fw-hint">${hint}</div>${text('长按 OK 返回首页', 300)}`;
   }
   function currentStep(view) {
     if (view.phase === 'timing') return view.finished.some(Boolean) ? 'second' : 'first';
@@ -144,15 +144,6 @@ function cancelInput() {
   audio.stop();
   render();
 }
-function leave() {
-  if (!engine || exiting) return;
-  exiting = true;
-  release();
-  clearInterval(timer);
-  engine.exit();
-  audio.stop();
-  window.location.assign('/games.html?selected=1');
-}
 function press(button, source) {
   if (!engine || exiting || held) return;
   held = {button, source};
@@ -160,7 +151,7 @@ function press(button, source) {
   focused = true;
   audio.unlock();
   lastActivity = performance.now();
-  if (button === 'ok') holdTimer = setTimeout(leave, 1000);
+  if (button === 'ok') holdTimer = setTimeout(cancelInput, 1000);
   if (dimmed) {
     dimmed = false;
     syncSound('button');

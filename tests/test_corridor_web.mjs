@@ -166,7 +166,7 @@ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'corridor-web-test-'));
 let changed=0,pixels=0,maxColorDelta=0,maxStateError=0;
 try{
   const exe=path.join(dir,'native');
-  let result=spawnSync(process.env.CC||'cc',['-O2','-ffp-contract=off','-std=c11','-Wall','-Wextra','-Werror','-Imain','tests/corridor_web_native.c','prototype/exit-corridor/firmware/bridge.c','main/corridor_game.c','main/corridor_render.c','-lm','-o',exe],{encoding:'utf8'});
+  let result=spawnSync(process.env.CC||'cc',['-O2','-ffp-contract=off','-std=c11','-Wall','-Wextra','-Werror','-Imain','tests/corridor_web_native.c','prototype/exit-corridor/firmware/bridge.c','main/corridor_game.c','main/corridor_sound.c','main/corridor_render.c','-lm','-o',exe],{encoding:'utf8'});
   assert.equal(result.status,0,result.stderr);
   result=spawnSync(exe,[],{input:steps.join('\n')+'\n',maxBuffer:32*1024*1024});assert.equal(result.status,0,result.stderr?.toString());
   const stateBytes=STATE_FIELDS.length*8,recordSize=stateBytes+77824;

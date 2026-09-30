@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""Compile the firmware game/renderer unchanged into a browser reactor module."""
+"""Compile the firmware game/renderer/audio into a browser reactor module."""
 import argparse, hashlib, json, os, re, subprocess
 from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / 'prototype/exit-corridor/firmware'
-SOURCES = ['main/corridor_game.c', 'main/corridor_game.h', 'main/corridor_render.c',
+SOURCES = ['main/corridor_sound.c', 'main/corridor_sound.h', 'main/corridor_game.c', 'main/corridor_game.h', 'main/corridor_render.c',
            'main/corridor_render.h', 'main/corridor_palette.inc', 'main/corridor_sprite_lut.inc',
            'main/corridor_notice.inc', 'main/corridor_font.c', 'main/corridor_title_font.c',
            'main/demo_corridor.c', 'prototype/exit-corridor/firmware/bridge.c',
            'assets/images/exit-corridor/commuter-device.bin', 'tools/build_corridor_web.py']
 EXPORTS = ['web_sprite', 'web_sprite_size', 'web_init', 'web_key', 'web_tick', 'web_pause',
-           'web_title', 'web_draw', 'web_destroy', 'web_state', 'web_review']
+           'web_audio_enabled', 'web_audio_running', 'web_audio_render', 'web_title', 'web_draw', 'web_destroy', 'web_state', 'web_review']
 def digest(p): return hashlib.sha256(p.read_bytes()).hexdigest()
 def font_data(path='main/corridor_font.c'):
     source = (ROOT/path).read_text()
@@ -63,7 +63,7 @@ def main():
     sdk=Path(args.sdk);clang=sdk/'bin/clang';sprite=ROOT/'assets/images/exit-corridor/commuter-device.bin'
     cmd=[str(clang),'-O2','-ffp-contract=off','-mexec-model=reactor','-Imain',
          '-D_POSIX_C_SOURCE=200809L',f'-DEC_SPRITE_BYTES={sprite.stat().st_size}',
-         'main/corridor_game.c','main/corridor_render.c',str(OUT/'bridge.c'),'-lm',
+         'main/corridor_game.c','main/corridor_sound.c','main/corridor_render.c',str(OUT/'bridge.c'),'-lm',
          '-Wl,-z,stack-size=131072','-Wl,--initial-memory=2097152','-Wl,--max-memory=4194304',
          *['-Wl,--export='+e for e in EXPORTS],'-o',str(OUT/'corridor.wasm')]
     subprocess.run(cmd,cwd=ROOT,check=True)
@@ -71,7 +71,7 @@ def main():
        'nativeResolution':[240,320],'sources':{p:digest(ROOT/p) for p in SOURCES},
        'artifacts':{p:digest(OUT/p) for p in ['corridor.wasm','presentation.json']},
        'spriteBytes':sprite.stat().st_size,'spriteUrl':'/assets/images/exit-corridor/commuter-device.bin',
-       'boundary':'Shared C game and renderer; browser input/display shell. Browser timing is not device timing.'}
+       'boundary':'Shared C game, renderer and audio; browser input/display/PCM transport shell. Browser timing is not device timing.'}
     manifest_path.write_text(json.dumps(m,indent=2)+'\n')
     print('Built shared firmware browser:',(OUT/'corridor.wasm').stat().st_size,'bytes')
 if __name__=='__main__':main()

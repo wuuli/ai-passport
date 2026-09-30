@@ -8,6 +8,7 @@ uint8_t *web_sprite(void);unsigned web_sprite_size(void);int web_init(uint32_t);
 void web_key(int);void web_tick(float);void web_pause(void);void web_title(void);
 uint8_t *web_draw(void);void web_destroy(void);double web_state(unsigned);
 int web_review(int,float,float,float,unsigned,int);
+void web_audio_enabled(int);int16_t *web_audio_render(unsigned);
 int main(void){
     FILE*f=fopen("assets/images/exit-corridor/commuter-device.bin","rb");assert(f);
     assert(fread(web_sprite(),1,web_sprite_size(),f)==web_sprite_size());fclose(f);assert(web_init(1));
@@ -15,6 +16,8 @@ int main(void){
     while(fgets(line,sizeof(line),stdin)){
         int key,a,entry;unsigned seed,score;float dt,x,z,yaw;
         switch(line[0]){
+        case 'E':assert(sscanf(line+1,"%d",&key)==1);web_audio_enabled(key);break;
+        case 'A':assert(fwrite(web_audio_render(640),sizeof(int16_t),640,stdout)==640);break;
         case 'I':assert(sscanf(line+1,"%u",&seed)==1);assert(web_init(seed));break;
         case 'K':assert(sscanf(line+1,"%d",&key)==1);web_key(key);break;
         case 'T':assert(sscanf(line+1,"%f",&dt)==1);web_tick(dt);break;

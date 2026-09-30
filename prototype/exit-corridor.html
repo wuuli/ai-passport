@@ -7,7 +7,7 @@
 </head>
 <body>
 <header><div class="brand">8</div><div><h1>8号出口</h1><p>AI Passport · 固件同步版</p></div>
-<nav aria-label="显示与游戏工具"><label>视图 <select id="scale" aria-label="视图缩放"><option value="1" selected>1× 原生</option><option value="2">2× 放大</option></select></label><button id="fullscreen">全屏</button><button id="restart" disabled>重新开始</button></nav></header>
+<nav aria-label="显示与游戏工具"><label>视图 <select id="scale" aria-label="视图缩放"><option value="1" selected>1× 原生</option><option value="2">2× 放大</option></select></label><button id="sound" aria-pressed="false" disabled>点击启用声音</button><label>音量 <input id="volume" aria-label="音量" type="range" min="0" max="100" value="40" style="width:72px;vertical-align:middle"></label><button id="fullscreen">全屏</button><button id="restart" disabled>重新开始</button></nav></header>
 <main>
 <div class="caption"><span>240 × 320 · 三键操作</span><span>与真机共用游戏代码及素材</span></div>
 <section class="device" id="device" aria-label="AI Passport 游戏预览">
@@ -21,8 +21,13 @@
 <button id="btnAction3" data-key="2" disabled aria-label="OK 开始或走停"><b>●</b><span>开始 / 走停</span><small>OK / 空格</small></button>
 </div>
 </section>
-<p class="controls">UP 左转 45° · DOWN 右转 45° · OK 进入／走停<br>长按 OK 1 秒返回入口，入口页长按回游戏选择；网页可用 ↑ / ↓ 和空格 / Enter。</p>
+<p class="controls">UP 左转 45° · DOWN 右转 45° · OK 进入／走停<br>长按 OK 1 秒返回开始界面；网页可用 ↑ / ↓ 和空格 / Enter。</p>
 <p class="boundary">画面使用原生分辨率。网页运行速度不代表设备帧率，电量显示为占位。</p>
+<details id="audioReviewPanel"><summary>声音试听<small>逐项确认后再更新真机</small></summary>
+<div class="review-body"><p>使用同一份 C / WebAssembly 生成声音，按电脑 Demo 60% 的参考响度播放。试听会暂停行走，不会重开游戏。</p>
+<div class="actions" id="audioReviewActions"><button data-audio-review="lifecycle" disabled>启停完整流程</button><button data-audio-review="ambience" disabled>环境声</button><button data-audio-review="walking" disabled>行走与停步</button><button data-audio-review="corner" disabled>自动拐角</button><button data-audio-review="observing" disabled>原地观察</button><button data-audio-review="completion" disabled>通关</button></div>
+<p id="audioReviewStatus" role="status">选择一段声音试听。</p><audio id="audioReviewPlayer" hidden controls preload="metadata" aria-label="分项声音试听"></audio>
+<p><a id="audioReviewDownload" hidden>下载这段 WAV</a></p></div></details>
 <details id="reviewPanel"><summary>开发评审（含答案）<small>展开暂停游戏</small></summary>
 <div class="review-body"><p>评审样例使用同一套固件逻辑；回到盲玩会从 0 重新开始。</p>
 <div class="fields"><label>异常样例<select id="anomaly"><option value="0">正常通道</option><option value="1">维修门缺失</option><option value="2">海报眼睛</option><option value="3">海报倒置</option><option value="4">额外通风口</option><option value="5">红灯</option><option value="6">高大路人</option><option value="7">停止凝视</option><option value="8">路人缺席</option></select></label>

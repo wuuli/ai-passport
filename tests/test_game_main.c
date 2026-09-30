@@ -139,7 +139,8 @@ void bsp_lvgl_unlock(void) {}
 void bsp_display_backlight(uint8_t percent) { s_backlight_percent = percent; }
 esp_err_t bsp_audio_init(void) { return s_fail_bsp_audio_init ? ESP_FAIL : ESP_OK; }
 esp_err_t bsp_battery_init(void) { return s_fail_bsp_battery_init ? ESP_FAIL : ESP_OK; }
-esp_err_t fap_screenshot_start(void) { return s_fail_fap_screenshot ? ESP_FAIL : ESP_OK; }
+static fap_input_cb_t s_usb_input;
+esp_err_t fap_screenshot_start(fap_input_cb_t input_cb) { s_usb_input=input_cb;return s_fail_fap_screenshot ? ESP_FAIL : ESP_OK; }
 
 static bool s_duel_io_init_called = false;
 static bool s_duel_io_active = false;
@@ -293,6 +294,7 @@ static void reset_dispatcher_state(void) {
     s_fail_bsp_audio_init = false;
     s_fail_bsp_battery_init = false;
     s_fail_fap_screenshot = false;
+    s_usb_input = NULL;
     s_fail_launcher_create = false;
     s_backlight_percent = 0;
 
@@ -732,6 +734,25 @@ static void test_initialization_failures(void) {
     printf("  [PASS] 9. Initialization failures abort gracefully without accepting input\n");
 }
 
+static void test_usb_inputs_use_dispatcher(void) {
+    reset_dispatcher_state();
+    app_main();
+    assert(s_usb_input != NULL);
+    s_usb_input(FAP_INPUT_NONE);
+    s_usb_input(FAP_INPUT_LEFT);
+    s_usb_input(FAP_INPUT_RIGHT);
+    s_usb_input(FAP_INPUT_OK);
+    assert(s_corridor_key_count == 0);
+    trigger_tick(1010000);
+    assert(s_corridor_key_count == 6); // Each short key queues press and click.
+    s_usb_input(FAP_INPUT_BACK);
+    assert(s_corridor_return_to_title_count == 0);
+    trigger_tick(1020000);
+    assert(s_corridor_return_to_title_count == 1);
+    assert(s_navigation.active == 0);
+    printf("  [PASS] USB input queues through the physical-key dispatcher\n");
+}
+
 int main(void) {
     printf("=== Running game_main host dispatcher regression tests ===\n");
     test_default_boot_corridor();
@@ -743,6 +764,7 @@ int main(void) {
     test_overflow_stops_active_game();
     test_launcher_return_no_diagnostic_ui();
     test_initialization_failures();
+    test_usb_inputs_use_dispatcher();
     printf("=== All game_main dispatcher regression tests PASSED! ===\n");
     return 0;
 }

@@ -9,6 +9,7 @@ typedef struct { int32_t x1, y1, x2, y2; } lv_area_t;
 typedef struct { lv_display_t *target; lv_area_t *area; } lv_event_t;
 typedef struct { int unused; } lv_event_dsc_t;
 typedef struct { int unused; } lvgl_port_cfg_t;
+typedef void (*lv_display_flush_wait_cb_t)(lv_display_t *disp);
 #define ESP_LVGL_PORT_INIT_CONFIG() {0}
 #define LV_EVENT_FLUSH_START 1
 #define LV_COLOR_FORMAT_RGB565 1
@@ -29,6 +30,8 @@ lv_display_t *lvgl_port_add_disp(const lvgl_port_display_cfg_t *);
 esp_err_t lvgl_port_remove_disp(lv_display_t *);
 void lv_display_add_event_cb(lv_display_t *, void (*)(lv_event_t *), int, void *);
 uint32_t lv_display_get_event_count(lv_display_t *);
+void lv_display_set_flush_wait_cb(lv_display_t *, lv_display_flush_wait_cb_t);
+void lv_display_delete_refr_timer(lv_display_t *);
 static inline void *lv_event_get_target(lv_event_t *ev) { return ev->target; }
 static inline void *lv_event_get_param(lv_event_t *ev) { return ev->area; }
 static inline lv_draw_buf_t *lv_display_get_buf_active(lv_display_t *disp) { return &disp->buffer; }

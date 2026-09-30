@@ -12,6 +12,8 @@ The selector and both games use their own LVGL screens. `CONFIG_PASSPORT_HARDWAR
 
 Button callbacks enqueue timestamped events. A single LVGL timer consumes them and ticks the active game; page changes advance a generation so queued events cannot operate the next page. Input overflow stops the active game. No game UI is called from the BSP button task. The application-lifetime battery/audio worker shares only atomic data and does not retain page pointers.
 
+Browser previews use one standalone page per game: [Exit Corridor](http://127.0.0.1:8098/) and [Time Challenge](http://127.0.0.1:8098/time-duel-v2.html). Holding OK returns to that game's start screen. The firmware selector described above is not reproduced as another demo page.
+
 ## Display and installation compatibility
 
 The integration adopts upstream display initialization rollback, rounded-corner masking, 80 MHz LCD SPI, and one 40-row LVGL draw buffer. This frees 19,200 bytes compared with the former double buffer; actual frame cadence and visual effects still require device measurement. Both games inset their status and battery labels to keep text inside the 30-pixel corner mask; browser shells show the same rounded safe area.

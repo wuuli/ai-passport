@@ -17,7 +17,6 @@ class PreviewRoutesTest(unittest.TestCase):
     def test_game_entries_and_artifacts(self):
         for url, relative in {
             "/": "prototype/exit-corridor.html",
-            "/games.html?selected=1": "prototype/games.html",
             "/time-duel-v2.html": "prototype/time-duel-v2.html",
             "/time-duel/firmware/duel.wasm": "prototype/time-duel/firmware/duel.wasm",
             "/exit-corridor/firmware/corridor.wasm": "prototype/exit-corridor/firmware/corridor.wasm",
@@ -27,7 +26,7 @@ class PreviewRoutesTest(unittest.TestCase):
                 self.assertEqual(self.resolve(url), ROOT / relative)
 
     def test_private_paths_and_traversal_are_not_served(self):
-        for url in ("/.git/config", "/sdkconfig", "/build/FoloToy-AI-Passport-full.bin",
+        for url in ("/games.html", "/.git/config", "/sdkconfig", "/build/FoloToy-AI-Passport-full.bin",
                     "/time-duel/../../.git/config", "/exit-corridor/%2e%2e/%2e%2e/sdkconfig",
                     "/assets/images/time-duel/../../../README.md"):
             with self.subTest(url=url):

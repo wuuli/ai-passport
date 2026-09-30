@@ -26,6 +26,7 @@ static int64_t s_capture_deadline;
 static bool s_capturing;
 static bool s_capture_ok;
 static unsigned s_next_row;
+static fap_input_cb_t s_input_cb;
 
 static bool write_all(const void *data, size_t size)
 {
@@ -122,6 +123,7 @@ static void screenshot_task(void *argument)
     (void)argument;
     fap_screenshot_matcher_t matcher = {0};
     uint8_t input[32];
+    char line[32];size_t line_length=0;bool line_overflow=false;
     while (true) {
         if (!usb_serial_jtag_is_driver_installed()) {
             vTaskDelay(pdMS_TO_TICKS(200));
@@ -134,12 +136,22 @@ static void screenshot_task(void *argument)
         }
         for (int index = 0; index < received; ++index) {
             if (fap_screenshot_matcher_push(&matcher, input[index])) send_screen();
+            uint8_t byte=input[index];
+            if(byte=='\n'||byte=='\r'){
+                line[line_length]=0;
+                fap_input_t command=line_overflow?FAP_INPUT_NONE:fap_input_parse(line);
+                if(command!=FAP_INPUT_NONE&&s_input_cb){
+                    s_input_cb(command);ESP_LOGI(TAG,"input=%d queued",command);
+                }
+                line_length=0;line_overflow=false;
+            }else if(line_length<sizeof(line)-1)line[line_length++]=(char)byte;
+            else line_overflow=true;
         }
         if (received == 0) vTaskDelay(pdMS_TO_TICKS(20));
     }
 }
 
-esp_err_t fap_screenshot_start(void)
+esp_err_t fap_screenshot_start(fap_input_cb_t input_cb)
 {
     if (!bsp_lvgl_lock(1000)) return ESP_ERR_TIMEOUT;
     lv_display_t *display = lv_display_get_default();
@@ -161,6 +173,7 @@ esp_err_t fap_screenshot_start(void)
         if (result != ESP_OK) return result;
     }
     usb_serial_jtag_vfs_use_driver();
+    s_input_cb=input_cb;
     return xTaskCreate(screenshot_task, "fap_screen", 8192, NULL, 3, NULL) == pdPASS
         ? ESP_OK : ESP_ERR_NO_MEM;
 }

@@ -108,10 +108,12 @@ run_static_checks() {
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_verify_firmware.py
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_archive_firmware.py
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_install_passport_skills.py
+    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_game_resource_stress.py
     rm -rf "${test_dir}"
     python3 tools/build_corridor_web.py --check
     node tests/test_corridor_web.mjs
     node tests/test_corridor_audio.mjs
+    node tests/test_corridor_resource_stress.mjs
     python3 tools/build_duel_web.py --check
     node tests/test_duel_web.mjs
     node tests/test_duel_preview.mjs

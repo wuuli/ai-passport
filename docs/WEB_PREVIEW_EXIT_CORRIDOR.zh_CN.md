@@ -97,11 +97,24 @@ UP／上箭头按下向左转 45°，DOWN／下箭头按下向右转 45°，短�
 
 ## 本地性能模拟的范围
 
-现有 Wasm 共用游戏、渲染和音源，设备适配层与浏览器适配层分别运行。它没有运行真机的 FreeRTOS、LVGL、SPI/DMA 和 I2S，因此没有覆盖这次显示等待空转造成的任务饥饿。电脑上的低帧率或浏览器 CPU 限速不能直接证明设备线程会及时补充音频。
+Wasm 预览共用玩法、渲染和音源，设备与浏览器适配层分别运行。它不运行设备的 FreeRTOS、LVGL、SPI/DMA 或 I2S。因此，仅靠浏览器 CPU 限速或降低帧率，并未暴露显示刷新忙等导致的真机音频断供。
 
-可增加的本地压力检查包括：限制游戏可用内存并注入分配失败；用真机测得的渲染／传输耗时建立任务调度与缓冲模型，注入延迟和 CPU 占用，检查音频是否欠载；重放行走、停步、拐角与退出操作。模型必须保留任务优先级、等待是否阻塞和中断完成事件等区别，并用设备数据校准。当前预览未实现这个完整压力模型，已有 flush 等待边界主机测试与真机供给间隔检查不能冒充完整仿真。
+[Demo 到真机 SOP](development/engineering/game-demo-to-device-acceptance.zh_CN.md)现已在玩法和真机验收之间加入资源压力关。[`tools/game_resource_stress.py`](../tools/game_resource_stress.py)建模固定优先级、可抢占 CPU 工作、释放 CPU/忙等的显示等待、按墙钟时间完成的 DMA、不可抢占停顿、PCM 消耗及额外内存预算。它是确定性负载实验，不是 ESP32/FreeRTOS 模拟器。
 
-物理总线时序、真实堆碎片、扬声器听感和长时间负载仍需真机验证。推荐保留“共享 C/Wasm 玩法验收 → 校准后的资源／调度压力测试 → 真机验收”三个层次；模拟用于提前发现问题，设备测量决定最终验收。
+```bash
+python3 tools/build_corridor_web.py --check
+node tests/test_corridor_audio.mjs
+node tests/test_corridor_resource_stress.mjs \
+  --output-dir /tmp/corridor-resource-stress-acceptance
+```
+
+游戏专用检查用实际 Wasm 执行三组可重复场景：进入/行走/停步/观察/标题/重进、自动拐角/停步、出口完成。导出带时间戳的音频/渲染开关及 Wasm、manifest 哈希，再用通用模型运行[部分测量的设备配置](../tests/fixtures/corridor_resource_profile.json)。停步保留实际环境声开关；返回标题停止模型需求及游戏 PCM。这是基准负载：模型 CPU 延迟不会反馈到 C 玩法运动或界面中。
+
+配置记录已验收的 130 秒真机样本和完整固件哈希。渲染 CPU 使用最大的窗口平均值（50,133 微秒），不是逐帧最坏情况测量；音频合成使用观测到的 431 微秒最大值。完整刷新时间（50,337 微秒）被保守地再次算作阻塞等待，不表示纯 SPI 时间。110 毫秒帧周期是实验目标。PCM 余量使用 6 x 240 描述符结构，实际可播放容量及初始预填充仍是假设。内存取已运行游戏的 125,992 字节空闲及 106,496 字节最大连续块，仅计算额外分配，实验预留为 100,000 字节。这些是场景输入，不是统一板卡配置，也不模拟碎片。
+
+本地集成验收的三组正例都通过，模型断供为零；十二个反例检出了旧忙等/低优先级配置造成的延迟或断供、120 毫秒不可抢占停顿、过大的额外帧缓冲，以及未完成校准。汇总明确区分 `modelRegression: PASS`、`wasmWorkloadIntegration: PASS` 与 `calibratedResourceAcceptance: NOT RUN`、`hardwareAcceptance: NOT RUN`。`--require-calibrated` 会拒绝这份部分校准配置。该关放行前，应分别测量有效 PCM 余量、显示等待，获取适用的渲染尾部耗时，并用独立真机样本对照模型预测。不能仅凭模型断供推断实际爆音。
+
+实际总线时序、缓存/Flash 影响、分配失败恢复、堆碎片、扬声器音质和持续负载仍需要独立测试与真机验收。压力命令不会重建、刷写或发布固件。
 
 ## USB 真机验收
 

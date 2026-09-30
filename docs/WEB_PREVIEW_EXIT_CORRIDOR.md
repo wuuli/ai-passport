@@ -97,11 +97,61 @@ The browser does not emulate ESP32 RAM pressure, SPI/DMA timing, physical ADC de
 
 ## Scope of local performance simulation
 
-The current Wasm preview shares the game, renderer and sound source while device and browser adapters run separately. It does not run the device's FreeRTOS, LVGL, SPI/DMA or I2S paths, so it did not cover the task starvation caused by display flush busy-waiting. Low browser frame rates or CPU throttling alone do not establish that device tasks can refill audio on time.
+The Wasm preview shares the game, renderer and sound source while device and
+browser adapters run separately. It does not run the device's FreeRTOS, LVGL,
+SPI/DMA or I2S paths. Browser CPU throttling or low frame rates alone therefore
+did not expose the display-flush busy-wait that starved device audio.
 
-Additional local stress checks can enforce a game allocation budget and inject allocation failure; model scheduling and buffers using measured render/transfer durations, then inject delay and CPU occupation to detect audio underruns; and replay walking, stopping, corners and teardown. Such a model must distinguish priorities, blocking waits and interrupt completion events, and be calibrated against device measurements. This preview does not currently implement that full stress model. Existing host flush-wait boundary tests and device feed-gap checks are not a complete emulator.
+The [demo-to-device SOP](development/engineering/game-demo-to-device-acceptance.md)
+now adds a resource-stress stage between gameplay and device acceptance.
+[`tools/game_resource_stress.py`](../tools/game_resource_stress.py) models fixed
+priorities, preemptible CPU work, blocking/busy display waits, wall-clock DMA
+completion, non-preemptible stalls, PCM consumption and additional memory
+budgets. It is a deterministic load experiment, not an ESP32/FreeRTOS emulator.
 
-Physical bus timing, actual heap fragmentation, speaker quality and prolonged load still need device checks. Use three stages: shared C/Wasm gameplay acceptance, calibrated resource/scheduling stress tests, and physical-device acceptance. Simulation helps expose failures earlier; board measurements determine final acceptance.
+```bash
+python3 tools/build_corridor_web.py --check
+node tests/test_corridor_audio.mjs
+node tests/test_corridor_resource_stress.mjs \
+  --output-dir /tmp/corridor-resource-stress-acceptance
+```
+
+The game-specific check executes the actual Wasm in three repeatable scenarios:
+enter/walk/stop/observe/title/re-entry, automatic corner/stop, and doorway
+completion. It exports timestamped audio/render gates with Wasm and manifest
+hashes, then runs the generic model against the
+[partial device profile](../tests/fixtures/corridor_resource_profile.json).
+Stopping movement preserves the actual ambience gate; returning to title stops
+both modeled demand and game PCM. This is a reference workload: modeled CPU
+latency does not feed back into the C game's motion or UI.
+
+The profile records the accepted 130-second device sample and full-image hash.
+Render CPU load uses the largest window average (50,133 us), not a measured
+per-frame worst case. Audio synthesis uses the observed 431 us maximum. Full
+refresh time (50,337 us) is conservatively charged again as blocking wait; it is
+not pure SPI time. The 110 ms frame period is an experiment target. PCM headroom
+uses 6 x 240 descriptor geometry, but effective playable capacity and initial
+prefill remain assumptions. Memory is the already-running game's observed
+125,992 free bytes and 106,496-byte largest block; only extra allocations are
+charged, with an experiment reserve of 100,000 bytes. These are scenario inputs,
+not universal board settings or a fragmentation model.
+
+Local integration acceptance passes all three positive scenarios with zero
+modeled underrun, and twelve negative controls detect delayed/starved audio
+under the old busy-wait/lower-priority configuration, a 120 ms non-preemptible
+stall, an oversized additional framebuffer, and incomplete calibration. The
+summary deliberately separates `modelRegression: PASS` and
+`wasmWorkloadIntegration: PASS` from `calibratedResourceAcceptance: NOT RUN` and
+`hardwareAcceptance: NOT RUN`. `--require-calibrated` rejects this partial profile.
+To advance that gate, measure effective PCM headroom and display waiting
+separately, capture appropriate render tails, and reconcile model predictions
+with an independent device sample. Do not infer acoustic crackles from a modeled
+underrun alone.
+
+Actual bus timing, cache/Flash effects, allocation-failure recovery, heap
+fragmentation, speaker quality and prolonged load still need independent tests
+and physical-device acceptance. No stress command rebuilds, flashes, or
+publishes firmware.
 
 ## USB device acceptance
 

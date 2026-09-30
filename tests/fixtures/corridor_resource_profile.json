@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "name": "Corridor conservative load experiment, 2026-09-29 accepted device sample",
+  "calibration": {
+    "status": "partial",
+    "date": "2026-09-29",
+    "firmware_sha256": "0af8d8336e49fffb5c1d2cc8a830cd079a04f41a2c34d9af9f269160005248b1",
+    "source": "docs/WEB_PREVIEW_EXIT_CORRIDOR.md: 130-second device scheduling acceptance, 23 frame windows and 20 audio windows.",
+    "observations": {
+      "max_window_render_avg_us": 50133,
+      "max_window_refresh_avg_us": 50337,
+      "max_audio_render_us": 431,
+      "max_device_feed_gap_us": 1649,
+      "fps_range": [
+        9.68,
+        11.0
+      ]
+    },
+    "assumptions": [
+      "Render load uses the largest window average, not a per-frame worst-case measurement.",
+      "Full LVGL refresh duration (50337 us) is conservatively charged again as a blocking transfer wait, not claimed as pure SPI time.",
+      "Frame period is a 110000 us experiment target, not the game timer configuration.",
+      "1440 mono-equivalent samples use the 6 x 240 descriptor geometry; effective playable headroom is unmeasured. The ring begins full.",
+      "Memory is the observed running-game free heap; only additional allocations are charged. Actual fragmentation is not modeled."
+    ]
+  },
+  "cpu": {
+    "render_us": 50133,
+    "frame_period_us": 110000,
+    "display_wait_us": 50337,
+    "display_wait": "blocking",
+    "render_priority": 4,
+    "audio_priority": 5,
+    "audio_render_us": 431
+  },
+  "audio": {
+    "sample_rate_hz": 16000,
+    "chunk_samples": 128,
+    "buffer_samples": 1440
+  },
+  "memory": {
+    "available_bytes": 125992,
+    "largest_block_bytes": 106496,
+    "reserve_bytes": 100000,
+    "allocations": []
+  },
+  "limits": {
+    "max_audio_underrun_us": 0,
+    "max_startup_us": 60000,
+    "max_frame_lateness_us": 2000,
+    "max_dropped_frames": 0
+  },
+  "stalls": []
+}

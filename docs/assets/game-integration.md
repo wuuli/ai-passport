@@ -22,7 +22,7 @@ The fork deliberately retains its existing 3 MB factory partition, `cardid` and 
 
 ## Demo and device acceptance
 
-Follow the [shared-C/Wasm acceptance SOP](../development/engineering/game-demo-to-device-acceptance.md). Exit Corridor shares both model and renderer; Time Challenge shares its C model and uses a browser visual reference for its LVGL page. Browser parity does not establish device font rendering, memory margin, physical-key response, audio or display cadence.
+Follow the [shared-C/Wasm acceptance SOP](../development/engineering/application-demo-to-device-acceptance.md). Exit Corridor shares both model and renderer; Time Challenge shares its C model and uses a browser visual reference for its LVGL page. Browser parity does not establish device font rendering, memory margin, physical-key response, audio or display cadence.
 
 The changed entry/exit path, game re-entry, battery display, upstream display changes and both complete game flows require fresh physical-device acceptance. Previous device reports describe their original candidates and do not validate this integration.
 

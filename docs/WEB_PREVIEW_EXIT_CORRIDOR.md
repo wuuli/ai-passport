@@ -102,7 +102,7 @@ browser adapters run separately. It does not run the device's FreeRTOS, LVGL,
 SPI/DMA or I2S paths. Browser CPU throttling or low frame rates alone therefore
 did not expose the display-flush busy-wait that starved device audio.
 
-The [demo-to-device SOP](development/engineering/game-demo-to-device-acceptance.md)
+The [demo-to-device SOP](development/engineering/application-demo-to-device-acceptance.md)
 now adds a resource-stress stage between gameplay and device acceptance.
 [`tools/game_resource_stress.py`](../tools/game_resource_stress.py) models fixed
 priorities, preemptible CPU work, blocking/busy display waits, wall-clock DMA

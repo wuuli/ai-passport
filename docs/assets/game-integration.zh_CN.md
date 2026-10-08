@@ -22,7 +22,7 @@
 
 ## Demo 与真机验收
 
-遵循[共享 C/Wasm 验收 SOP](../development/engineering/game-demo-to-device-acceptance.zh_CN.md)。8 号出口共享模型和渲染器；掐秒挑战共享 C 模型，浏览器页面作为 LVGL 界面的视觉参考。网页一致性不证明真机字体、内存余量、实体按键响应、声音或显示帧节奏。
+遵循[共享 C/Wasm 验收 SOP](../development/engineering/application-demo-to-device-acceptance.zh_CN.md)。8 号出口共享模型和渲染器；掐秒挑战共享 C 模型，浏览器页面作为 LVGL 界面的视觉参考。网页一致性不证明真机字体、内存余量、实体按键响应、声音或显示帧节奏。
 
 改变后的入口/退出路径、游戏重进、电量显示、上游显示变更和两个完整玩法流程均需重新真机验收。旧设备报告只描述当时的候选版本，不代表此次集成通过。
 

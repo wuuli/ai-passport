@@ -104,10 +104,13 @@ did not expose the display-flush busy-wait that starved device audio.
 
 The [demo-to-device SOP](development/engineering/application-demo-to-device-acceptance.md)
 now adds a resource-stress stage between gameplay and device acceptance.
-[`tools/game_resource_stress.py`](../tools/game_resource_stress.py) models fixed
+[`tools/resource_stress.py`](../tools/resource_stress.py) models fixed
 priorities, preemptible CPU work, blocking/busy display waits, wall-clock DMA
 completion, non-preemptible stalls, PCM consumption and additional memory
-budgets. It is a deterministic load experiment, not an ESP32/FreeRTOS emulator.
+budgets through configurable periodic and buffered tasks. See the
+[general tool contract](development/engineering/resource-stress.md) for task,
+trace and calibration semantics. It is a deterministic load experiment, not an
+ESP32/FreeRTOS emulator.
 
 ```bash
 python3 tools/build_corridor_web.py --check
@@ -116,7 +119,7 @@ node tests/test_corridor_resource_stress.mjs \
   --output-dir /tmp/corridor-resource-stress-acceptance
 ```
 
-The game-specific check executes the actual Wasm in three repeatable scenarios:
+The C/Wasm workload adapter executes the actual Wasm in three repeatable scenarios:
 enter/walk/stop/observe/title/re-entry, automatic corner/stop, and doorway
 completion. It exports timestamped audio/render gates with Wasm and manifest
 hashes, then runs the generic model against the

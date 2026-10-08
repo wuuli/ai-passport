@@ -1,5 +1,5 @@
 // Export real C/Wasm reference workloads, then apply device-load experiments.
-// The generic upstream model does not implement another game or sound engine.
+// The generic resource model does not implement another game or sound engine.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -30,7 +30,7 @@ function exportTrace(name, scenario) {
   const core = new FirmwareCore(new WebAssembly.Instance(module, {}), sprite, 12345);
   core.audioEnabled(true);
   scenario.setup(core);
-  const trace = {schema: 1, duration_us: scenario.seconds * 1e6,
+  const trace = {schema: 2, duration_us: scenario.seconds * 1e6,
     source: `Actual C/Wasm ${name} reference workload; 20 ms tick, seed 12345`,
     wasm_sha256: hash(bytes), manifest_sha256: hash(fs.readFileSync('prototype/exit-corridor/firmware/manifest.json')),
     events: []};
@@ -42,7 +42,8 @@ function exportTrace(name, scenario) {
     const flags = {audio: core.audioRunning(), render: state.phase === 1 || state.phase === 3,
       phase: state.phase, walking: Boolean(state.walking), turning: Boolean(state.turning)};
     if (JSON.stringify(flags) !== previous) {
-      trace.events.push({at_us: step * 20000, name, ...flags});
+      trace.events.push({at_us: step * 20000, name, ...flags,
+        active: [...(flags.render ? ['display'] : []), ...(flags.audio ? ['playback'] : [])]});
       previous = JSON.stringify(flags);
     }
     // Execute the actual source as well as extracting its workload gates.
@@ -71,7 +72,7 @@ function run(name, candidate, tracePath, expectedExit = 0, requireCalibration = 
   const profilePath = path.join(output, `${name}-profile.json`);
   const reportPath = path.join(output, `${name}-report.json`);
   fs.writeFileSync(profilePath, JSON.stringify(candidate, null, 2) + '\n');
-  const args = ['tools/game_resource_stress.py', '--profile', profilePath, '--trace', tracePath, '--output', reportPath];
+  const args = ['tools/resource_stress.py', '--profile', profilePath, '--trace', tracePath, '--output', reportPath];
   if (requireCalibration) args.push('--require-calibrated');
   const process = spawnSync('python3', args, {encoding: 'utf8'});
   assert.equal(process.status, expectedExit, `${name}: ${process.stderr || process.stdout}`);
@@ -86,18 +87,18 @@ try {
     fs.writeFileSync(tracePath, JSON.stringify(trace, null, 2) + '\n');
     const positive = run(name, profile, tracePath);
     assert.equal(positive.result, 'PASS');
-    assert.equal(positive.metrics.audio_underrun_us, 0);
+    assert.equal(positive.tasks.playback.underrun_us, 0);
     assert.equal(positive.hardware_acceptance, 'NOT RUN');
     const old = structuredClone(profile);
-    old.cpu.display_wait = 'busy'; old.cpu.audio_priority = 3;
+    old.tasks[0].wait = 'busy'; old.tasks[1].priority = 3;
     const regression = run(`${name}-old-busy-wait`, old, tracePath, 1);
-    assert.ok(regression.metrics.audio_underrun_us > 0 ||
-      regression.metrics.max_startup_us > old.limits.max_startup_us,
+    assert.ok(regression.tasks.playback.underrun_us > 0 ||
+      regression.tasks.playback.max_startup_us > old.tasks[1].limits.max_startup_us,
       'old scheduling must fail for audio starvation or delayed first write');
     const stall = structuredClone(profile);
     stall.stalls = [{at_us: name === 'lifecycle' ? 4e6 : 1e6, duration_us: 120000}];
     const delayed = run(`${name}-cpu-stall`, stall, tracePath, 1);
-    assert.ok(delayed.metrics.audio_underrun_us > 0, 'nonpreemptible delay must exhaust PCM');
+    assert.ok(delayed.tasks.playback.underrun_us > 0, 'nonpreemptible delay must exhaust PCM');
     const memory = structuredClone(profile);
     memory.memory.allocations = [{name: 'oversized additional framebuffer', bytes: 153600}];
     const exhausted = run(`${name}-memory-overrun`, memory, tracePath, 1);
@@ -105,7 +106,7 @@ try {
     const calibration = run(`${name}-require-calibration`, profile, tracePath, 1, true);
     assert.ok(calibration.failures.some(x => x.includes('calibration is incomplete')));
     results[name] = {positive: positive.result, oldBusyWaitDetected: true, cpuStallDetected: true,
-      memoryOverrunDetected: true, incompleteCalibrationBlocked: true, metrics: positive.metrics};
+      memoryOverrunDetected: true, incompleteCalibrationBlocked: true, metrics: positive.metrics, tasks: positive.tasks};
   }
   fs.writeFileSync(path.join(output, 'summary.json'), JSON.stringify({modelRegression: 'PASS',
     wasmWorkloadIntegration: 'PASS', calibratedResourceAcceptance: 'NOT RUN',

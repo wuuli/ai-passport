@@ -214,6 +214,8 @@ LICENSE                  仓库许可证
 
 [游戏集成与操作](assets/game-integration.zh_CN.md)说明本分支的独立游戏入口、上游显示变更及保留的安装布局。
 
+- [通用资源压力实验](development/engineering/resource-stress.zh_CN.md) — 共享任务模型、非游戏样例、C/Wasm 负载接入及校准边界。
+
 ---
 
 [参与贡献](../.github/CONTRIBUTING.zh_CN.md) · [获取帮助](../.github/SUPPORT.zh_CN.md) · [行为准则](../.github/CODE_OF_CONDUCT.zh_CN.md) · [安全说明](../.github/SECURITY.zh_CN.md) · [MIT 许可证](../LICENSE)

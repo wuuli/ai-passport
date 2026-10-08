@@ -1,5 +1,5 @@
 {
-  "schema": 1,
+  "schema": 2,
   "name": "Corridor conservative load experiment, 2026-09-29 accepted device sample",
   "calibration": {
     "status": "partial",
@@ -24,31 +24,39 @@
       "Memory is the observed running-game free heap; only additional allocations are charged. Actual fragmentation is not modeled."
     ]
   },
-  "cpu": {
-    "render_us": 50133,
-    "frame_period_us": 110000,
-    "display_wait_us": 50337,
-    "display_wait": "blocking",
-    "render_priority": 4,
-    "audio_priority": 5,
-    "audio_render_us": 431
-  },
-  "audio": {
-    "sample_rate_hz": 16000,
-    "chunk_samples": 128,
-    "buffer_samples": 1440
-  },
   "memory": {
     "available_bytes": 125992,
     "largest_block_bytes": 106496,
     "reserve_bytes": 100000,
     "allocations": []
   },
-  "limits": {
-    "max_audio_underrun_us": 0,
-    "max_startup_us": 60000,
-    "max_frame_lateness_us": 2000,
-    "max_dropped_frames": 0
-  },
-  "stalls": []
+  "stalls": [],
+  "tasks": [
+    {
+      "id": "display",
+      "mode": "periodic",
+      "priority": 4,
+      "cpu_us": 50133,
+      "period_us": 110000,
+      "transfer_us": 50337,
+      "wait": "blocking",
+      "limits": {
+        "max_lateness_us": 2000,
+        "max_dropped_jobs": 0
+      }
+    },
+    {
+      "id": "playback",
+      "mode": "buffered",
+      "priority": 5,
+      "cpu_us": 431,
+      "refill_us": 8000,
+      "capacity_us": 90000,
+      "initial_buffer_us": 90000,
+      "limits": {
+        "max_underrun_us": 0,
+        "max_startup_us": 60000
+      }
+    }
+  ]
 }

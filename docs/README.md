@@ -220,6 +220,8 @@ provide reference material. Choose the entry that matches your task.
 
 [Game integration and controls](assets/game-integration.md) describe this fork's independent game entry point, upstream display changes, and retained installation layout.
 
+- [General resource-stress experiments](development/engineering/resource-stress.md) — shared task model, non-game fixtures, C/Wasm workload integration, and calibration boundaries.
+
 ---
 
 [Contribute](../.github/CONTRIBUTING.md) · [Get help](../.github/SUPPORT.md) · [Code of conduct](../.github/CODE_OF_CONDUCT.md) · [Security](../.github/SECURITY.md) · [MIT License](../LICENSE)

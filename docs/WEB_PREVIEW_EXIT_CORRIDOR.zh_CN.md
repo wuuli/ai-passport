@@ -99,7 +99,7 @@ UP／上箭头按下向左转 45°，DOWN／下箭头按下向右转 45°，短�
 
 Wasm 预览共用玩法、渲染和音源，设备与浏览器适配层分别运行。它不运行设备的 FreeRTOS、LVGL、SPI/DMA 或 I2S。因此，仅靠浏览器 CPU 限速或降低帧率，并未暴露显示刷新忙等导致的真机音频断供。
 
-[Demo 到真机 SOP](development/engineering/application-demo-to-device-acceptance.zh_CN.md)现已在玩法和真机验收之间加入资源压力关。[`tools/game_resource_stress.py`](../tools/game_resource_stress.py)建模固定优先级、可抢占 CPU 工作、释放 CPU/忙等的显示等待、按墙钟时间完成的 DMA、不可抢占停顿、PCM 消耗及额外内存预算。它是确定性负载实验，不是 ESP32/FreeRTOS 模拟器。
+[Demo 到真机 SOP](development/engineering/application-demo-to-device-acceptance.zh_CN.md)现已在玩法和真机验收之间加入资源压力关。[`tools/resource_stress.py`](../tools/resource_stress.py)建模固定优先级、可抢占 CPU 工作、释放 CPU/忙等的显示等待、按墙钟时间完成的 DMA、不可抢占停顿、PCM 消耗及额外内存预算。通过可配置的周期与缓冲任务表达负载。任务、轨迹及校准语义见[通用工具契约](development/engineering/resource-stress.zh_CN.md)。它是确定性负载实验，不是 ESP32/FreeRTOS 模拟器。
 
 ```bash
 python3 tools/build_corridor_web.py --check

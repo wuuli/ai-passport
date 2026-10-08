@@ -35,7 +35,7 @@
   "method": {
     "inputs": "FAP_KEY_V1 through the existing input queue, no screenshot during timed runs; initial concatenated log lines retain the input field, and ACK values are matched against the entire sent-key sequence",
     "frame_filter": "Only windows wholly within playing intervals, at least 0.5 s after entry; partial title/entry windows excluded",
-    "audio_filter": "Report all windows separately; exclude the first after startup/idle from steady-rate range",
+    "audio_filter": "Discard initial buffered/partly pre-session windows (report time < 5.5 s); separately exclude the first usable window after startup/idle from the steady-rate range",
     "limits": "No write/format failure, panic/watchdog/overflow markers; each sent command must be acknowledged. Rates and window timings are observations, not predeclared performance targets."
   },
   "runs": {
@@ -199,8 +199,8 @@
         106496,
         106496
       ],
-      "audio_windows": 7,
-      "steady_audio_windows": 5,
+      "audio_windows": 5,
+      "steady_audio_windows": 3,
       "audio_rate_all_range": [
         15993,
         16209

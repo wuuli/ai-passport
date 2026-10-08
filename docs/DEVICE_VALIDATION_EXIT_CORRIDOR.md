@@ -32,7 +32,7 @@ The logs do not expose a DMA underrun counter and cannot establish acoustic qual
 | Complete playing windows | 53; partial entry/title windows excluded |
 | Submitted frame rate | 9.621-11.323 FPS; not panel-completion cadence |
 | Renderer window-average range | 35,532-50,426 us; not per-frame P95/P99 or worst case |
-| Audio windows | 59; first window after activation/idle excluded from steady-rate comparison |
+| Audio windows | 57 after excluding initial buffered/partly pre-session windows; first usable window after activation/idle also excluded from steady-rate comparison |
 | Steady audio supply | 15,993-16,019 samples/s |
 | Maximum observed synthesis elapsed time | 504 us |
 | Maximum between-write processing gap / write wait | 2,084 / 15,098 us; not measured audible latency |

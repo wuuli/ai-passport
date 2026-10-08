@@ -2,11 +2,59 @@ English | [简体中文](DEVICE_VALIDATION_EXIT_CORRIDOR.zh_CN.md)
 
 # Exit Corridor device validation
 
-These device records validate their original candidates. The upstream integration changes the display buffer, SPI configuration and game navigation; it requires fresh device acceptance. See [current integration](assets/game-integration.md).
+Latest observation: the connected device was checked on 2026-10-08 without flashing. Records below identify each candidate; older installation and performance records remain historical.
 
-Status: Firmware installed on 2026-09-20. The current installation runs the verified 2,312,240-byte plain-wall build at `0x10000`. Startup is verified, while long-session physical play and the latest corner face contrast refinement remain unverified on hardware.
+## 2026-10-08 USB regression and partial calibration
 
-## Current installation status
+The connected game's application descriptor and boot ELF prefix match the verified
+archive `0af8d8336e49fffb5c1d2cc8a830cd079a04f41a2c34d9af9f269160005248b1`
+(ELF `13b4fc1e67ae73708fc7ea89e2c52874902da646d5ef0330c431eb4f494fcf4d`,
+ESP-IDF 5.5.3). This is an identity match, not a full Flash checksum. Read-only
+inspection confirmed a 3 MB factory application at `0x10000` and a separate
+Recovery application at `0x700000`; no Flash was written or device identity read.
+The matching local archive passed layout and hash verification.
+
+[Sanitized evidence](assets/resource-stress/device-observations-20261008.json)
+contains three sessions of 164, 154 and 37 seconds, with all 33 USB key commands
+acknowledged in order. They exercise entry, walking, observation, automatic corner
+stop, title/launcher exit and re-entry. The final session explicitly records
+manual walk/stop/resume/stop and stable position after stopping. Both long sessions
+record a correct normal passage from 0 to 1. This does not cover a complete
+0-to-8 run, all anomalies or physical button debounce.
+
+No panic/watchdog, input-overflow or audio format/write-failure markers were
+captured. Five title transitions logged audio idle. Screenshot capture occurred
+outside the timing sessions; the final captured game view remained responsive.
+The logs do not expose a DMA underrun counter and cannot establish acoustic quality.
+
+| Observation | Result |
+| --- | --- |
+| Complete playing windows | 53; partial entry/title windows excluded |
+| Submitted frame rate | 9.621-11.323 FPS; not panel-completion cadence |
+| Renderer window-average range | 35,532-50,426 us; not per-frame P95/P99 or worst case |
+| Audio windows | 59; first window after activation/idle excluded from steady-rate comparison |
+| Steady audio supply | 15,993-16,019 samples/s |
+| Maximum observed synthesis elapsed time | 504 us |
+| Maximum between-write processing gap / write wait | 2,084 / 15,098 us; not measured audible latency |
+| Playing free heap / lifetime minimum / largest block | 125,992 / 115,792 / 106,496 bytes |
+| Minimum audio-task stack headroom | 932 bytes |
+
+The second session observed 504 us synthesis versus 433 us in the first and
+431 us in the old profile. The supplemental session also widened the maximum
+renderer window average from 50,133 to 50,426 us; observed refresh averages widen
+the wait estimate from 50,337 to 50,360 us. The partial profile now includes these
+observations. Do not reduce them to the first run or treat them as worst-case bounds.
+The fixed reference-workload model was rerun after the parameter update; measured
+costs do not feed back into the C/Wasm game state.
+
+USB lifecycle checks pass within this bounded scope. Resource calibration remains
+`NOT RUN`/partial: per-frame tails, separate CPU/transfer waiting, effective PCM
+capacity/prefill, panel completion, and independent prediction-error validation
+still need instrumented measurements. Speaker quality, physical-button timing,
+long-session fragmentation and complete playthrough are unverified. Existing logs
+cannot fill those gaps merely by collecting more window averages.
+
+## 2026-09-20 installation history
 
 - **Installed firmware**: 2026-09-20 plain-wall application (2,312,240 bytes) flashed to ESP32-C3 at `0x10000`. The partition table matched the verified merged image; the previous 3 MB application was backed up locally. Bootloader, partition table, NVS, identity, and permanent Recovery were not modified.
 - **Hardware verification**: Device rebooted normally. Screen capture confirms Corridor selected in the boot menu ([`firmware-plain-wall-menu-20260920.png`](../assets/images/exit-corridor/device-validation/firmware-plain-wall-menu-20260920.png)). [Installation metadata and write hashes](../assets/images/exit-corridor/device-validation/firmware-install-plain-wall-20260920.json).

@@ -1,0 +1,806 @@
+{
+  "schema": 1,
+  "date": "2026-10-08",
+  "timezone": "Asia/Shanghai",
+  "scope": "Bounded USB lifecycle/performance observation; not a calibrated timing model or acoustic/physical-button acceptance",
+  "installed_identity": {
+    "method": "Read-only ROM partition table and 288-byte application header/descriptor; no MAC/NVS/identity reads or flash writes",
+    "partition_table_md5_valid": true,
+    "application_offset": 65536,
+    "application_size": 3145728,
+    "embedded_elf_sha256": "13b4fc1e67ae73708fc7ea89e2c52874902da646d5ef0330c431eb4f494fcf4d",
+    "version": "v0.1.1-exit-corridor-60-ge5a4bf",
+    "idf_version": "v5.5.3",
+    "scope": "Descriptor match, not a full Flash content checksum",
+    "app_partitions": [
+      {
+        "offset": 65536,
+        "size": 3145728,
+        "subtype": 0
+      },
+      {
+        "offset": 7340032,
+        "size": 1048576,
+        "subtype": 32
+      }
+    ],
+    "boot_elf_prefix": "13b4fc1e6",
+    "active_identity_verified": true
+  },
+  "matching_verified_archive": {
+    "bundle": "build/firmware/0af8d8336e49fffb5c1d2cc8a830cd079a04f41a2c34d9af9f269160005248b1",
+    "full_image_sha256": "0af8d8336e49fffb5c1d2cc8a830cd079a04f41a2c34d9af9f269160005248b1",
+    "app_sha256": "46b5399b8546b00a6fd8ae2b017635baca8c88694789ff338ca654b3d5b0503e"
+  },
+  "method": {
+    "inputs": "FAP_KEY_V1 through the existing input queue, no screenshot during timed runs; initial concatenated log lines retain the input field, and ACK values are matched against the entire sent-key sequence",
+    "frame_filter": "Only windows wholly within playing intervals, at least 0.5 s after entry; partial title/entry windows excluded",
+    "audio_filter": "Report all windows separately; exclude the first after startup/idle from steady-rate range",
+    "limits": "No write/format failure, panic/watchdog/overflow markers; each sent command must be acknowledged. Rates and window timings are observations, not predeclared performance targets."
+  },
+  "runs": {
+    "a": {
+      "duration_s": 164.0,
+      "commands": 14,
+      "acknowledged": 14,
+      "error_markers": [],
+      "playing_windows": 25,
+      "submitted_fps_range": [
+        9.796,
+        11.323
+      ],
+      "render_window_average_us_range": [
+        35532,
+        47699
+      ],
+      "free_heap_bytes_range": [
+        125992,
+        125992
+      ],
+      "lifetime_min_heap_bytes_range": [
+        115792,
+        115792
+      ],
+      "largest_block_bytes_range": [
+        106496,
+        106496
+      ],
+      "audio_windows": 26,
+      "steady_audio_windows": 24,
+      "audio_rate_all_range": [
+        15993,
+        16175
+      ],
+      "audio_steady_samples_per_s_range": [
+        15993,
+        16019
+      ],
+      "audio_gap_max_us": 2084,
+      "audio_render_max_us": 433,
+      "audio_write_max_us": 14939,
+      "audio_stack_free_min_bytes": 932,
+      "turning_observed": true,
+      "stationary_observed": true,
+      "judgements": [
+        {
+          "at_s": 42.468,
+          "device_ms": 419525,
+          "tag": "corridor",
+          "kind": "judgement",
+          "fields": {
+            "passage": 1,
+            "before": 0,
+            "after": 1,
+            "anomaly": 0,
+            "entry_exit": 0,
+            "crossed_exit": 1,
+            "forward": 1,
+            "correct": 1,
+            "phase": 1
+          }
+        }
+      ],
+      "idle_transitions": [
+        115.081,
+        145.095
+      ],
+      "source_record_sha256": "d9b34d63561ca039820aa3f204da9bfd84b41f0cb3fc768f94a72353f8d4fec3"
+    },
+    "b": {
+      "duration_s": 154.0,
+      "commands": 13,
+      "acknowledged": 13,
+      "error_markers": [],
+      "playing_windows": 25,
+      "submitted_fps_range": [
+        9.775,
+        11.167
+      ],
+      "render_window_average_us_range": [
+        36053,
+        48142
+      ],
+      "free_heap_bytes_range": [
+        125992,
+        125992
+      ],
+      "lifetime_min_heap_bytes_range": [
+        115792,
+        115792
+      ],
+      "largest_block_bytes_range": [
+        106496,
+        106496
+      ],
+      "audio_windows": 26,
+      "steady_audio_windows": 23,
+      "audio_rate_all_range": [
+        15993,
+        16222
+      ],
+      "audio_steady_samples_per_s_range": [
+        15993,
+        16019
+      ],
+      "audio_gap_max_us": 1886,
+      "audio_render_max_us": 504,
+      "audio_write_max_us": 15098,
+      "audio_stack_free_min_bytes": 932,
+      "turning_observed": false,
+      "stationary_observed": true,
+      "judgements": [
+        {
+          "at_s": 40.583,
+          "device_ms": 151545,
+          "tag": "corridor",
+          "kind": "judgement",
+          "fields": {
+            "passage": 1,
+            "before": 0,
+            "after": 1,
+            "anomaly": 0,
+            "entry_exit": 0,
+            "crossed_exit": 1,
+            "forward": 1,
+            "correct": 1,
+            "phase": 1
+          }
+        }
+      ],
+      "idle_transitions": [
+        110.126,
+        140.055
+      ],
+      "source_record_sha256": "0fea4981db5110b213ee63a7d17d4ea57e8a6330c28cfd6674c3821c397ba5fb"
+    },
+    "c": {
+      "duration_s": 37.0,
+      "commands": 6,
+      "acknowledged": 6,
+      "error_markers": [],
+      "playing_windows": 3,
+      "submitted_fps_range": [
+        9.621,
+        9.879
+      ],
+      "render_window_average_us_range": [
+        47393,
+        50426
+      ],
+      "free_heap_bytes_range": [
+        125992,
+        125992
+      ],
+      "lifetime_min_heap_bytes_range": [
+        115792,
+        115792
+      ],
+      "largest_block_bytes_range": [
+        106496,
+        106496
+      ],
+      "audio_windows": 7,
+      "steady_audio_windows": 5,
+      "audio_rate_all_range": [
+        15993,
+        16209
+      ],
+      "audio_steady_samples_per_s_range": [
+        15993,
+        16019
+      ],
+      "audio_gap_max_us": 1812,
+      "audio_render_max_us": 429,
+      "audio_write_max_us": 14971,
+      "audio_stack_free_min_bytes": 932,
+      "turning_observed": false,
+      "stationary_observed": true,
+      "judgements": [],
+      "idle_transitions": [
+        25.065
+      ],
+      "source_record_sha256": "3a4407b0a759f6664bdca0e5244fe427970db4c9116c58b182fffd9b0ac22838"
+    }
+  },
+  "usb_lifecycle_acceptance": "PASS",
+  "calibrated_resource_acceptance": "NOT RUN",
+  "physical_output_acceptance": "NOT RUN",
+  "unverified": [
+    "per-frame P95/P99 and worst-case CPU time",
+    "separate SPI/DMA display wait",
+    "effective audio headroom and initial prefill",
+    "panel-completion cadence",
+    "long-session heap fragmentation",
+    "physical button timing and speaker quality",
+    "complete eight-round playthrough"
+  ],
+  "sanitized_records": [
+{
+  "name": "a",
+  "duration_seconds": 164.0,
+  "actions": [
+    {
+      "at_s": 1.036,
+      "key": "OK"
+    },
+    {
+      "at_s": 8.062,
+      "key": "OK"
+    },
+    {
+      "at_s": 40.004,
+      "key": "OK"
+    },
+    {
+      "at_s": 70.041,
+      "key": "LEFT"
+    },
+    {
+      "at_s": 72.032,
+      "key": "LEFT"
+    },
+    {
+      "at_s": 80.066,
+      "key": "RIGHT"
+    },
+    {
+      "at_s": 82.06,
+      "key": "RIGHT"
+    },
+    {
+      "at_s": 90.079,
+      "key": "OK"
+    },
+    {
+      "at_s": 115.015,
+      "key": "BACK"
+    },
+    {
+      "at_s": 120.097,
+      "key": "OK"
+    },
+    {
+      "at_s": 123.02,
+      "key": "OK"
+    },
+    {
+      "at_s": 145.028,
+      "key": "BACK"
+    },
+    {
+      "at_s": 150.028,
+      "key": "BACK"
+    },
+    {
+      "at_s": 155.007,
+      "key": "OK"
+    }
+  ],
+  "records": [
+    {"at_s":0.0,"device_ms":331148,"tag":"corridor","kind":"frames=0","fields":{"frames":0,"window_ms":5007,"render_avg_us":0,"free":120232,"min":115792,"largest":106496,"phase":0,"score":0,"passages":0}},
+    {"at_s":0.0,"device_ms":331149,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33323,"walls":10552,"sprite":483}},
+    {"at_s":1.037,"device_ms":331149,"tag":"corridor","kind":"pipeline","fields":{"tick_us":12937,"refresh_avg_us":0,"refreshes":0,"input":2}},
+    {"at_s":1.076,"device_ms":378132,"tag":"game_audio","kind":"ready","fields":{"generation":1,"setup_us":27709}},
+    {"at_s":4.316,"device_ms":381371,"tag":"corridor","kind":"frames=33","fields":{"frames":33,"window_ms":5098,"render_avg_us":45872,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":4.316,"device_ms":381373,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33872,"walls":10696,"sprite":1218}},
+    {"at_s":4.317,"device_ms":381374,"tag":"corridor","kind":"pipeline","fields":{"tick_us":15460,"refresh_avg_us":49785,"refreshes":33,"decoded_chunks":2112}},
+    {"at_s":4.318,"device_ms":381375,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-1800,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":6.08,"device_ms":383136,"tag":"game_audio","kind":"rate=16042","fields":{"rate":16042,"gap_max_us":915,"render_max_us":135,"write_max_us":14933,"stack_free":932,"peak":630,"steps":0}},
+    {"at_s":8.075,"device_ms":385132,"tag":"fap_screen","kind":"input=2","fields":{"input":2}},
+    {"at_s":9.359,"device_ms":386415,"tag":"corridor","kind":"frames=51","fields":{"frames":51,"window_ms":5043,"render_avg_us":45809,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":9.359,"device_ms":386416,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33536,"walls":10244,"sprite":1483}},
+    {"at_s":9.36,"device_ms":386417,"tag":"corridor","kind":"pipeline","fields":{"tick_us":27984,"refresh_avg_us":49777,"refreshes":51,"decoded_chunks":3264}},
+    {"at_s":9.361,"device_ms":386418,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-3893,"yaw_mrad":0,"walking":1,"turning":0,"observing":0}},
+    {"at_s":11.09,"device_ms":388146,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1600,"render_max_us":424,"write_max_us":14932,"stack_free":932,"peak":7050,"steps":5}},
+    {"at_s":14.448,"device_ms":391504,"tag":"corridor","kind":"frames=50","fields":{"frames":50,"window_ms":5086,"render_avg_us":47484,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":14.449,"device_ms":391505,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":34054,"walls":13416,"sprite":0}},
+    {"at_s":14.45,"device_ms":391507,"tag":"corridor","kind":"pipeline","fields":{"tick_us":62825,"refresh_avg_us":50323,"refreshes":50,"decoded_chunks":3200}},
+    {"at_s":14.451,"device_ms":391508,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-12133,"yaw_mrad":0,"walking":1,"turning":0,"observing":0}},
+    {"at_s":16.099,"device_ms":393156,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1576,"render_max_us":433,"write_max_us":14933,"stack_free":932,"peak":7716,"steps":15}},
+    {"at_s":19.532,"device_ms":396588,"tag":"corridor","kind":"frames=52","fields":{"frames":52,"window_ms":5088,"render_avg_us":43465,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":19.533,"device_ms":396590,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":32595,"walls":11241,"sprite":0}},
+    {"at_s":19.534,"device_ms":396590,"tag":"corridor","kind":"pipeline","fields":{"tick_us":65543,"refresh_avg_us":50281,"refreshes":52,"decoded_chunks":3328}},
+    {"at_s":19.534,"device_ms":396591,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-20376,"yaw_mrad":0,"walking":1,"turning":0,"observing":0}},
+    {"at_s":21.11,"device_ms":398166,"tag":"game_audio","kind":"rate=16019","fields":{"rate":16019,"gap_max_us":1718,"render_max_us":431,"write_max_us":14935,"stack_free":932,"peak":7884,"steps":24}},
+    {"at_s":24.607,"device_ms":401664,"tag":"corridor","kind":"frames=56","fields":{"frames":56,"window_ms":5077,"render_avg_us":36555,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":24.608,"device_ms":401665,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":32766,"walls":8416,"sprite":0}},
+    {"at_s":24.609,"device_ms":401666,"tag":"corridor","kind":"pipeline","fields":{"tick_us":72518,"refresh_avg_us":50138,"refreshes":56,"decoded_chunks":3584}},
+    {"at_s":24.61,"device_ms":401667,"tag":"corridor","kind":"view","fields":{"x_mm":828,"z_mm":-26799,"yaw_mrad":1510,"walking":1,"turning":1,"observing":0}},
+    {"at_s":26.119,"device_ms":403176,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1766,"render_max_us":422,"write_max_us":14933,"stack_free":932,"peak":7638,"steps":29}},
+    {"at_s":29.608,"device_ms":406664,"tag":"corridor","kind":"frames=53","fields":{"frames":53,"window_ms":5001,"render_avg_us":41300,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":29.608,"device_ms":406666,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":32622,"walls":8594,"sprite":0}},
+    {"at_s":29.609,"device_ms":406666,"tag":"corridor","kind":"pipeline","fields":{"tick_us":34099,"refresh_avg_us":49704,"refreshes":53,"decoded_chunks":3392}},
+    {"at_s":29.61,"device_ms":406668,"tag":"corridor","kind":"view","fields":{"x_mm":850,"z_mm":-26800,"yaw_mrad":1570,"walking":0,"turning":0,"observing":0}},
+    {"at_s":31.129,"device_ms":408186,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1605,"render_max_us":134,"write_max_us":14938,"stack_free":932,"peak":714,"steps":29}},
+    {"at_s":34.7,"device_ms":411756,"tag":"corridor","kind":"frames=54","fields":{"frames":54,"window_ms":5092,"render_avg_us":41257,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":34.7,"device_ms":411758,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":32752,"walls":8266,"sprite":0}},
+    {"at_s":34.701,"device_ms":411759,"tag":"corridor","kind":"pipeline","fields":{"tick_us":33248,"refresh_avg_us":49690,"refreshes":54,"decoded_chunks":3456}},
+    {"at_s":34.702,"device_ms":411759,"tag":"corridor","kind":"view","fields":{"x_mm":850,"z_mm":-26800,"yaw_mrad":1570,"walking":0,"turning":0,"observing":0}},
+    {"at_s":36.139,"device_ms":413196,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1838,"render_max_us":135,"write_max_us":14932,"stack_free":932,"peak":726,"steps":29}},
+    {"at_s":39.792,"device_ms":416849,"tag":"corridor","kind":"frames=54","fields":{"frames":54,"window_ms":5092,"render_avg_us":41259,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":39.793,"device_ms":416851,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":32621,"walls":8595,"sprite":0}},
+    {"at_s":39.794,"device_ms":416851,"tag":"corridor","kind":"pipeline","fields":{"tick_us":33904,"refresh_avg_us":49733,"refreshes":54,"decoded_chunks":3456}},
+    {"at_s":39.795,"device_ms":416852,"tag":"corridor","kind":"view","fields":{"x_mm":850,"z_mm":-26800,"yaw_mrad":1570,"walking":0,"turning":0,"observing":0}},
+    {"at_s":40.006,"device_ms":417063,"tag":"fap_screen","kind":"input=2","fields":{"input":2}},
+    {"at_s":41.149,"device_ms":418206,"tag":"game_audio","kind":"rate=16019","fields":{"rate":16019,"gap_max_us":1758,"render_max_us":421,"write_max_us":14932,"stack_free":932,"peak":6780,"steps":32}},
+    {"at_s":42.468,"device_ms":419525,"tag":"corridor","kind":"judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":44.841,"device_ms":421898,"tag":"corridor","kind":"frames=53","fields":{"frames":53,"window_ms":5056,"render_avg_us":40165,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":44.841,"device_ms":421899,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":20940,"walls":11419,"sprite":0}},
+    {"at_s":44.842,"device_ms":421900,"tag":"corridor","kind":"pipeline","fields":{"tick_us":106840,"refresh_avg_us":50287,"refreshes":53,"decoded_chunks":3392}},
+    {"at_s":44.843,"device_ms":421900,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":44.843,"device_ms":421901,"tag":"corridor","kind":"view","fields":{"x_mm":-1141,"z_mm":2800,"yaw_mrad":1570,"walking":1,"turning":0,"observing":0}},
+    {"at_s":46.159,"device_ms":423216,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1714,"render_max_us":422,"write_max_us":14928,"stack_free":932,"peak":7710,"steps":40}},
+    {"at_s":49.914,"device_ms":426971,"tag":"corridor","kind":"frames=54","fields":{"frames":54,"window_ms":5062,"render_avg_us":40549,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":49.915,"device_ms":426973,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":34056,"walls":10583,"sprite":0}},
+    {"at_s":49.915,"device_ms":426973,"tag":"corridor","kind":"pipeline","fields":{"tick_us":43026,"refresh_avg_us":49746,"refreshes":54,"decoded_chunks":3456}},
+    {"at_s":49.916,"device_ms":426974,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":49.917,"device_ms":426975,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":1949,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":51.168,"device_ms":428226,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":2062,"render_max_us":389,"write_max_us":14933,"stack_free":932,"peak":1410,"steps":40}},
+    {"at_s":54.991,"device_ms":432048,"tag":"corridor","kind":"frames=52","fields":{"frames":52,"window_ms":5077,"render_avg_us":44747,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":54.992,"device_ms":432050,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33898,"walls":10725,"sprite":0}},
+    {"at_s":54.992,"device_ms":432050,"tag":"corridor","kind":"pipeline","fields":{"tick_us":14270,"refresh_avg_us":49687,"refreshes":52,"decoded_chunks":3328}},
+    {"at_s":54.993,"device_ms":432051,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":54.994,"device_ms":432052,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":1949,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":56.178,"device_ms":433236,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1445,"render_max_us":126,"write_max_us":14935,"stack_free":932,"peak":768,"steps":40}},
+    {"at_s":60.061,"device_ms":437118,"tag":"corridor","kind":"frames=52","fields":{"frames":52,"window_ms":5070,"render_avg_us":44704,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":60.061,"device_ms":437120,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33896,"walls":10821,"sprite":0}},
+    {"at_s":60.063,"device_ms":437121,"tag":"corridor","kind":"pipeline","fields":{"tick_us":14690,"refresh_avg_us":49667,"refreshes":52,"decoded_chunks":3328}},
+    {"at_s":60.064,"device_ms":437122,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":60.065,"device_ms":437123,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":1949,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":61.188,"device_ms":438246,"tag":"game_audio","kind":"rate=16019","fields":{"rate":16019,"gap_max_us":1746,"render_max_us":135,"write_max_us":14932,"stack_free":932,"peak":810,"steps":40}},
+    {"at_s":65.139,"device_ms":442196,"tag":"corridor","kind":"frames=52","fields":{"frames":52,"window_ms":5077,"render_avg_us":44711,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":65.139,"device_ms":442198,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":34149,"walls":10587,"sprite":0}},
+    {"at_s":65.14,"device_ms":442199,"tag":"corridor","kind":"pipeline","fields":{"tick_us":14286,"refresh_avg_us":49747,"refreshes":52,"decoded_chunks":3328}},
+    {"at_s":65.141,"device_ms":442200,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":65.142,"device_ms":442201,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":1949,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":66.198,"device_ms":443256,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1577,"render_max_us":135,"write_max_us":14932,"stack_free":932,"peak":714,"steps":40}},
+    {"at_s":70.042,"device_ms":447101,"tag":"fap_screen","kind":"input=0","fields":{"input":0}},
+    {"at_s":70.196,"device_ms":447254,"tag":"corridor","kind":"frames=52","fields":{"frames":52,"window_ms":5070,"render_avg_us":44316,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":70.196,"device_ms":447255,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":19301,"walls":12311,"sprite":0}},
+    {"at_s":70.197,"device_ms":447256,"tag":"corridor","kind":"pipeline","fields":{"tick_us":25003,"refresh_avg_us":49491,"refreshes":52,"decoded_chunks":3328}},
+    {"at_s":70.198,"device_ms":447257,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":70.199,"device_ms":447258,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":1949,"yaw_mrad":-728,"walking":0,"turning":0,"observing":0}},
+    {"at_s":71.208,"device_ms":448266,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1442,"render_max_us":251,"write_max_us":14932,"stack_free":932,"peak":762,"steps":40}},
+    {"at_s":72.032,"device_ms":449114,"tag":"fap_screen","kind":"input=0","fields":{"input":0}},
+    {"at_s":75.236,"device_ms":452295,"tag":"corridor","kind":"frames=57","fields":{"frames":57,"window_ms":5034,"render_avg_us":35532,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":75.237,"device_ms":452296,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":29046,"walls":9587,"sprite":0}},
+    {"at_s":75.238,"device_ms":452297,"tag":"corridor","kind":"pipeline","fields":{"tick_us":35396,"refresh_avg_us":49541,"refreshes":57,"decoded_chunks":3648}},
+    {"at_s":75.239,"device_ms":452298,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":75.24,"device_ms":452299,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":1949,"yaw_mrad":-1570,"walking":0,"turning":0,"observing":0}},
+    {"at_s":76.218,"device_ms":453276,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1765,"render_max_us":130,"write_max_us":14934,"stack_free":932,"peak":726,"steps":40}},
+    {"at_s":80.088,"device_ms":457147,"tag":"fap_screen","kind":"input=1","fields":{"input":1}},
+    {"at_s":80.247,"device_ms":457305,"tag":"corridor","kind":"frames=55","fields":{"frames":55,"window_ms":5019,"render_avg_us":38319,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":80.247,"device_ms":457307,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":17699,"walls":12593,"sprite":0}},
+    {"at_s":80.248,"device_ms":457307,"tag":"corridor","kind":"pipeline","fields":{"tick_us":34078,"refresh_avg_us":49482,"refreshes":55,"decoded_chunks":3520}},
+    {"at_s":80.249,"device_ms":457308,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":80.25,"device_ms":457309,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":1949,"yaw_mrad":-852,"walking":0,"turning":0,"observing":0}},
+    {"at_s":81.227,"device_ms":458286,"tag":"game_audio","kind":"rate=16019","fields":{"rate":16019,"gap_max_us":1662,"render_max_us":131,"write_max_us":14933,"stack_free":932,"peak":798,"steps":40}},
+    {"at_s":82.062,"device_ms":459121,"tag":"fap_screen","kind":"input=1","fields":{"input":1}},
+    {"at_s":85.327,"device_ms":462386,"tag":"corridor","kind":"frames=55","fields":{"frames":55,"window_ms":5066,"render_avg_us":39421,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":85.33,"device_ms":462388,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":34127,"walls":10539,"sprite":0}},
+    {"at_s":85.33,"device_ms":462389,"tag":"corridor","kind":"pipeline","fields":{"tick_us":33869,"refresh_avg_us":49458,"refreshes":55,"decoded_chunks":3520}},
+    {"at_s":85.331,"device_ms":462390,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":85.331,"device_ms":462391,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":1949,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":86.237,"device_ms":463296,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1569,"render_max_us":126,"write_max_us":14932,"stack_free":932,"peak":690,"steps":40}},
+    {"at_s":90.121,"device_ms":467180,"tag":"fap_screen","kind":"input=2","fields":{"input":2}},
+    {"at_s":90.414,"device_ms":467473,"tag":"corridor","kind":"frames=52","fields":{"frames":52,"window_ms":5084,"render_avg_us":44777,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":90.415,"device_ms":467474,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":35071,"walls":10853,"sprite":0}},
+    {"at_s":90.416,"device_ms":467475,"tag":"corridor","kind":"pipeline","fields":{"tick_us":30670,"refresh_avg_us":49515,"refreshes":52,"decoded_chunks":3328}},
+    {"at_s":90.416,"device_ms":467475,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":90.417,"device_ms":467476,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":1465,"yaw_mrad":0,"walking":1,"turning":0,"observing":0}},
+    {"at_s":91.247,"device_ms":468306,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1720,"render_max_us":421,"write_max_us":14939,"stack_free":932,"peak":7134,"steps":42}},
+    {"at_s":95.508,"device_ms":472567,"tag":"corridor","kind":"frames=51","fields":{"frames":51,"window_ms":5097,"render_avg_us":45358,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":95.509,"device_ms":472569,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33661,"walls":9301,"sprite":0}},
+    {"at_s":95.51,"device_ms":472569,"tag":"corridor","kind":"pipeline","fields":{"tick_us":79067,"refresh_avg_us":50230,"refreshes":51,"decoded_chunks":3264}},
+    {"at_s":95.511,"device_ms":472570,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":95.512,"device_ms":472571,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-6791,"yaw_mrad":0,"walking":1,"turning":0,"observing":0}},
+    {"at_s":96.257,"device_ms":473316,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1603,"render_max_us":431,"write_max_us":14935,"stack_free":932,"peak":7260,"steps":52}},
+    {"at_s":100.557,"device_ms":477616,"tag":"corridor","kind":"frames=51","fields":{"frames":51,"window_ms":5048,"render_avg_us":44581,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":100.557,"device_ms":477617,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33329,"walls":9539,"sprite":0}},
+    {"at_s":100.558,"device_ms":477618,"tag":"corridor","kind":"pipeline","fields":{"tick_us":74506,"refresh_avg_us":50276,"refreshes":51,"decoded_chunks":3264}},
+    {"at_s":100.559,"device_ms":477619,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":100.56,"device_ms":477620,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-14970,"yaw_mrad":0,"walking":1,"turning":0,"observing":0}},
+    {"at_s":101.267,"device_ms":478326,"tag":"game_audio","kind":"rate=16019","fields":{"rate":16019,"gap_max_us":1607,"render_max_us":423,"write_max_us":14934,"stack_free":932,"peak":7500,"steps":61}},
+    {"at_s":105.63,"device_ms":482689,"tag":"corridor","kind":"frames=52","fields":{"frames":52,"window_ms":5074,"render_avg_us":43091,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":105.631,"device_ms":482690,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":32563,"walls":7929,"sprite":0}},
+    {"at_s":105.632,"device_ms":482692,"tag":"corridor","kind":"pipeline","fields":{"tick_us":76281,"refresh_avg_us":50284,"refreshes":52,"decoded_chunks":3328}},
+    {"at_s":105.633,"device_ms":482693,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":105.634,"device_ms":482694,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-23192,"yaw_mrad":0,"walking":1,"turning":0,"observing":0}},
+    {"at_s":106.276,"device_ms":483336,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1810,"render_max_us":432,"write_max_us":14932,"stack_free":932,"peak":8046,"steps":71}},
+    {"at_s":110.678,"device_ms":487737,"tag":"corridor","kind":"frames=56","fields":{"frames":56,"window_ms":5049,"render_avg_us":36273,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":110.679,"device_ms":487739,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":32687,"walls":8705,"sprite":0}},
+    {"at_s":110.68,"device_ms":487740,"tag":"corridor","kind":"pipeline","fields":{"tick_us":62530,"refresh_avg_us":50059,"refreshes":56,"decoded_chunks":3584}},
+    {"at_s":110.681,"device_ms":487740,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":110.682,"device_ms":487741,"tag":"corridor","kind":"view","fields":{"x_mm":850,"z_mm":-26800,"yaw_mrad":1570,"walking":0,"turning":0,"observing":0}},
+    {"at_s":111.286,"device_ms":488346,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1465,"render_max_us":423,"write_max_us":14932,"stack_free":932,"peak":8178,"steps":75}},
+    {"at_s":115.025,"device_ms":492086,"tag":"fap_screen","kind":"input=3","fields":{"input":3}},
+    {"at_s":115.081,"device_ms":492141,"tag":"game_audio","kind":"idle","fields":{"generation":1}},
+    {"at_s":115.642,"device_ms":492702,"tag":"corridor","kind":"frames=47","fields":{"frames":47,"window_ms":5006,"render_avg_us":41423,"free":125992,"min":115792,"largest":106496,"phase":0,"score":0,"passages":0}},
+    {"at_s":115.643,"device_ms":492703,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":34093,"walls":10669,"sprite":1149}},
+    {"at_s":115.644,"device_ms":492704,"tag":"corridor","kind":"pipeline","fields":{"tick_us":34144,"refresh_avg_us":36697,"refreshes":69,"decoded_chunks":3198}},
+    {"at_s":115.644,"device_ms":492705,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-1800,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":120.098,"device_ms":497159,"tag":"fap_screen","kind":"input=2","fields":{"input":2}},
+    {"at_s":120.745,"device_ms":497804,"tag":"corridor","kind":"frames=7","fields":{"frames":7,"window_ms":5056,"render_avg_us":45728,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":120.745,"device_ms":497806,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":34079,"walls":10562,"sprite":1159}},
+    {"at_s":120.746,"device_ms":497807,"tag":"corridor","kind":"pipeline","fields":{"tick_us":17947,"refresh_avg_us":20990,"refreshes":17,"decoded_chunks":450}},
+    {"at_s":120.747,"device_ms":497808,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-1800,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":123.022,"device_ms":500083,"tag":"fap_screen","kind":"input=2","fields":{"input":2}},
+    {"at_s":125.116,"device_ms":502176,"tag":"game_audio","kind":"rate=16175","fields":{"rate":16175,"gap_max_us":1005,"render_max_us":431,"write_max_us":14934,"stack_free":932,"peak":6864,"steps":3}},
+    {"at_s":125.804,"device_ms":502864,"tag":"corridor","kind":"frames=51","fields":{"frames":51,"window_ms":5058,"render_avg_us":45655,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":125.806,"device_ms":502866,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":34089,"walls":9746,"sprite":1633}},
+    {"at_s":125.807,"device_ms":502867,"tag":"corridor","kind":"pipeline","fields":{"tick_us":43504,"refresh_avg_us":50002,"refreshes":51,"decoded_chunks":3264}},
+    {"at_s":125.808,"device_ms":502868,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-6319,"yaw_mrad":0,"walking":1,"turning":0,"observing":0}},
+    {"at_s":130.126,"device_ms":507186,"tag":"game_audio","kind":"rate=16019","fields":{"rate":16019,"gap_max_us":1747,"render_max_us":423,"write_max_us":14932,"stack_free":932,"peak":7818,"steps":13}},
+    {"at_s":130.803,"device_ms":507863,"tag":"corridor","kind":"frames=49","fields":{"frames":49,"window_ms":5002,"render_avg_us":47699,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":130.804,"device_ms":507864,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33287,"walls":8898,"sprite":0}},
+    {"at_s":130.804,"device_ms":507865,"tag":"corridor","kind":"pipeline","fields":{"tick_us":61393,"refresh_avg_us":50360,"refreshes":49,"decoded_chunks":3136}},
+    {"at_s":130.805,"device_ms":507866,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-14423,"yaw_mrad":0,"walking":1,"turning":0,"observing":0}},
+    {"at_s":135.136,"device_ms":512196,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1854,"render_max_us":422,"write_max_us":14912,"stack_free":932,"peak":7404,"steps":23}},
+    {"at_s":135.857,"device_ms":512917,"tag":"corridor","kind":"frames=52","fields":{"frames":52,"window_ms":5055,"render_avg_us":42996,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":135.857,"device_ms":512918,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33282,"walls":7640,"sprite":0}},
+    {"at_s":135.858,"device_ms":512919,"tag":"corridor","kind":"pipeline","fields":{"tick_us":66982,"refresh_avg_us":50225,"refreshes":52,"decoded_chunks":3328}},
+    {"at_s":135.859,"device_ms":512920,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-22612,"yaw_mrad":0,"walking":1,"turning":0,"observing":0}},
+    {"at_s":140.146,"device_ms":517206,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":2084,"render_max_us":431,"write_max_us":14912,"stack_free":932,"peak":7668,"steps":29}},
+    {"at_s":140.889,"device_ms":517949,"tag":"corridor","kind":"frames=56","fields":{"frames":56,"window_ms":5032,"render_avg_us":36010,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":140.889,"device_ms":517951,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":32607,"walls":8826,"sprite":0}},
+    {"at_s":140.89,"device_ms":517951,"tag":"corridor","kind":"pipeline","fields":{"tick_us":62184,"refresh_avg_us":50053,"refreshes":56,"decoded_chunks":3584}},
+    {"at_s":140.891,"device_ms":517952,"tag":"corridor","kind":"view","fields":{"x_mm":850,"z_mm":-26800,"yaw_mrad":1570,"walking":0,"turning":0,"observing":0}},
+    {"at_s":145.028,"device_ms":522111,"tag":"fap_screen","kind":"input=3","fields":{"input":3}},
+    {"at_s":145.095,"device_ms":522156,"tag":"game_audio","kind":"idle","fields":{"generation":1}},
+    {"at_s":145.903,"device_ms":522964,"tag":"corridor","kind":"frames=45","fields":{"frames":45,"window_ms":5056,"render_avg_us":41387,"free":125992,"min":115792,"largest":106496,"phase":0,"score":0,"passages":0}},
+    {"at_s":145.904,"device_ms":522965,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33229,"walls":11482,"sprite":1154}},
+    {"at_s":145.905,"device_ms":522966,"tag":"corridor","kind":"pipeline","fields":{"tick_us":39940,"refresh_avg_us":32334,"refreshes":77,"decoded_chunks":3130}},
+    {"at_s":145.906,"device_ms":522967,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-1800,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":150.028,"device_ms":527090,"tag":"fap_screen","kind":"input=3","fields":{"input":3}},
+    {"at_s":155.009,"device_ms":532070,"tag":"fap_screen","kind":"input=2","fields":{"input":2}},
+    {"at_s":155.104,"device_ms":532165,"tag":"corridor","kind":"ready=1","fields":{"ready":1,"native":240,"image":77824,"work":13240,"free":125992,"largest":106496}},
+    {"at_s":160.121,"device_ms":537182,"tag":"corridor","kind":"frames=1","fields":{"frames":1,"window_ms":5017,"render_avg_us":44377,"free":125992,"min":115792,"largest":106496,"phase":0,"score":0,"passages":0}},
+    {"at_s":160.122,"device_ms":537183,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33211,"walls":10745,"sprite":401}},
+    {"at_s":160.122,"device_ms":537183,"tag":"corridor","kind":"pipeline","fields":{"tick_us":25685,"refresh_avg_us":10274,"refreshes":30,"decoded_chunks":296}},
+    {"at_s":160.123,"device_ms":537184,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-1800,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}}
+  ]
+},
+{
+  "name": "b",
+  "duration_seconds": 154.0,
+  "actions": [
+    {
+      "at_s": 1.035,
+      "key": "OK"
+    },
+    {
+      "at_s": 8.044,
+      "key": "OK"
+    },
+    {
+      "at_s": 38.097,
+      "key": "OK"
+    },
+    {
+      "at_s": 65.028,
+      "key": "LEFT"
+    },
+    {
+      "at_s": 67.017,
+      "key": "LEFT"
+    },
+    {
+      "at_s": 75.034,
+      "key": "RIGHT"
+    },
+    {
+      "at_s": 77.048,
+      "key": "RIGHT"
+    },
+    {
+      "at_s": 85.06,
+      "key": "OK"
+    },
+    {
+      "at_s": 110.1,
+      "key": "BACK"
+    },
+    {
+      "at_s": 115.068,
+      "key": "OK"
+    },
+    {
+      "at_s": 118.044,
+      "key": "OK"
+    },
+    {
+      "at_s": 140.002,
+      "key": "BACK"
+    },
+    {
+      "at_s": 145.005,
+      "key": "OK"
+    }
+  ],
+  "records": [
+    {"at_s":0.0,"device_ms":80798,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33217,"walls":10751,"sprite":402}},
+    {"at_s":0.0,"device_ms":80798,"tag":"corridor","kind":"pipeline","fields":{"tick_us":12952,"refresh_avg_us":0,"refreshes":0,"decoded_chunks":0}},
+    {"at_s":0.0,"device_ms":80798,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-1800,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":0.0,"device_ms":85799,"tag":"corridor","kind":"frames=0","fields":{"frames":0,"window_ms":5002,"render_avg_us":0,"free":120232,"min":115792,"largest":106496,"phase":0,"score":0,"passages":0}},
+    {"at_s":0.0,"device_ms":85800,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33217,"walls":10751,"sprite":402}},
+    {"at_s":1.038,"device_ms":85800,"tag":"corridor","kind":"pipeline","fields":{"tick_us":12943,"refresh_avg_us":0,"refreshes":0,"input":2}},
+    {"at_s":1.071,"device_ms":112032,"tag":"game_audio","kind":"ready","fields":{"generation":1,"setup_us":27766}},
+    {"at_s":4.917,"device_ms":115878,"tag":"corridor","kind":"frames=39","fields":{"frames":39,"window_ms":5017,"render_avg_us":45872,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":4.918,"device_ms":115880,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33643,"walls":10912,"sprite":1210}},
+    {"at_s":4.919,"device_ms":115880,"tag":"corridor","kind":"pipeline","fields":{"tick_us":14163,"refresh_avg_us":50177,"refreshes":39,"decoded_chunks":2496}},
+    {"at_s":4.92,"device_ms":115882,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-1800,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":6.075,"device_ms":117036,"tag":"game_audio","kind":"rate=16042","fields":{"rate":16042,"gap_max_us":912,"render_max_us":175,"write_max_us":15098,"stack_free":932,"peak":630,"steps":0}},
+    {"at_s":8.094,"device_ms":119056,"tag":"fap_screen","kind":"input=2","fields":{"input":2}},
+    {"at_s":9.978,"device_ms":120939,"tag":"corridor","kind":"frames=51","fields":{"frames":51,"window_ms":5057,"render_avg_us":45897,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":9.978,"device_ms":120940,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33605,"walls":11449,"sprite":2124}},
+    {"at_s":9.979,"device_ms":120941,"tag":"corridor","kind":"pipeline","fields":{"tick_us":32291,"refresh_avg_us":49979,"refreshes":51,"decoded_chunks":3264}},
+    {"at_s":9.98,"device_ms":120942,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-4861,"yaw_mrad":0,"walking":1,"turning":0,"observing":0}},
+    {"at_s":11.085,"device_ms":122046,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1483,"render_max_us":431,"write_max_us":14863,"stack_free":932,"peak":7902,"steps":5}},
+    {"at_s":15.068,"device_ms":126029,"tag":"corridor","kind":"frames=50","fields":{"frames":50,"window_ms":5093,"render_avg_us":47685,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":15.069,"device_ms":126030,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33797,"walls":10662,"sprite":0}},
+    {"at_s":15.069,"device_ms":126031,"tag":"corridor","kind":"pipeline","fields":{"tick_us":61509,"refresh_avg_us":50172,"refreshes":50,"decoded_chunks":3200}},
+    {"at_s":15.07,"device_ms":126032,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-13112,"yaw_mrad":0,"walking":1,"turning":0,"observing":0}},
+    {"at_s":16.095,"device_ms":127056,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1774,"render_max_us":433,"write_max_us":14861,"stack_free":932,"peak":7992,"steps":15}},
+    {"at_s":20.123,"device_ms":131084,"tag":"corridor","kind":"frames=52","fields":{"frames":52,"window_ms":5053,"render_avg_us":43276,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":20.124,"device_ms":131086,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":32338,"walls":14324,"sprite":0}},
+    {"at_s":20.124,"device_ms":131087,"tag":"corridor","kind":"pipeline","fields":{"tick_us":63434,"refresh_avg_us":50080,"refreshes":52,"decoded_chunks":3328}},
+    {"at_s":20.125,"device_ms":131087,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-21298,"yaw_mrad":0,"walking":1,"turning":0,"observing":0}},
+    {"at_s":21.105,"device_ms":132066,"tag":"game_audio","kind":"rate=16019","fields":{"rate":16019,"gap_max_us":1749,"render_max_us":434,"write_max_us":14978,"stack_free":932,"peak":8382,"steps":24}},
+    {"at_s":25.158,"device_ms":136119,"tag":"corridor","kind":"frames=56","fields":{"frames":56,"window_ms":5041,"render_avg_us":36097,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":25.159,"device_ms":136121,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33077,"walls":8249,"sprite":0}},
+    {"at_s":25.159,"device_ms":136122,"tag":"corridor","kind":"pipeline","fields":{"tick_us":67845,"refresh_avg_us":49893,"refreshes":56,"decoded_chunks":3584}},
+    {"at_s":25.16,"device_ms":136122,"tag":"corridor","kind":"view","fields":{"x_mm":850,"z_mm":-26800,"yaw_mrad":1570,"walking":0,"turning":0,"observing":0}},
+    {"at_s":26.114,"device_ms":137076,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1661,"render_max_us":433,"write_max_us":14861,"stack_free":932,"peak":7728,"steps":29}},
+    {"at_s":30.159,"device_ms":141120,"tag":"corridor","kind":"frames=53","fields":{"frames":53,"window_ms":5001,"render_avg_us":41229,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":30.16,"device_ms":141122,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":32689,"walls":8638,"sprite":0}},
+    {"at_s":30.16,"device_ms":141123,"tag":"corridor","kind":"pipeline","fields":{"tick_us":35095,"refresh_avg_us":49789,"refreshes":53,"decoded_chunks":3392}},
+    {"at_s":30.161,"device_ms":141123,"tag":"corridor","kind":"view","fields":{"x_mm":850,"z_mm":-26800,"yaw_mrad":1570,"walking":0,"turning":0,"observing":0}},
+    {"at_s":31.124,"device_ms":142086,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1653,"render_max_us":320,"write_max_us":14861,"stack_free":932,"peak":714,"steps":29}},
+    {"at_s":35.174,"device_ms":146135,"tag":"corridor","kind":"frames=53","fields":{"frames":53,"window_ms":5015,"render_avg_us":41234,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":35.174,"device_ms":146137,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":32722,"walls":8284,"sprite":0}},
+    {"at_s":35.175,"device_ms":146138,"tag":"corridor","kind":"pipeline","fields":{"tick_us":33084,"refresh_avg_us":50006,"refreshes":53,"decoded_chunks":3392}},
+    {"at_s":35.176,"device_ms":146138,"tag":"corridor","kind":"view","fields":{"x_mm":850,"z_mm":-26800,"yaw_mrad":1570,"walking":0,"turning":0,"observing":0}},
+    {"at_s":36.134,"device_ms":147096,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1807,"render_max_us":320,"write_max_us":14861,"stack_free":932,"peak":726,"steps":29}},
+    {"at_s":38.112,"device_ms":149075,"tag":"fap_screen","kind":"input=2","fields":{"input":2}},
+    {"at_s":40.234,"device_ms":151196,"tag":"corridor","kind":"frames=53","fields":{"frames":53,"window_ms":5057,"render_avg_us":41455,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":40.235,"device_ms":151198,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":34185,"walls":8244,"sprite":0}},
+    {"at_s":40.235,"device_ms":151198,"tag":"corridor","kind":"pipeline","fields":{"tick_us":69200,"refresh_avg_us":50036,"refreshes":53,"decoded_chunks":3392}},
+    {"at_s":40.236,"device_ms":151199,"tag":"corridor","kind":"view","fields":{"x_mm":4295,"z_mm":-26800,"yaw_mrad":1570,"walking":1,"turning":0,"observing":0}},
+    {"at_s":40.583,"device_ms":151545,"tag":"corridor","kind":"judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":41.144,"device_ms":152106,"tag":"game_audio","kind":"rate=16019","fields":{"rate":16019,"gap_max_us":1692,"render_max_us":428,"write_max_us":14861,"stack_free":932,"peak":7500,"steps":35}},
+    {"at_s":45.27,"device_ms":156232,"tag":"corridor","kind":"frames=54","fields":{"frames":54,"window_ms":5033,"render_avg_us":38839,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":45.271,"device_ms":156234,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33833,"walls":10903,"sprite":1137}},
+    {"at_s":45.271,"device_ms":156234,"tag":"corridor","kind":"pipeline","fields":{"tick_us":88137,"refresh_avg_us":50054,"refreshes":54,"decoded_chunks":3456}},
+    {"at_s":45.273,"device_ms":156235,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":45.273,"device_ms":156236,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":1949,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":46.154,"device_ms":157116,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1604,"render_max_us":504,"write_max_us":14870,"stack_free":932,"peak":6990,"steps":40}},
+    {"at_s":50.321,"device_ms":161284,"tag":"corridor","kind":"frames=51","fields":{"frames":51,"window_ms":5052,"render_avg_us":45996,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":50.322,"device_ms":161285,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33906,"walls":10832,"sprite":1266}},
+    {"at_s":50.323,"device_ms":161286,"tag":"corridor","kind":"pipeline","fields":{"tick_us":14668,"refresh_avg_us":50015,"refreshes":51,"decoded_chunks":3264}},
+    {"at_s":50.324,"device_ms":161287,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":50.325,"device_ms":161288,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":1949,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":51.164,"device_ms":162126,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1542,"render_max_us":174,"write_max_us":15018,"stack_free":932,"peak":696,"steps":40}},
+    {"at_s":55.38,"device_ms":166342,"tag":"corridor","kind":"frames=51","fields":{"frames":51,"window_ms":5058,"render_avg_us":46155,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":55.38,"device_ms":166344,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33834,"walls":10971,"sprite":1961}},
+    {"at_s":55.381,"device_ms":166345,"tag":"corridor","kind":"pipeline","fields":{"tick_us":14016,"refresh_avg_us":50026,"refreshes":51,"decoded_chunks":3264}},
+    {"at_s":55.383,"device_ms":166345,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":55.383,"device_ms":166347,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":1949,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":56.173,"device_ms":167136,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1776,"render_max_us":175,"write_max_us":14861,"stack_free":932,"peak":768,"steps":40}},
+    {"at_s":60.445,"device_ms":171408,"tag":"corridor","kind":"frames=51","fields":{"frames":51,"window_ms":5065,"render_avg_us":46693,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":60.446,"device_ms":171409,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33833,"walls":10956,"sprite":2396}},
+    {"at_s":60.447,"device_ms":171410,"tag":"corridor","kind":"pipeline","fields":{"tick_us":14308,"refresh_avg_us":49645,"refreshes":51,"decoded_chunks":3264}},
+    {"at_s":60.448,"device_ms":171411,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":60.449,"device_ms":171413,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":1949,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":61.183,"device_ms":172146,"tag":"game_audio","kind":"rate=16019","fields":{"rate":16019,"gap_max_us":1557,"render_max_us":178,"write_max_us":14863,"stack_free":932,"peak":810,"steps":40}},
+    {"at_s":65.029,"device_ms":175993,"tag":"fap_screen","kind":"input=0","fields":{"input":0}},
+    {"at_s":65.44,"device_ms":176403,"tag":"corridor","kind":"frames=50","fields":{"frames":50,"window_ms":5010,"render_avg_us":46595,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":65.442,"device_ms":176405,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":18218,"walls":12785,"sprite":1209}},
+    {"at_s":65.442,"device_ms":176405,"tag":"corridor","kind":"pipeline","fields":{"tick_us":18454,"refresh_avg_us":50202,"refreshes":50,"decoded_chunks":3200}},
+    {"at_s":65.443,"device_ms":176407,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":65.444,"device_ms":176408,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":1949,"yaw_mrad":-783,"walking":0,"turning":0,"observing":0}},
+    {"at_s":66.193,"device_ms":177156,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1699,"render_max_us":292,"write_max_us":14989,"stack_free":932,"peak":714,"steps":40}},
+    {"at_s":67.025,"device_ms":177988,"tag":"fap_screen","kind":"input=0","fields":{"input":0}},
+    {"at_s":70.462,"device_ms":181425,"tag":"corridor","kind":"frames=56","fields":{"frames":56,"window_ms":5015,"render_avg_us":36481,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":70.462,"device_ms":181426,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":29213,"walls":9418,"sprite":0}},
+    {"at_s":70.463,"device_ms":181427,"tag":"corridor","kind":"pipeline","fields":{"tick_us":34222,"refresh_avg_us":49938,"refreshes":56,"decoded_chunks":3584}},
+    {"at_s":70.464,"device_ms":181427,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":70.465,"device_ms":181428,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":1949,"yaw_mrad":-1570,"walking":0,"turning":0,"observing":0}},
+    {"at_s":71.203,"device_ms":182166,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1552,"render_max_us":257,"write_max_us":14861,"stack_free":932,"peak":762,"steps":40}},
+    {"at_s":75.058,"device_ms":186022,"tag":"fap_screen","kind":"input=1","fields":{"input":1}},
+    {"at_s":75.477,"device_ms":186440,"tag":"corridor","kind":"frames=55","fields":{"frames":55,"window_ms":5022,"render_avg_us":37948,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":75.478,"device_ms":186442,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":18056,"walls":12754,"sprite":884}},
+    {"at_s":75.479,"device_ms":186442,"tag":"corridor","kind":"pipeline","fields":{"tick_us":34378,"refresh_avg_us":49996,"refreshes":55,"decoded_chunks":3520}},
+    {"at_s":75.48,"device_ms":186443,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":75.48,"device_ms":186444,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":1949,"yaw_mrad":-787,"walking":0,"turning":0,"observing":0}},
+    {"at_s":76.213,"device_ms":187176,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1798,"render_max_us":256,"write_max_us":15082,"stack_free":932,"peak":726,"steps":40}},
+    {"at_s":77.051,"device_ms":188015,"tag":"fap_screen","kind":"input=1","fields":{"input":1}},
+    {"at_s":80.575,"device_ms":191539,"tag":"corridor","kind":"frames=54","fields":{"frames":54,"window_ms":5085,"render_avg_us":41151,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":80.576,"device_ms":191540,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33893,"walls":10882,"sprite":1058}},
+    {"at_s":80.577,"device_ms":191541,"tag":"corridor","kind":"pipeline","fields":{"tick_us":30401,"refresh_avg_us":49935,"refreshes":54,"decoded_chunks":3456}},
+    {"at_s":80.578,"device_ms":191542,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":80.579,"device_ms":191543,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":1949,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":81.223,"device_ms":192186,"tag":"game_audio","kind":"rate=16019","fields":{"rate":16019,"gap_max_us":1680,"render_max_us":177,"write_max_us":15015,"stack_free":932,"peak":798,"steps":40}},
+    {"at_s":85.06,"device_ms":196036,"tag":"fap_screen","kind":"input=2","fields":{"input":2}},
+    {"at_s":85.647,"device_ms":196610,"tag":"corridor","kind":"frames=51","fields":{"frames":51,"window_ms":5070,"render_avg_us":45879,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":85.648,"device_ms":196613,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33740,"walls":11770,"sprite":989}},
+    {"at_s":85.649,"device_ms":196613,"tag":"corridor","kind":"pipeline","fields":{"tick_us":32771,"refresh_avg_us":50119,"refreshes":51,"decoded_chunks":3264}},
+    {"at_s":85.65,"device_ms":196614,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":85.651,"device_ms":196615,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":968,"yaw_mrad":0,"walking":1,"turning":0,"observing":0}},
+    {"at_s":86.232,"device_ms":197196,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1674,"render_max_us":422,"write_max_us":15007,"stack_free":932,"peak":6570,"steps":42}},
+    {"at_s":90.685,"device_ms":201649,"tag":"corridor","kind":"frames=50","fields":{"frames":50,"window_ms":5039,"render_avg_us":46470,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":90.686,"device_ms":201650,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33723,"walls":9981,"sprite":1381}},
+    {"at_s":90.687,"device_ms":201651,"tag":"corridor","kind":"pipeline","fields":{"tick_us":81893,"refresh_avg_us":49952,"refreshes":50,"decoded_chunks":3200}},
+    {"at_s":90.688,"device_ms":201652,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":90.689,"device_ms":201653,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-7196,"yaw_mrad":0,"walking":1,"turning":0,"observing":0}},
+    {"at_s":91.242,"device_ms":202206,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1369,"render_max_us":432,"write_max_us":14861,"stack_free":932,"peak":7212,"steps":52}},
+    {"at_s":95.7,"device_ms":206663,"tag":"corridor","kind":"frames=49","fields":{"frames":49,"window_ms":5013,"render_avg_us":48142,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":95.7,"device_ms":206665,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33482,"walls":9472,"sprite":3797}},
+    {"at_s":95.701,"device_ms":206666,"tag":"corridor","kind":"pipeline","fields":{"tick_us":70440,"refresh_avg_us":50013,"refreshes":49,"decoded_chunks":3136}},
+    {"at_s":95.702,"device_ms":206667,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":95.703,"device_ms":206668,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-15317,"yaw_mrad":0,"walking":1,"turning":0,"observing":0}},
+    {"at_s":96.252,"device_ms":207216,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1857,"render_max_us":428,"write_max_us":14861,"stack_free":932,"peak":7662,"steps":61}},
+    {"at_s":100.754,"device_ms":211718,"tag":"corridor","kind":"frames=52","fields":{"frames":52,"window_ms":5062,"render_avg_us":43062,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":100.755,"device_ms":211720,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":31174,"walls":8325,"sprite":0}},
+    {"at_s":100.756,"device_ms":211720,"tag":"corridor","kind":"pipeline","fields":{"tick_us":75185,"refresh_avg_us":50015,"refreshes":52,"decoded_chunks":3328}},
+    {"at_s":100.757,"device_ms":211721,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":100.758,"device_ms":211722,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-23518,"yaw_mrad":0,"walking":1,"turning":0,"observing":0}},
+    {"at_s":101.262,"device_ms":212226,"tag":"game_audio","kind":"rate=16019","fields":{"rate":16019,"gap_max_us":1886,"render_max_us":431,"write_max_us":14861,"stack_free":932,"peak":8202,"steps":71}},
+    {"at_s":105.809,"device_ms":216773,"tag":"corridor","kind":"frames=56","fields":{"frames":56,"window_ms":5054,"render_avg_us":36308,"free":125992,"min":115792,"largest":106496,"phase":1,"score":1,"passages":1}},
+    {"at_s":105.81,"device_ms":216775,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":32742,"walls":8720,"sprite":0}},
+    {"at_s":105.811,"device_ms":216775,"tag":"corridor","kind":"pipeline","fields":{"tick_us":60208,"refresh_avg_us":50135,"refreshes":56,"decoded_chunks":3584}},
+    {"at_s":105.812,"device_ms":216776,"tag":"corridor","kind":"last_judgement","fields":{"passage":1,"before":0,"after":1,"anomaly":0,"entry_exit":0,"crossed_exit":1,"forward":1,"correct":1,"phase":1}},
+    {"at_s":105.813,"device_ms":216777,"tag":"corridor","kind":"view","fields":{"x_mm":850,"z_mm":-26800,"yaw_mrad":1570,"walking":0,"turning":0,"observing":0}},
+    {"at_s":106.272,"device_ms":217236,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1820,"render_max_us":434,"write_max_us":15010,"stack_free":932,"peak":7698,"steps":75}},
+    {"at_s":110.11,"device_ms":221075,"tag":"fap_screen","kind":"input=3","fields":{"input":3}},
+    {"at_s":110.126,"device_ms":221091,"tag":"game_audio","kind":"idle","fields":{"generation":1}},
+    {"at_s":110.812,"device_ms":221776,"tag":"corridor","kind":"frames=46","fields":{"frames":46,"window_ms":5044,"render_avg_us":41479,"free":125992,"min":115792,"largest":106496,"phase":0,"score":0,"passages":0}},
+    {"at_s":110.812,"device_ms":221778,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33242,"walls":11525,"sprite":1149}},
+    {"at_s":110.813,"device_ms":221778,"tag":"corridor","kind":"pipeline","fields":{"tick_us":33273,"refresh_avg_us":34198,"refreshes":74,"decoded_chunks":3170}},
+    {"at_s":110.814,"device_ms":221779,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-1800,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":115.068,"device_ms":226034,"tag":"fap_screen","kind":"input=2","fields":{"input":2}},
+    {"at_s":115.866,"device_ms":226830,"tag":"corridor","kind":"frames=8","fields":{"frames":8,"window_ms":5008,"render_avg_us":45841,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":115.867,"device_ms":226832,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33552,"walls":11040,"sprite":1149}},
+    {"at_s":115.868,"device_ms":226833,"tag":"corridor","kind":"pipeline","fields":{"tick_us":15601,"refresh_avg_us":32638,"refreshes":13,"decoded_chunks":542}},
+    {"at_s":115.868,"device_ms":226834,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-1800,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":118.044,"device_ms":229018,"tag":"fap_screen","kind":"input=2","fields":{"input":2}},
+    {"at_s":120.086,"device_ms":231051,"tag":"game_audio","kind":"rate=16222","fields":{"rate":16222,"gap_max_us":913,"render_max_us":426,"write_max_us":14971,"stack_free":932,"peak":7350,"steps":3}},
+    {"at_s":120.928,"device_ms":231893,"tag":"corridor","kind":"frames=51","fields":{"frames":51,"window_ms":5062,"render_avg_us":45637,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":120.929,"device_ms":231894,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33404,"walls":9044,"sprite":2029}},
+    {"at_s":120.929,"device_ms":231895,"tag":"corridor","kind":"pipeline","fields":{"tick_us":45599,"refresh_avg_us":50064,"refreshes":51,"decoded_chunks":3264}},
+    {"at_s":120.93,"device_ms":231895,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-6472,"yaw_mrad":0,"walking":1,"turning":0,"observing":0}},
+    {"at_s":125.096,"device_ms":236061,"tag":"game_audio","kind":"rate=16019","fields":{"rate":16019,"gap_max_us":1590,"render_max_us":496,"write_max_us":14862,"stack_free":932,"peak":7398,"steps":13}},
+    {"at_s":126.001,"device_ms":236966,"tag":"corridor","kind":"frames=50","fields":{"frames":50,"window_ms":5075,"render_avg_us":47637,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":126.002,"device_ms":236968,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":34423,"walls":8755,"sprite":0}},
+    {"at_s":126.002,"device_ms":236968,"tag":"corridor","kind":"pipeline","fields":{"tick_us":62858,"refresh_avg_us":49858,"refreshes":50,"decoded_chunks":3200}},
+    {"at_s":126.003,"device_ms":236969,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-14693,"yaw_mrad":0,"walking":1,"turning":0,"observing":0}},
+    {"at_s":130.106,"device_ms":241071,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1751,"render_max_us":433,"write_max_us":15011,"stack_free":932,"peak":7260,"steps":22}},
+    {"at_s":131.04,"device_ms":242005,"tag":"corridor","kind":"frames=52","fields":{"frames":52,"window_ms":5042,"render_avg_us":42976,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":131.041,"device_ms":242007,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":32814,"walls":7738,"sprite":0}},
+    {"at_s":131.042,"device_ms":242007,"tag":"corridor","kind":"pipeline","fields":{"tick_us":63078,"refresh_avg_us":50065,"refreshes":52,"decoded_chunks":3328}},
+    {"at_s":131.042,"device_ms":242008,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-22861,"yaw_mrad":0,"walking":1,"turning":0,"observing":0}},
+    {"at_s":135.116,"device_ms":246081,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1766,"render_max_us":431,"write_max_us":14901,"stack_free":932,"peak":7374,"steps":29}},
+    {"at_s":136.07,"device_ms":247035,"tag":"corridor","kind":"frames=56","fields":{"frames":56,"window_ms":5029,"render_avg_us":36053,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":136.071,"device_ms":247037,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":32684,"walls":8636,"sprite":0}},
+    {"at_s":136.072,"device_ms":247037,"tag":"corridor","kind":"pipeline","fields":{"tick_us":59605,"refresh_avg_us":49980,"refreshes":56,"decoded_chunks":3584}},
+    {"at_s":136.072,"device_ms":247038,"tag":"corridor","kind":"view","fields":{"x_mm":850,"z_mm":-26800,"yaw_mrad":1570,"walking":0,"turning":0,"observing":0}},
+    {"at_s":140.002,"device_ms":251020,"tag":"fap_screen","kind":"input=3","fields":{"input":3}},
+    {"at_s":140.055,"device_ms":251076,"tag":"game_audio","kind":"idle","fields":{"generation":1}},
+    {"at_s":141.056,"device_ms":252022,"tag":"corridor","kind":"frames=43","fields":{"frames":43,"window_ms":5028,"render_avg_us":41365,"free":125992,"min":115792,"largest":106496,"phase":0,"score":0,"passages":0}},
+    {"at_s":141.057,"device_ms":252023,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":34072,"walls":10651,"sprite":1149}},
+    {"at_s":141.057,"device_ms":252024,"tag":"corridor","kind":"pipeline","fields":{"tick_us":39032,"refresh_avg_us":31687,"refreshes":76,"decoded_chunks":3008}},
+    {"at_s":141.058,"device_ms":252024,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-1800,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":145.006,"device_ms":255973,"tag":"fap_screen","kind":"input=2","fields":{"input":2}},
+    {"at_s":146.153,"device_ms":257118,"tag":"corridor","kind":"frames=12","fields":{"frames":12,"window_ms":5050,"render_avg_us":45791,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":146.154,"device_ms":257120,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33740,"walls":10907,"sprite":1182}},
+    {"at_s":146.155,"device_ms":257121,"tag":"corridor","kind":"pipeline","fields":{"tick_us":13335,"refresh_avg_us":50207,"refreshes":11,"decoded_chunks":704}},
+    {"at_s":146.156,"device_ms":257122,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-1800,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":150.025,"device_ms":260991,"tag":"game_audio","kind":"rate=16219","fields":{"rate":16219,"gap_max_us":915,"render_max_us":226,"write_max_us":15009,"stack_free":932,"peak":630,"steps":0}},
+    {"at_s":151.196,"device_ms":262162,"tag":"corridor","kind":"frames=51","fields":{"frames":51,"window_ms":5042,"render_avg_us":45900,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":151.197,"device_ms":262164,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33690,"walls":10983,"sprite":1233}},
+    {"at_s":151.198,"device_ms":262164,"tag":"corridor","kind":"pipeline","fields":{"tick_us":14038,"refresh_avg_us":49959,"refreshes":51,"decoded_chunks":3264}},
+    {"at_s":151.199,"device_ms":262165,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-1800,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}}
+  ]
+},
+{
+  "name": "c",
+  "duration_seconds": 37.0,
+  "actions": [
+    {
+      "at_s": 1.069,
+      "key": "OK"
+    },
+    {
+      "at_s": 7.012,
+      "key": "OK"
+    },
+    {
+      "at_s": 13.071,
+      "key": "OK"
+    },
+    {
+      "at_s": 19.038,
+      "key": "OK"
+    },
+    {
+      "at_s": 25.004,
+      "key": "BACK"
+    },
+    {
+      "at_s": 30.094,
+      "key": "OK"
+    }
+  ],
+  "records": [
+    {"at_s":0.0,"device_ms":287503,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33658,"walls":10928,"sprite":1986}},
+    {"at_s":0.0,"device_ms":287503,"tag":"corridor","kind":"pipeline","fields":{"tick_us":23217,"refresh_avg_us":50573,"refreshes":50,"decoded_chunks":3200}},
+    {"at_s":0.0,"device_ms":287504,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-1800,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":0.0,"device_ms":291051,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1452,"render_max_us":281,"write_max_us":14861,"stack_free":932,"peak":726,"steps":0}},
+    {"at_s":0.0,"device_ms":292558,"tag":"corridor","kind":"frames=51","fields":{"frames":51,"window_ms":5057,"render_avg_us":46392,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":0.0,"device_ms":292559,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33951,"walls":10646,"sprite":1488}},
+    {"at_s":0.0,"device_ms":292560,"tag":"corridor","kind":"pipeline","fields":{"tick_us":23884,"refresh_avg_us":49604,"refreshes":51,"decoded_chunks":3264}},
+    {"at_s":0.0,"device_ms":292560,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-1800,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":1.072,"device_ms":384808,"tag":"fap_screen","kind":"input=2","fields":{"input":2}},
+    {"at_s":2.506,"device_ms":386241,"tag":"game_audio","kind":"rate=16019","fields":{"rate":16019,"gap_max_us":1151,"render_max_us":428,"write_max_us":14863,"stack_free":932,"peak":7140,"steps":2}},
+    {"at_s":4.782,"device_ms":388517,"tag":"corridor","kind":"frames=50","fields":{"frames":50,"window_ms":5034,"render_avg_us":46776,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":4.783,"device_ms":388518,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":34813,"walls":9896,"sprite":3666}},
+    {"at_s":4.783,"device_ms":388518,"tag":"corridor","kind":"pipeline","fields":{"tick_us":58814,"refresh_avg_us":50000,"refreshes":50,"decoded_chunks":3200}},
+    {"at_s":4.784,"device_ms":388519,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-7845,"yaw_mrad":0,"walking":1,"turning":0,"observing":0}},
+    {"at_s":7.086,"device_ms":390822,"tag":"fap_screen","kind":"input=2","fields":{"input":2}},
+    {"at_s":7.516,"device_ms":391251,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1669,"render_max_us":427,"write_max_us":14858,"stack_free":932,"peak":7740,"steps":11}},
+    {"at_s":9.874,"device_ms":393609,"tag":"corridor","kind":"frames=49","fields":{"frames":49,"window_ms":5093,"render_avg_us":50426,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":9.875,"device_ms":393611,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33507,"walls":11547,"sprite":3620}},
+    {"at_s":9.876,"device_ms":393612,"tag":"corridor","kind":"pipeline","fields":{"tick_us":44872,"refresh_avg_us":49861,"refreshes":49,"decoded_chunks":3136}},
+    {"at_s":9.877,"device_ms":393613,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-11555,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":12.526,"device_ms":396261,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1812,"render_max_us":275,"write_max_us":14861,"stack_free":932,"peak":744,"steps":11}},
+    {"at_s":13.071,"device_ms":396851,"tag":"fap_screen","kind":"input=2","fields":{"input":2}},
+    {"at_s":14.932,"device_ms":398668,"tag":"corridor","kind":"frames=50","fields":{"frames":50,"window_ms":5061,"render_avg_us":47499,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":14.933,"device_ms":398669,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33521,"walls":8678,"sprite":2379}},
+    {"at_s":14.934,"device_ms":398670,"tag":"corridor","kind":"pipeline","fields":{"tick_us":40403,"refresh_avg_us":50171,"refreshes":50,"decoded_chunks":3200}},
+    {"at_s":14.934,"device_ms":398671,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-14515,"yaw_mrad":0,"walking":1,"turning":0,"observing":0}},
+    {"at_s":17.535,"device_ms":401271,"tag":"game_audio","kind":"rate=15993","fields":{"rate":15993,"gap_max_us":1667,"render_max_us":429,"write_max_us":14861,"stack_free":932,"peak":7602,"steps":19}},
+    {"at_s":19.039,"device_ms":402776,"tag":"fap_screen","kind":"input=2","fields":{"input":2}},
+    {"at_s":20.001,"device_ms":403737,"tag":"corridor","kind":"frames=50","fields":{"frames":50,"window_ms":5067,"render_avg_us":47393,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":20.002,"device_ms":403738,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":32366,"walls":14445,"sprite":0}},
+    {"at_s":20.002,"device_ms":403739,"tag":"corridor","kind":"pipeline","fields":{"tick_us":59481,"refresh_avg_us":50029,"refreshes":50,"decoded_chunks":3200}},
+    {"at_s":20.003,"device_ms":403740,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-21102,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":22.545,"device_ms":406281,"tag":"game_audio","kind":"rate=16019","fields":{"rate":16019,"gap_max_us":1610,"render_max_us":429,"write_max_us":14861,"stack_free":932,"peak":6732,"steps":22}},
+    {"at_s":25.005,"device_ms":408740,"tag":"corridor","kind":"frames=50","fields":{"frames":50,"window_ms":5004,"render_avg_us":46817,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":25.006,"device_ms":408743,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":32241,"walls":14567,"sprite":0}},
+    {"at_s":25.007,"device_ms":408743,"tag":"corridor","kind":"pipeline","fields":{"tick_us":14394,"refresh_avg_us":50137,"refreshes":50,"decoded_chunks":3200}},
+    {"at_s":25.008,"device_ms":408744,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-21102,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":25.017,"device_ms":408754,"tag":"fap_screen","kind":"input=3","fields":{"input":3}},
+    {"at_s":25.065,"device_ms":408801,"tag":"game_audio","kind":"idle","fields":{"generation":1}},
+    {"at_s":29.982,"device_ms":413718,"tag":"corridor","kind":"frames=1","fields":{"frames":1,"window_ms":5024,"render_avg_us":45922,"free":125992,"min":115792,"largest":106496,"phase":0,"score":0,"passages":0}},
+    {"at_s":29.982,"device_ms":413719,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33247,"walls":11487,"sprite":1168}},
+    {"at_s":29.983,"device_ms":413720,"tag":"corridor","kind":"pipeline","fields":{"tick_us":26928,"refresh_avg_us":8910,"refreshes":34,"decoded_chunks":320}},
+    {"at_s":29.984,"device_ms":413721,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-1800,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":30.095,"device_ms":413832,"tag":"fap_screen","kind":"input=2","fields":{"input":2}},
+    {"at_s":35.05,"device_ms":418786,"tag":"corridor","kind":"frames=50","fields":{"frames":50,"window_ms":5021,"render_avg_us":45858,"free":125992,"min":115792,"largest":106496,"phase":1,"score":0,"passages":0}},
+    {"at_s":35.05,"device_ms":418787,"tag":"corridor","kind":"last_cpu_us","fields":{"floor":33647,"walls":11046,"sprite":1246}},
+    {"at_s":35.051,"device_ms":418788,"tag":"corridor","kind":"pipeline","fields":{"tick_us":14350,"refresh_avg_us":50092,"refreshes":50,"decoded_chunks":3200}},
+    {"at_s":35.052,"device_ms":418789,"tag":"corridor","kind":"view","fields":{"x_mm":0,"z_mm":-1800,"yaw_mrad":0,"walking":0,"turning":0,"observing":0}},
+    {"at_s":35.115,"device_ms":418851,"tag":"game_audio","kind":"rate=16209","fields":{"rate":16209,"gap_max_us":1151,"render_max_us":175,"write_max_us":14971,"stack_free":932,"peak":630,"steps":0}}
+  ]
+}
+  ]
+}

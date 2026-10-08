@@ -1,27 +1,29 @@
 {
   "schema": 2,
-  "name": "Corridor conservative load experiment, 2026-09-29 accepted device sample",
+  "name": "Corridor partial device-calibrated load experiment, validated 2026-10-08",
   "calibration": {
     "status": "partial",
-    "date": "2026-09-29",
+    "date": "2026-10-08",
     "firmware_sha256": "0af8d8336e49fffb5c1d2cc8a830cd079a04f41a2c34d9af9f269160005248b1",
-    "source": "docs/WEB_PREVIEW_EXIT_CORRIDOR.md: 130-second device scheduling acceptance, 23 frame windows and 20 audio windows.",
+    "source": "docs/WEB_PREVIEW_EXIT_CORRIDOR.md: original 130-second sample; docs/assets/resource-stress/device-observations-20261008.json: fresh identity-verified lifecycle samples. Cost envelopes include the fresh observed maxima; rendering and refresh still use window averages.",
     "observations": {
-      "max_window_render_avg_us": 50133,
-      "max_window_refresh_avg_us": 50337,
-      "max_audio_render_us": 431,
-      "max_device_feed_gap_us": 1649,
+      "max_window_render_avg_us": 50426,
+      "max_window_refresh_avg_us": 50360,
+      "max_audio_render_us": 504,
+      "max_device_feed_gap_us": 2084,
       "fps_range": [
-        9.68,
-        11.0
-      ]
+        9.621,
+        11.323
+      ],
+      "fresh_samples": "docs/assets/resource-stress/device-observations-20261008.json"
     },
     "assumptions": [
       "Render load uses the largest window average, not a per-frame worst-case measurement.",
-      "Full LVGL refresh duration (50337 us) is conservatively charged again as a blocking transfer wait, not claimed as pure SPI time.",
+      "Full LVGL refresh duration (50360 us) is conservatively charged again as a blocking transfer wait, not claimed as pure SPI time.",
       "Frame period is a 110000 us experiment target, not the game timer configuration.",
       "1440 mono-equivalent samples use the 6 x 240 descriptor geometry; effective playable headroom is unmeasured. The ring begins full.",
-      "Memory is the observed running-game free heap; only additional allocations are charged. Actual fragmentation is not modeled."
+      "Memory is the observed running-game free heap; only additional allocations are charged. Actual fragmentation is not modeled.",
+      "504 us is the maximum synthesis wall-clock duration observed across samples, not a proven worst-case CPU execution bound."
     ]
   },
   "memory": {
@@ -36,9 +38,9 @@
       "id": "display",
       "mode": "periodic",
       "priority": 4,
-      "cpu_us": 50133,
+      "cpu_us": 50426,
       "period_us": 110000,
-      "transfer_us": 50337,
+      "transfer_us": 50360,
       "wait": "blocking",
       "limits": {
         "max_lateness_us": 2000,
@@ -49,7 +51,7 @@
       "id": "playback",
       "mode": "buffered",
       "priority": 5,
-      "cpu_us": 431,
+      "cpu_us": 504,
       "refill_us": 8000,
       "capacity_us": 90000,
       "initial_buffer_us": 90000,

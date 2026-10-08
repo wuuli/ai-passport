@@ -129,9 +129,10 @@ both modeled demand and game PCM. This is a reference workload: modeled CPU
 latency does not feed back into the C game's motion or UI.
 
 The profile records the accepted 130-second device sample and full-image hash.
-Render CPU load uses the largest window average (50,133 us), not a measured
-per-frame worst case. Audio synthesis uses the observed 431 us maximum. Full
-refresh time (50,337 us) is conservatively charged again as blocking wait; it is
+The current profile includes the [2026-10-08 device observations](DEVICE_VALIDATION_EXIT_CORRIDOR.md#2026-10-08-usb-regression-and-partial-calibration).
+Render CPU load uses the largest observed window average (50,426 us), not a measured
+per-frame worst case. Audio synthesis uses the observed 504 us maximum. Full
+refresh time (50,360 us) is conservatively charged again as blocking wait; it is
 not pure SPI time. The 110 ms frame period is an experiment target. PCM headroom
 uses 6 x 240 descriptor geometry, but effective playable capacity and initial
 prefill remain assumptions. Memory is the already-running game's observed

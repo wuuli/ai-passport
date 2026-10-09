@@ -31,49 +31,14 @@ run_static_checks() {
         -o "${test_dir}/test_ui_pixel_math"
     "${test_dir}/test_ui_pixel_math"
     "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
-        tests/test_duel_clock.c main/duel_clock.c -lm \
-        -o "${test_dir}/test_duel_clock"
-    "${test_dir}/test_duel_clock"
-    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
-        tests/test_corridor_game.c main/corridor_game.c -lm \
-        -o "${test_dir}/test_corridor_game"
-    "${test_dir}/test_corridor_game"
-    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
-        -Icomponents/bsp/include -Itests/stubs/corridor_demo \
-        tests/test_corridor_demo.c main/corridor_game.c main/corridor_sound.c -lm \
-        -o "${test_dir}/test_corridor_demo"
-    "${test_dir}/test_corridor_demo"
-    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
-        tests/test_corridor_render.c main/corridor_render.c main/corridor_game.c -lm \
-        -o "${test_dir}/test_corridor_render"
-    "${test_dir}/test_corridor_render"
-    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
-        tests/test_duel_sound.c main/duel_sound.c \
-        -o "${test_dir}/test_duel_sound"
-    "${test_dir}/test_duel_sound"
-    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
-        tests/test_corridor_sound.c main/corridor_sound.c main/corridor_game.c -lm \
-        -o "${test_dir}/test_corridor_sound"
-    "${test_dir}/test_corridor_sound"
-    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
-        -Itests/duel_demo/stubs -Icomponents/bsp/include \
-        tests/test_demo_duel.c main/demo_duel.c main/duel_clock.c -lm \
-        -o "${test_dir}/test_demo_duel"
-    "${test_dir}/test_demo_duel"
-    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
         tests/test_fap_screenshot_protocol.c main/fap_screenshot_protocol.c \
         -o "${test_dir}/test_fap_screenshot_protocol"
     "${test_dir}/test_fap_screenshot_protocol"
-    python3 tests/test_duel_assets.py
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_capture_passport_screen.py
     "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
         tests/test_demo_navigation.c main/demo_navigation.c \
         -o "${test_dir}/test_demo_navigation"
     "${test_dir}/test_demo_navigation"
-    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Itests/game_main_stubs -Imain \
-        tests/test_game_main.c main/demo_navigation.c \
-        -o "${test_dir}/test_game_main"
-    "${test_dir}/test_game_main"
     "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
         tests/test_key_guard.c -o "${test_dir}/test_key_guard"
     "${test_dir}/test_key_guard"
@@ -113,14 +78,6 @@ run_static_checks() {
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_archive_firmware.py
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_install_passport_skills.py
     rm -rf "${test_dir}"
-    python3 tools/build_corridor_web.py --check
-    node tests/test_corridor_web.mjs
-    node tests/test_corridor_audio.mjs
-    python3 tools/build_duel_web.py --check
-    node tests/test_duel_web.mjs
-    node tests/test_duel_preview.mjs
-    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_web_build_manifest.py
-    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_game_preview_server.py
     echo "Host tests: PASS"
 }
 

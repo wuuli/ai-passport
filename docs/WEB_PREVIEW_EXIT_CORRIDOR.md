@@ -59,6 +59,7 @@ After changing a manifest-listed native source or asset, rebuild with the offici
 ```bash
 python3 tools/build_corridor_web.py --sdk /path/to/wasi-sdk
 ./tools/validate.sh --static
+./tools/validate-games.sh
 # Activate ESP-IDF 5.5.3 before the complete gate:
 ./tools/validate.sh
 ```
@@ -108,3 +109,19 @@ Physical bus timing, actual heap fragmentation, speaker quality and prolonged lo
 The game firmware accepts newline-terminated `FAP_KEY_V1 LEFT`, `RIGHT`, `OK`, and `BACK` commands over its physical USB serial connection. Send the full `FAP_KEY_V1` prefix on each line. These represent the top, middle, short bottom OK, and long OK actions. They enqueue the same button events as the physical keys; only the LVGL dispatcher touches game UI. Invalid commands are ignored and queue overflow stops movement. This developer interface does not emulate switch debounce or human timing.
 
 Run bounded enter/walk/stop/look/corner/title/re-entry sequences while collecting `game_audio` feed rate, maximum gap, synthesis/write duration, stack margin, and PCM peak alongside the game frame/heap logs. Capture screenshots separately, since screen transfer disturbs timing. USB tests cannot confirm the speaker's acoustic output.
+
+## Fork game validation
+
+`tools/validate.sh` covers generic repository/BSP checks and firmware packaging;
+it does not invoke game tests. Run `./tools/validate-games.sh` separately for both
+games' native logic, rendering, sound, lifecycle, launcher and C/Wasm parity checks.
+Game-specific resource scenarios, when present, belong in that application gate;
+the reusable resource model remains independent of either game.
+
+The game gate needs Node.js 18+, Python 3.10+ and a C11 compiler. Checking existing
+Wasm artifacts does not need WASI SDK. `.github/workflows/game-checks.yml` runs the
+same command for pull requests and pushes to `main` that change application code,
+shared BSP code, assets, previews, tests, tools, build configuration or that workflow.
+It also supports manual dispatch. Documentation-only changes skip it, so do not
+require this path-filtered status for unrelated changes. A game release requires
+both the generic gate and the game gate; neither replaces physical-device testing.

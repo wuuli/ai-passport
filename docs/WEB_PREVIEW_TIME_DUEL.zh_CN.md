@@ -34,6 +34,7 @@ node tests/test_duel_preview.mjs
 ```bash
 python3 tools/build_duel_web.py --sdk /path/to/wasi-sdk
 ./tools/validate.sh --static
+./tools/validate-games.sh
 # 激活 ESP-IDF 5.5.3 环境后运行完整门禁：
 ./tools/validate.sh
 ```
@@ -78,3 +79,16 @@ python3 tools/build_duel_web.py --sdk /path/to/wasi-sdk
 - **固件安全**：网页构建过程不修改也无法刷写物理设备分区。
 
 `node tests/test_duel_preview.mjs` 使用真实 Wasm 核心与受控时钟验证网页输入适配层，覆盖按下／松开与重复输入、封存成绩、模式切换、输入中断及长按返回首页。这些检查不测量实体按键延迟。
+
+## Fork 游戏验证
+
+`tools/validate.sh` 负责通用仓库/BSP 检查和固件打包，不调用游戏测试。
+另外运行 `./tools/validate-games.sh`，验证两款游戏的原生逻辑、渲染、声音、
+生命周期、启动器和 C/Wasm 一致性。存在游戏专用资源场景时，将它们放在此应用门禁；
+可复用的资源模型保持独立，不依赖任何游戏。
+
+游戏门禁需要 Node.js 18+、Python 3.10+ 和 C11 编译器；检查已有 Wasm 产物不需要
+WASI SDK。`.github/workflows/game-checks.yml` 在 PR 或推送到 `main` 涉及应用代码、
+共享 BSP、素材、预览、测试、工具、构建配置或该工作流时运行相同命令，也支持手动触发。
+纯文档变更会跳过，因此不要将这个按路径触发的状态设为无关变更的必需检查。
+游戏发布需要同时通过通用门禁和游戏门禁；两者都不能代替真机验收。

@@ -1,0 +1,47 @@
+name: Game checks
+
+on:
+  pull_request:
+    paths:
+      - "main/**"
+      - "components/**"
+      - "assets/**"
+      - "prototype/**"
+      - "tests/**"
+      - "tools/**"
+      - "CMakeLists.txt"
+      - "sdkconfig*"
+      - "dependencies.lock"
+      - "partitions.csv"
+      - ".github/workflows/game-checks.yml"
+  push:
+    branches: [main]
+    paths:
+      - "main/**"
+      - "components/**"
+      - "assets/**"
+      - "prototype/**"
+      - "tests/**"
+      - "tools/**"
+      - "CMakeLists.txt"
+      - "sdkconfig*"
+      - "dependencies.lock"
+      - "partitions.csv"
+      - ".github/workflows/game-checks.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: games-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  games:
+    name: Fork game host and Wasm checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Validate game behavior and web parity
+        run: ./tools/validate-games.sh

@@ -59,6 +59,7 @@ node tests/test_corridor_web.mjs
 ```bash
 python3 tools/build_corridor_web.py --sdk /path/to/wasi-sdk
 ./tools/validate.sh --static
+./tools/validate-games.sh
 # Activate ESP-IDF 5.5.3 before the complete gate:
 ./tools/validate.sh
 ```
@@ -108,3 +109,16 @@ UP／上箭头按下向左转 45°，DOWN／下箭头按下向右转 45°，短�
 游戏固件在物理 USB 串口上接受以换行结尾的 `FAP_KEY_V1 LEFT`、`RIGHT`、`OK`、`BACK` 命令，每行都需带完整的 `FAP_KEY_V1` 前缀。它们分别表示顶部键、中部键、短按底部 OK 键和长按 OK。这些命令进入与物理按键相同的事件队列，只有 LVGL 分发器会访问游戏 UI。无效命令被忽略，队列溢出会停止移动。此开发接口不模拟物理开关消抖或人的按键时序。
 
 执行有时限的进入、行走、停下、观察、拐角、返回标题和重新进入流程，同时采集 `game_audio` 的供给速率、最长间隔、合成与写入耗时、栈余量、PCM 峰值及游戏帧率和堆内存。截图传输会扰动时序，必须与音频计时测试分开。USB 测试无法确认扬声器的实际听感。
+
+## Fork 游戏验证
+
+`tools/validate.sh` 负责通用仓库/BSP 检查和固件打包，不调用游戏测试。
+另外运行 `./tools/validate-games.sh`，验证两款游戏的原生逻辑、渲染、声音、
+生命周期、启动器和 C/Wasm 一致性。存在游戏专用资源场景时，将它们放在此应用门禁；
+可复用的资源模型保持独立，不依赖任何游戏。
+
+游戏门禁需要 Node.js 18+、Python 3.10+ 和 C11 编译器；检查已有 Wasm 产物不需要
+WASI SDK。`.github/workflows/game-checks.yml` 在 PR 或推送到 `main` 涉及应用代码、
+共享 BSP、素材、预览、测试、工具、构建配置或该工作流时运行相同命令，也支持手动触发。
+纯文档变更会跳过，因此不要将这个按路径触发的状态设为无关变更的必需检查。
+游戏发布需要同时通过通用门禁和游戏门禁；两者都不能代替真机验收。

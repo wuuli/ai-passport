@@ -34,6 +34,7 @@ After modifying native clock sources or the web bridge, rebuild with the officia
 ```bash
 python3 tools/build_duel_web.py --sdk /path/to/wasi-sdk
 ./tools/validate.sh --static
+./tools/validate-games.sh
 # Activate ESP-IDF 5.5.3 before the complete gate:
 ./tools/validate.sh
 ```
@@ -78,3 +79,19 @@ Key differences from physical hardware:
 - **Firmware safety**: the web build does not alter or flash device partitions.
 
 The browser input adapter is checked with the real Wasm core and a controlled clock by `node tests/test_duel_preview.mjs`: press/release and repeat handling, sealed results, mode changes, input interruption, and long-press return home. These checks do not measure physical key latency.
+
+## Fork game validation
+
+`tools/validate.sh` covers generic repository/BSP checks and firmware packaging;
+it does not invoke game tests. Run `./tools/validate-games.sh` separately for both
+games' native logic, rendering, sound, lifecycle, launcher and C/Wasm parity checks.
+Game-specific resource scenarios, when present, belong in that application gate;
+the reusable resource model remains independent of either game.
+
+The game gate needs Node.js 18+, Python 3.10+ and a C11 compiler. Checking existing
+Wasm artifacts does not need WASI SDK. `.github/workflows/game-checks.yml` runs the
+same command for pull requests and pushes to `main` that change application code,
+shared BSP code, assets, previews, tests, tools, build configuration or that workflow.
+It also supports manual dispatch. Documentation-only changes skip it, so do not
+require this path-filtered status for unrelated changes. A game release requires
+both the generic gate and the game gate; neither replaces physical-device testing.

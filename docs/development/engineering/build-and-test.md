@@ -169,5 +169,3 @@ Hardware-affecting changes must also run the applicable on-device checklist in t
 Never upload the app-only `build/FoloToy-AI-Passport.bin` to the community. Only
 the validated `build/FoloToy-AI-Passport-full.bin` contains the complete checked
 firmware layout.
-
-The corridor web parity gate also requires Node.js 18+, Python 3.10+ and a C11 compiler. Checking existing generated artifacts does not require WASI SDK. After changing the firmware game, renderer, font or linked assets, rebuild using the [web sync instructions](../../WEB_PREVIEW_EXIT_CORRIDOR.md).
